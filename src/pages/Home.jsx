@@ -1,96 +1,37 @@
+
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { signIn } from "../services/users.js";
-import splash from "../assets/splash.svg";
+import { useNavigate, Link } from "react-router-dom";
+import { signIn } from "../services/users";
 
-function Home({ setUser }) {
+export default function Home() {
   const navigate = useNavigate();
-
-  const [form, setForm] = useState({
-    username: "",
-    password: "",
-    isError: false,
-    errorMsg: "",
-  });
+  const [form, setForm] = useState({ username: "", password: "", isError: false, errorMsg: "" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: value,
-    }));
+    setForm(f => ({ ...f, [name]: value }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
+  const onSignIn = async (e) => {
+    e.preventDefault();
     try {
-      const userData = await signIn(form);
-      setUser(userData);
-
-      navigate("/cats");
+      await signIn({ username: form.username, password: form.password });
+      navigate("/");
     } catch (error) {
-      console.error(error);
-      setForm((prevForm) => ({
-        isError: true,
-        errorMsg: "Invalid Credentials",
-        username: prevForm.username,
-        password: "",
-      }));
-    }
-  };
-
-  const renderError = () => {
-    const toggleForm = form.isError ? "danger" : "";
-
-    if (form.isError) {
-      return (
-        <button type="submit" className={toggleForm}>
-          {form.errorMsg}
-        </button>
-      );
-    } else {
-      return <button type="submit">Log In</button>;
+      setForm(f => ({ ...f, isError: true, errorMsg: "Invalid Credentials" }));
     }
   };
 
   return (
-    <div className="home-container">
-      <div>
-        <img src={splash} alt="splash" />
-      </div>
-      <div>
-        <form className="home-form" onSubmit={handleSubmit}>
-          <h1>Login</h1>
-          <input
-            type='text'
-            name='username'
-            value={form.username}
-            placeholder='Enter Username'
-            onChange={handleChange}
-            required
-            autoComplete="off"
-          />
-          <input
-            type='password'
-            name='password'
-            value={form.password}
-            placeholder='Enter Password'
-            onChange={handleChange}
-            required
-            autoComplete="off"
-          />
-
-          {renderError()}
-
-          <Link to="/register">
-            <p>No account? Sign up here!</p>
-          </Link>
-        </form>
-      </div>
+    <div>
+      <h1>Sign In</h1>
+      <form onSubmit={onSignIn}>
+        <input name="username" placeholder="Username" value={form.username} onChange={handleChange} />
+        <input name="password" type="password" placeholder="Password" value={form.password} onChange={handleChange} />
+        {form.isError && <div>{form.errorMsg}</div>}
+        <button type="submit">Sign In</button>
+      </form>
+      <Link to="/register">No account? Sign up here!</Link>
     </div>
   );
 }
-
-export default Home;

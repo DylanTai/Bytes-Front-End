@@ -1,40 +1,32 @@
+
 import api from "./apiConfig";
 
 export const signUp = async (credentials) => {
-  try {
-    const resp = await api.post("/users/register/", credentials);
-    localStorage.setItem("token", resp.data.access);
-    return resp.data.user;
-  } catch (error) {
-    throw error;
-  }
+  const resp = await api.post("/users/register/", credentials);
+  localStorage.setItem("token", resp.data.access);
+  return resp.data.user;
 };
 
 export const signIn = async (credentials) => {
-  try {
-    const resp = await api.post("/users/login/", credentials);
-    localStorage.setItem("token", resp.data.access);
-    return resp.data.user;
-  } catch (error) {
-    throw error;
-  }
+  const resp = await api.post("/users/login/", credentials);
+  localStorage.setItem("token", resp.data.access);
+  return resp.data.user;
 };
 
 export const signOut = async () => {
-  try {
-    localStorage.removeItem("token");
-    return true;
-  } catch (error) {
-    throw error;
-  }
+  localStorage.removeItem("token");
+  return true;
 };
 
 export const verifyUser = async () => {
   const token = localStorage.getItem("token");
-  if (token) {
+  if (!token) return false;
+  try {
     const resp = await api.get("/users/token/refresh/");
     localStorage.setItem("token", resp.data.access);
     return resp.data.user;
+  } catch {
+    localStorage.removeItem("token");
+    return false;
   }
-  return false;
 };
