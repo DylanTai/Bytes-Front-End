@@ -1,0 +1,394 @@
+/* 
+  NAV Bar Section
+*/
+
+nav {
+  background-color: #95c3ec;
+  height: 10vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+nav * {
+  font-size: 25px;
+  padding: 2px;
+}
+
+nav > img {
+  width: 25%;
+}
+
+.nav-links {
+  width: 455px;
+  height: 10vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-link {
+  height: 10vh;
+  display: flex;
+  align-items: center;
+}
+
+.nav-link:hover {
+  background-color: #535bf1;
+  color: white;
+}
+
+/* 
+  HOME
+*/
+
+.home-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 90vh;
+}
+
+.home-container img {
+  width: 350px;
+}
+
+.home-form {
+  width: 400px;
+  border: 2px solid #c5d2da;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.home-form * {
+  padding: 5px;
+  margin: 5px;
+}
+
+.home-form button {
+  background-color: #207868;
+}
+
+.home-form .danger {
+  background: #e57373;
+}
+
+/* Cats */
+.cats-root > h1 {
+  text-align: center;
+}
+
+.cats-container {
+  display: flex;
+  justify-content: center;
+  flex-flow: wrap;
+}
+
+.cat-card {
+  width: 250px;
+  border: 2px solid #2470f7;
+  padding: 10px;
+  margin: 10px;
+}
+
+.cat-card img {
+  width: 250px;
+}
+
+/* Cat Detail */
+.cat-detail-root {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.cat-detail-container {
+  height: 250px;
+  display: flex;
+}
+
+.cat-detail-container img {
+  width: 200px;
+}
+
+.cat-detail-container > div {
+  padding: 15px;
+}
+
+.cat-detail-edit {
+  background-color: orange;
+  margin: 5px;
+}
+
+.cat-detail-delete {
+  background-color: red;
+  margin: 5px;
+}
+
+.cat-detail-bottom-container {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.cat-detail-bottom-container > div {
+  width: 350px;
+  margin: 10px;
+}
+
+.feedings-container {
+  border: 2px solid #95c3ec;
+  padding: 15px;
+}
+
+.feedings-container p {
+  text-align: center;
+}
+
+.feedings-container form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.feedings-container form div {
+  width: 75%;
+  display: flex;
+  justify-content: space-between;
+  margin: 3px;
+}
+
+.feedings-container form button {
+  background-color: #207868;
+  margin-top: 5px;
+}
+
+.cat-toys-container {
+  border: 2px solid #95c3ec;
+  padding: 15px
+}
+
+.cats-personal-toys {
+  display: flex;
+  margin-top: 4px;
+}
+
+.cats-personal-toys > div {
+  height: 20px;
+  width: 20px;
+}
+
+.cats-personal-toys > p {
+  margin: 0 0 0 10px;
+}
+
+.cats-personal-toys > button {
+  padding: 0;
+  margin-left: 10px;
+  background-color: #207868;
+}
+
+.cats-personal-owned-toys {
+  display: flex;
+  margin-top: 4px;
+}
+
+.cats-personal-owned-toys > div {
+  height: 20px;
+  width: 20px;
+}
+
+.cats-personal-owned-toys > p {
+  margin: 0 0 0 10px;
+}
+
+.cats-personal-owned-toys > button {
+  padding: 0;
+  margin-left: 10px;
+  background-color: red;
+}
+
+/* Create Cat */
+.create-cat-root, .edit-cat-root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.create-cat-heading, .edit-cat-heading {
+  width: 15%;
+}
+
+.create-cat-heading h2, .edit-cat-heading h2 {
+  text-align: center;
+}
+
+.create-form, .edit-form {
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+  width: 35%;
+  justify-content: space-evenly;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+}
+
+.create-form input, 
+.create-form textarea, 
+.edit-form input, 
+.edit-form textarea {
+  font-size: 35px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  border-top-style: hidden;
+  border-right-style: hidden;
+  border-left-style: hidden;
+  border-bottom-style: hidden;
+}
+
+.cat-form-age {
+  display: flex;
+  justify-content: space-between;
+}
+
+label {
+  font-weight: bold;
+}
+
+textarea {
+  font-size: 24px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.input-name {
+  font-size: 48px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.input-age {
+  padding-left: 10px;
+  font-size: 24px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.input-breed {
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.create-form > button, .edit-form > button {
+  background-color: #207868;
+}
+
+/* Toys */
+.toys-container {
+  display: flex;
+  justify-content: center;
+  flex-flow: wrap
+}
+
+.toys-root h2 {
+  text-align: center;
+}
+
+.toy {
+  width: 200px;
+  height: 200px;
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  padding: 10px;
+}
+
+.toy h3, .toy p {
+  margin: 0;
+  text-align: right;
+}
+
+/* Toy Create */
+.create-toy-root, .edit-toy-root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.toy {
+  color: white;
+}
+
+.create-toy-heading, .edit-toy-heading {
+  width: 15%;
+}
+
+.create-toy-heading h2, .edit-toy-heading h2 {
+  text-align: center;
+}
+
+.create-toy-form > button, .edit-toy-form > button {
+  background-color: #207868;
+}
+
+.create-toy-form, .edit-toy-form {
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+  width: 35%;
+  justify-content: space-evenly;
+}
+
+.create-toy-form input, 
+.edit-toy-form input {
+  font-size: 35px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  border-top-style: hidden;
+  border-right-style: hidden;
+  border-left-style: hidden;
+  border-bottom-style: hidden;
+}
+
+.input-toy-name {
+  font-size: 48px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.input-toy-color {
+  font-size: 28px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Toy Detail */
+.toy-root-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
+.toy-detail-edit {
+  background-color: orange;
+  margin: 5px;
+}
+
+.toy-detail-delete {
+  background-color: red;
+  margin: 5px;
+}
+
+.toy-detail-root {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
