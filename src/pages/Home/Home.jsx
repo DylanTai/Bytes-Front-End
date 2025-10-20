@@ -1,13 +1,19 @@
 import "./Home.css"
 
-const GuestLanding = () => {
+const Home = () => {
+
+  const { user } = useContext(UserContext);
+  if (user) {
+    return <RecipeList />;
+  }
+
   return (
     <main>
-      <h1 className="landing-page-title">Moodies</h1>
-      <p>Your Online Mood Logger</p>
+      <h1 className="landing-page-title">Bytes</h1>
+      <p>Your Online Recipe Box</p>
     </main>
   );
 };
 
-export default GuestLanding;
+export default Home;
 

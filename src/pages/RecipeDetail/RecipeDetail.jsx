@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
-import * as recipeService from "../../services/recipeService.js";
+import * as recipeService from "../services/recipeService.js";
 import "./RecipeDetail.css";
 
 // format date to show only day, not time
