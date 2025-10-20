@@ -9,3 +9,20 @@
   margin-top: 30px;
 }
 
+form button {
+  border: #82200c solid 3px;
+  border-radius: 8px;
+  padding: 7px;
+  background: #B94700;
+  color: white;
+}
+
+form button:hover {
+  background-color: #82200c;
+  color:blanchedalmond;
+  cursor: pointer;
+}
+
+.username-input {
+  width: 246px;
+}

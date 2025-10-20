@@ -30,9 +30,17 @@ nav img {
 }
 
 nav button {
-    border: #C8553D solid 3px;
-    border-radius: 8px;
-    padding: 5px;
+  border: #82200c solid 3px;
+  border-radius: 8px;
+  padding: 7px;
+  background: #B94700;
+  color: white;
+}
+
+nav button:hover {
+  background-color: #82200c;
+  color:blanchedalmond;
+  cursor: pointer;
 }
 
 
