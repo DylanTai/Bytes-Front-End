@@ -74,8 +74,7 @@ const RecipeList = () => {
             >
               <li className="recipe-card">
                 <strong>{recipe.title}</strong>
-                {recipe.favorite && <span> ★</span>}
-                <p>{formatDate(recipe.created_at || recipe.id)}</p>
+                {recipe.favorite && <span> 🍪 </span>}
               </li>
             </Link>
           ))}
