@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { UserContext } from "../../contexts/UserContext";
 import "./NavBar.css";
 import { Squash as Hamburger } from "hamburger-react";
-import logo from "../../../assets/BytesLogo.png";
+import logo from "../../../assets/Bytes.png";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
