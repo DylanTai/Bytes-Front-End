@@ -1,54 +1,72 @@
-const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/auth`;
+const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/users`;
 
-const signUp = async (formData) => {
+// SIGN UP
+export const signUp = async (formData) => {
   try {
-    const res = await fetch(`${BASE_URL}/sign-up`, {
+    const res = await fetch(`${BASE_URL}/sign-up/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
 
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || "Sign up failed");
+    }
+
     const data = await res.json();
 
-    if (data.err) {
-      throw new Error(data.err);
-    }
+    // Save JWT tokens for future authenticated requests
+    localStorage.setItem("access", data.access);
+    localStorage.setItem("refresh", data.refresh);
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      return JSON.parse(atob(data.token.split(".")[1])).payload;
-    }
-
-    throw new Error(data.error);
-  } catch (error) {
-    console.log(error);
-    throw new Error(error);
+    return data.user; // return the user object
+  } catch (err) {
+    console.error("Error signing up:", err);
+    throw err;
   }
 };
 
-const signIn = async (formData) => {
+// SIGN IN
+export const signIn = async (formData) => {
   try {
-    const res = await fetch(`${BASE_URL}/sign-in`, {
+    const res = await fetch(`${BASE_URL}/sign-in/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || "Invalid credentials");
+    }
+
     const data = await res.json();
 
-    if (data.err) {
-      throw new Error(data.err);
-    }
+    localStorage.setItem("access", data.access);
+    localStorage.setItem("refresh", data.refresh);
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      return JSON.parse(atob(data.token.split(".")[1])).payload;
-    }
-
-    throw new Error(data.error);
-  } catch (error) {
-    console.log(error);
-    throw new Error(error);
+    return data.user;
+  } catch (err) {
+    console.error("Error signing in:", err);
+    throw err;
   }
 };
 
-export { signUp, signIn };
+// REFRESH TOKEN
+export const refreshAccessToken = async () => {
+  const refresh = localStorage.getItem("refresh");
+  if (!refresh) throw new Error("No refresh token found");
+
+  const res = await fetch(`${BASE_URL}/token/refresh/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh }),
+  });
+
+  if (!res.ok) throw new Error("Token refresh failed");
+
+  const data = await res.json();
+  localStorage.setItem("access", data.access);
+  return data.access;
+};

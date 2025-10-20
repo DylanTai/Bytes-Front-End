@@ -1,18 +1,22 @@
 const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/users`;
 
-const index = async () => {
+export const index = async () => {
   try {
+    const accessToken = localStorage.getItem("access");
+    if (!accessToken) throw new Error("No access token found.");
+
     const res = await fetch(BASE_URL, {
       headers: {
-        Authorization: localStorage.getItem("token"),
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
     });
-    const data = await res.json();
 
-    return data;
+    if (!res.ok) throw new Error("Failed to fetch users.");
+
+    return await res.json();
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching users:", error);
+    throw error;
   }
 };
-
-export { index };
