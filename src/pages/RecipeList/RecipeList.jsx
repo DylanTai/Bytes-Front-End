@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import * as recipeService from "../../services/RecipeService.js";
+import * as recipeService from "../../services/recipeService.js";
 import "./RecipeList.css";
 
 const formatDate = (dateString) => {
