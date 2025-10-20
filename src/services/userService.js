@@ -1,22 +1,40 @@
 const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/users`;
 
-export const index = async () => {
-  try {
-    const accessToken = localStorage.getItem("access");
-    if (!accessToken) throw new Error("No access token found.");
+// Helper function for authenticated requests
+const fetchWithAuth = async (url, options = {}) => {
+  const access = localStorage.getItem("access");
 
-    const res = await fetch(BASE_URL, {
+  const authHeaders = {
+    ...options.headers,
+  };
+
+  if (access) {
+    authHeaders["Authorization"] = `Bearer ${access}`;
+  }
+
+  return await fetch(url, {
+    ...options,
+    headers: authHeaders,
+  });
+};
+
+export const getUser = async () => {
+  try {
+    const res = await fetchWithAuth(`${BASE_URL}/token/refresh/`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
       },
     });
 
-    if (!res.ok) throw new Error("Failed to fetch users.");
+    if (!res.ok) {
+      throw new Error("Failed to fetch user");
+    }
 
-    return await res.json();
+    const data = await res.json();
+    return data.user;
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("Error fetching user:", error);
     throw error;
   }
 };

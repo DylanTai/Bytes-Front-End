@@ -53,19 +53,65 @@ export const signIn = async (formData) => {
   }
 };
 
+export const getUser = async () => {
+  const access = localStorage.getItem("access");
+
+  if (!access) {
+    throw new Error("No token found");
+  }
+
+  try {
+    const res = await fetch(`${BASE_URL}/profile/`, {
+      // or whatever your user endpoint is
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${access}`,
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch user");
+    }
+
+    return await res.json();
+  } catch (err) {
+    // Try refreshing token
+    try {
+      const newAccess = await refreshAccessToken();
+      const res = await fetch(`${BASE_URL}/profile/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${newAccess}`,
+        },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch user");
+      return await res.json();
+    } catch (refreshErr) {
+      // Refresh failed, user needs to log in again
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+      throw refreshErr;
+    }
+  }
+};
+
 // REFRESH TOKEN
 export const refreshAccessToken = async () => {
   const refresh = localStorage.getItem("refresh");
-  if (!refresh) throw new Error("No refresh token found");
+  const access = localStorage.getItem("access");
+
+  if (!access) throw new Error("No access token found");
 
   const res = await fetch(`${BASE_URL}/token/refresh/`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh }),
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${access}`,
+    },
   });
 
   if (!res.ok) throw new Error("Token refresh failed");
-
   const data = await res.json();
   localStorage.setItem("access", data.access);
   return data.access;
