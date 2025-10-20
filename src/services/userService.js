@@ -4,8 +4,8 @@ const index = async () => {
   try {
     const res = await fetch(BASE_URL, {
       headers: {
-        "Authorization": localStorage.getItem("token")
-      }
+        Authorization: localStorage.getItem("token"),
+      },
     });
     const data = await res.json();
 

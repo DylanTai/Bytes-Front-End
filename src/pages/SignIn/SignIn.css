@@ -1,0 +1,11 @@
+.sign-in-title {
+  padding: 25px;
+  margin-bottom: 20px;
+}
+
+.sign-in-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+}
+

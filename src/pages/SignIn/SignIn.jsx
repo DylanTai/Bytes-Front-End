@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router";
-import { signIn } from "../../services/authService";
-import { UserContext } from "../../contexts/UserContext";
-import "./SignInForm.css";
+import { signIn } from "../../services/AuthService.js";
+import { UserContext } from "../../contexts/UserContext.jsx";
+import "./SignIn.css";
 
 const SignInForm = () => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const SignInForm = () => {
 
   return (
     <main>
-      <h1>Sign In</h1>
+      <h1 className="sign-in-title">Sign In</h1>
       <p>{message}</p>
       <form autoComplete="off" onSubmit={handleSubmit}>
         <div>
@@ -45,6 +45,7 @@ const SignInForm = () => {
             name="username"
             onChange={handleChange}
             required
+            className="username-input"
           />
         </div>
         <div>
@@ -57,9 +58,10 @@ const SignInForm = () => {
             name="password"
             onChange={handleChange}
             required
+            className="password-input"
           />
         </div>
-        <div>
+        <div className="sign-in-buttons">
           <button>Sign In</button>
           <button onClick={() => navigate("/")}>Cancel</button>
         </div>

@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router";
-import { signUp } from "../../services/authService.js";
+import { signUp } from "../../services/AuthService.js";
 import { UserContext } from "../../contexts/UserContext.jsx";
-import "./SignUpForm.css";
+import "./SignUp.css";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ const SignUpForm = () => {
 
   return (
     <main>
-      <h1>Sign Up</h1>
+      <h1 className="sign-up-title">Sign Up</h1>
       <p className="error-message">{message}</p>
       <form onSubmit={handleSubmit}>
         <div>
@@ -51,6 +51,7 @@ const SignUpForm = () => {
             name="username"
             onChange={handleChange}
             required
+            className="username-input"
           />
         </div>
         <div>
@@ -62,6 +63,7 @@ const SignUpForm = () => {
             name="password"
             onChange={handleChange}
             required
+            className="password-input"
           />
         </div>
         <div>
@@ -73,9 +75,10 @@ const SignUpForm = () => {
             name="passwordConf"
             onChange={handleChange}
             required
+            className="confirm-input"
           />
         </div>
-        <div>
+        <div className="sign-up-buttons">
           <button disabled={isFormInvalid()}>Sign Up</button>
           <button onClick={() => navigate("/")}>Cancel</button>
         </div>

@@ -1,48 +1,90 @@
-import { useState, useEffect } from 'react'
-import { verifyUser } from './services/users.js'
-import Nav from './components/Nav'
-import Home from './pages/Home'
-import Register from './pages/Register'
-import SignOut from './pages/SignOut.jsx'
-import Cats from './pages/Cats'
-import CatDetail from './pages/CatDetail'
-import CreateCat from './pages/CreateCat'
-import EditCat from './pages/EditCat'
-import Toys from './pages/Toys'
-import ToyDetail from './pages/ToyDetail'
-import CreateToy from './pages/CreateToy'
-import { Routes, Route } from 'react-router-dom'
-import './App.css'
+import React from "react";
+import { createBrowserRouter, RouterProvider } from "react-router";
 
-function App() {
-  const [user, setUser] = useState(null);
+// Components
+import NavBar from "./components/NavBar/NavBar.jsx";
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = await verifyUser();
-      user ? setUser(user) : setUser(null);
-    };
+// Pages
+import Home from "./pages/Home/Home.jsx";
+import SignIn from "./pages/SignIn/SignIn.jsx";
+import SignUp from "./pages/SignUp/SignUp.jsx";
+import RecipeList from "./pages/RecipeList/RecipeList.jsx";
+import RecipeDetail from "./pages/RecipeDetail/RecipeDetail.jsx";
+import RecipeForm from "./pages/RecipeForm/RecipeForm.jsx";
 
-    fetchUser();
-  }, []);
+// Protected route wrapper
+import Protected from "./components/Protected/Protected.jsx";
 
+// Styles
+import "./App.css";
+
+// --------------------------
+// ROUTER CONFIGURATION
+// --------------------------
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: (
+      <>
+        <NavBar />
+        <Home />
+      </>
+    ),
+  },
+  {
+    path: "/sign-in",
+    element: (
+      <>
+        <NavBar />
+        <SignIn />
+      </>
+    ),
+  },
+  {
+    path: "/sign-up",
+    element: (
+      <>
+        <NavBar />
+        <SignUp />
+      </>
+    ),
+  },
+  {
+    path: "/recipes",
+    element: (
+      <Protected>
+        <NavBar />
+        <RecipeList />
+      </Protected>
+    ),
+  },
+  {
+    path: "/recipes/:id",
+    element: (
+      <Protected>
+        <NavBar />
+        <RecipeDetail />
+      </Protected>
+    ),
+  },
+  {
+    path: "/recipes/add",
+    element: (
+      <Protected>
+        <NavBar />
+        <RecipeForm />
+      </Protected>
+    ),
+  },
+]);
+
+// --------------------------
+// MAIN APP COMPONENT
+// --------------------------
+export default function App() {
   return (
-    <>
-      <Nav user={user} />
-      <Routes>
-        <Route path="/" element={<Home setUser={setUser} />} />
-        <Route path="/register" element={<Register setUser={setUser} />} />
-        <Route path="/sign-out" element={<SignOut setUser={setUser} />} />
-        <Route path="/cats" element={<Cats />} />
-        <Route path="/cats/add" element={<CreateCat />} />
-        <Route path="/cats/:catId/edit" element={<EditCat />} />
-        <Route path="/cats/:catId" element={<CatDetail />} />
-        <Route path="/toys" element={<Toys />} />
-        <Route path="/toys/add" element={<CreateToy />} />
-        <Route path="/toys/:toyId" element={<ToyDetail />} />
-      </Routes>
-    </>
-  )
+    <div className="App">
+      <RouterProvider router={router} />
+    </div>
+  );
 }
-
-export default App
