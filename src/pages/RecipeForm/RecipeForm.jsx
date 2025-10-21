@@ -27,7 +27,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   const [recipeData, setRecipeData] = useState({
     title: "",
     notes: "",
-    favorite: null,
+    favorite: false,
   });
 
   const [ingredientsData, setIngredientsData] = useState([
@@ -41,7 +41,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   const [stepsData, setStepsData] = useState([
     {
-      number: 1,
+      step: 1,
       description: "",
     },
   ]);
@@ -76,7 +76,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       return [
         ...prev,
         {
-          number: prev.length + 1,
+          step: prev.length + 1,
           description: "",
         },
       ];
@@ -89,21 +89,49 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         .filter((_, index) => index !== indexToRmove)
         .map((step, newIndex) => ({
           ...step,
-          number: newIndex + 1,
+          step: newIndex + 1,
         }))
     );
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log("submitted");
     try {
+      // Create new Recipe
       const newRecipe = await addRecipe(recipeData);
-      setRecipeData(newRecipe);
-      // const newIngredient = await
+
+      // Create Ingredients for the newly created Recipe
+      const ingredientsPromises = ingredientsData.map((ingredient) =>
+        addIngredient(newRecipe.id, {
+          ...ingredient,
+          recipe: newRecipe.id,
+        })
+      );
+
+      await Promise.all(ingredientsPromises);
+
+      // Create Steps for the newly created Recipe
+      const stepsPromises = stepsData.map((step) =>
+        addStep(newRecipe.id, {
+          ...step,
+          recipe: newRecipe.id,
+        })
+      );
+
+      await Promise.all(stepsPromises);
+
+      // stepsData.map(async (step, index) => {
+      //   step.recipe = await newRecipe.id;
+      //   await addStep(step.recipe, step);
+      // });
+      // map through ingredientsData array and inject recipe id
+      // map through stepsData array and inject recipe id
+
+      navigate(`/recipes/${newRecipe.id}`);
     } catch (error) {
       console.error(error);
     }
-    console.log("submitted");
   };
 
   // onChange handlers
@@ -137,6 +165,10 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     });
   };
 
+  const handleCancel = () => {
+    navigate(`/recipes/`);
+  };
+
   return (
     <>
       <h1 className="recipeform-title">Log New Recipe</h1>
@@ -162,36 +194,38 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             />
             <label htmlFor="recipe-favorite">Favorite</label>
             <input
+              id="recipe-favorite"
               type="checkbox"
               checked={recipeData.favorite}
               onChange={handleRecipeChange}
             />
           </div>
-
           <div className="ingredient-container">
             {ingredientsData.map((ingredient, index) => (
               <div className="ingredient-form" key={index}>
-                <label htmlFor="ingredient-name">Ingredient: </label>
+                <label htmlFor={`ingredient-name-${index}`}>Ingredient: </label>
                 <input
                   type="text"
-                  id="ingredient-name"
+                  id={`ingredient-name-${index}`}
                   value={ingredient.name}
                   onChange={(e) => {
                     handleIngredientChange(index, e);
                   }}
                   name="name"
+                  autoComplete="false"
                 />
-                <label htmlFor="ingredient-quantity">Quantity</label>
+                <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
                 <input
                   type="number"
-                  id="ingredient-quantity"
+                  id={`ingredient-quantity-${index}`}
                   value={ingredientsData.quantity}
                   onChange={(e) => handleIngredientChange(index, e)}
                   name="quantity"
                 />
 
-                <label htmlFor="ingredient-volume">Volume:</label>
+                <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
                 <select
+                  id={`ingredient-volume-${index}`}
                   name="volume_unit"
                   value={ingredient.volume_unit || ""}
                   onChange={(e) => {
@@ -207,8 +241,9 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   ))}
                 </select>
 
-                <label htmlFor="ingredient-weight">Weight:</label>
+                <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
                 <select
+                  id={`ingredient-weight-${index}`}
                   name="weight_unit"
                   value={ingredient.weight_unit || ""}
                   onChange={(e) => {
@@ -225,8 +260,8 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 </select>
                 {ingredientsData.length > 1 && (
                   <button
+                    type="button"
                     onClick={(e) => {
-                      e.preventDefault();
                       removeIngredient(index);
                     }}
                   >
@@ -235,19 +270,23 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 )}
               </div>
             ))}
-            <button onClick={addExtraIngredient}>Add Ingredient</button>
+            <button type="button" onClick={addExtraIngredient}>
+              Add Ingredient
+            </button>
           </div>
           <div className="steps-component">
             {stepsData.map((step, index) => (
               <div className="step-form" key={index}>
-                <label htmlFor={`step-num-${index}`}>step</label>
+                <label htmlFor={`step-number-${index}`}>step</label>
                 <input
                   type="number"
                   id={`step-number-${index}`}
-                  value={step.number}
-                  name="number"
-                  // onChange={(e) => handleStepChange(index, e)}
+                  value={step.step}
+                  name="step"
                   readOnly
+                  onChange={(e) => {
+                    handleStepChange(index, e);
+                  }}
                 />
                 <label htmlFor={`step-description-${index}`}>Description</label>
                 <input
@@ -255,12 +294,14 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   id={`step-description-${index}`}
                   value={step.description}
                   name="description"
-                  onChange={(e) => handleStepChange(index, e)}
+                  onChange={(e) => {
+                    handleStepChange(index, e);
+                  }}
                 />
                 {stepsData.length > 1 && (
                   <button
+                    type="button"
                     onClick={(e) => {
-                      e.preventDefault();
                       removeStep(index);
                     }}
                   >
@@ -269,10 +310,14 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 )}
               </div>
             ))}
-            <button onClick={addExtraStep}>Add step</button>
+            <button type="button" onClick={addExtraStep}>
+              Add step
+            </button>
           </div>
-
           <button type="submit">Add Recipe</button>
+          <button type="button" onClick={handleCancel}>
+            Cancel
+          </button>
         </div>
       </form>
     </>

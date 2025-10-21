@@ -23,6 +23,7 @@ const NavBar = () => {
       <Link to="/" className="nav-link">Home</Link>
       <Link to="/recipes/add" className="nav-link">Add Recipe</Link>
       <Link to="/grocery-list" className="nav-link">Grocery List</Link>
+      <Link to="/recipe-wheel" className="nav-link">Recipe Wheel</Link>
       <Link to="/profile" className="nav-link">Profile</Link>
       <Link to="/" onClick={handleSignOut} className="nav-link">Sign Out</Link>
     </>

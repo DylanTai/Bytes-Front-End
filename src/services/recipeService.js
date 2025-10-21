@@ -135,6 +135,34 @@ export const addIngredient = async (recipeId, ingredientData) => {
   }
 };
 
+export const updateIngredient = async (
+  recipeId,
+  ingredientId,
+  ingredientData
+) => {
+  const res = await fetchWithAuth(
+    `${BASE_URL}${recipeId}/ingredients/${ingredientId}/`,
+    {
+      method: "PUT",
+      body: JSON.stringify(ingredientData),
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+  if (!res.ok) throw new Error("Failed to update ingredient");
+  return await res.json();
+};
+
+export const deleteIngredient = async (recipeId, ingredientId) => {
+  const res = await fetchWithAuth(
+    `${BASE_URL}${recipeId}/ingredients/${ingredientId}/`,
+    {
+      method: "DELETE",
+    }
+  );
+  if (res.status === 204) return { success: true };
+  if (!res.ok) throw new Error("Failed to delete ingredient");
+};
+
 export const getSteps = async (recipeId) => {
   try {
     const res = await fetchWithAuth(`${BASE_URL}${recipeId}/steps/`, {
@@ -147,6 +175,21 @@ export const getSteps = async (recipeId) => {
   } catch (error) {
     console.error("Error fetching steps:", error);
     throw error;
+  }
+};
+
+export const updateStep = async (recipeId, stepData, stepId) => {
+  try {
+    const isFormData = stepData instanceof FormData;
+    const res = await fetchWithAuth(`${BASE_URL}${recipeId}/steps/${stepId}/`, {
+      method: "PUT",
+      body: isFormData ? stepData : JSON(stepData),
+      headers: isFormData ? {} : { "Content-type": "application/json" },
+    });
+    if (!res.ok) throw new Error("Failed to update step");
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating the step");
   }
 };
 
