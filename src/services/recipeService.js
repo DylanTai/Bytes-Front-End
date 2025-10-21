@@ -181,7 +181,7 @@ export const getSteps = async (recipeId) => {
 export const updateStep = async (recipeId, stepData, stepId) => {
   try {
     const isFormData = stepData instanceof FormData;
-    const res = await fetchWithAuth(`${BASE_URL}${recipeId}/steps/${stepId}`, {
+    const res = await fetchWithAuth(`${BASE_URL}${recipeId}/steps/${stepId}/`, {
       method: "PUT",
       body: isFormData ? stepData : JSON(stepData),
       headers: isFormData ? {} : { "Content-type": "application/json" },

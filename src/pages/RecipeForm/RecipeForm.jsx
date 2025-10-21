@@ -165,6 +165,10 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     });
   };
 
+  const handleCancel = () => {
+    navigate(`/recipes/`);
+  };
+
   return (
     <>
       <h1 className="recipeform-title">Log New Recipe</h1>
@@ -196,7 +200,6 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               onChange={handleRecipeChange}
             />
           </div>
-
           <div className="ingredient-container">
             {ingredientsData.map((ingredient, index) => (
               <div className="ingredient-form" key={index}>
@@ -311,8 +314,10 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               Add step
             </button>
           </div>
-
           <button type="submit">Add Recipe</button>
+          <button type="button" onClick={handleCancel}>
+            Cancel
+          </button>
         </div>
       </form>
     </>
