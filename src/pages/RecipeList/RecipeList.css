@@ -72,6 +72,11 @@
 
 .add-ingredients-btn:hover {
   color: #f9ae2c;
+  cursor: pointer;
+}
+
+.fav-checkbox {
+  color: black;
 }
 
 .recipe-list-buttons {

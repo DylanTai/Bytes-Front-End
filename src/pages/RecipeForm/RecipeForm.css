@@ -35,6 +35,7 @@
 label {
   padding-right: 15px;
   padding-left: 15px;
+  font-size: 18px;
 }
 
 select {
@@ -70,14 +71,16 @@ select {
   text-decoration: none;
   padding: 10px;
   font-weight: 400;
-  width: 70px;
+  width: 80px;
   text-align: center;
   background: none;
   border: none;
+  font-size: 14px;
 }
 
 .form-btn:hover {
   color: #f9ae2c;
+  cursor: pointer;
 }
 
 /* for cell phones */
