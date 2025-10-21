@@ -8,6 +8,7 @@ const SignUpForm = () => {
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
   const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -19,14 +20,17 @@ const SignUpForm = () => {
 
   const handleChange = (evt) => {
     setMessage("");
+    setErrors({});
     setFormData({ ...formData, [evt.target.name]: evt.target.value });
   };
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
+    setErrors({});
+    setMessage("");
 
     if (password !== password2) {
-      setMessage("Passwords do not match.");
+      setErrors({ password2: ["Passwords do not match."] });
       return;
     }
 
@@ -36,7 +40,23 @@ const SignUpForm = () => {
       navigate("/");
     } catch (error) {
       console.error("Sign-up failed:", error);
-      setMessage(error.message || "Failed to create account.");
+      console.log("Error response:", error.response); // Debug log
+      
+      // Handle Django validation errors
+      if (error.response && error.response.data) {
+        const errorData = error.response.data;
+        console.log("Error data:", errorData); // Debug log
+        
+        // Check if it's field-specific errors
+        if (typeof errorData === 'object' && !errorData.detail) {
+          setErrors(errorData);
+        } else {
+          // Generic error message
+          setMessage(errorData.detail || error.message || "Failed to create account.");
+        }
+      } else {
+        setMessage(error.message || "Failed to create account.");
+      }
     }
   };
 
@@ -48,7 +68,6 @@ const SignUpForm = () => {
     <main className="sign-up-page">
       <h1 className="sign-up-title">Sign Up</h1>
       {message && <p className="error-message">{message}</p>}
-
       <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="username">Username:</label>
@@ -61,8 +80,10 @@ const SignUpForm = () => {
             required
             className="username-input"
           />
+          {errors.username && (
+            <p className="field-error">{errors.username.join(", ")}</p>
+          )}
         </div>
-
         <div>
           <label htmlFor="email">Email:</label>
           <input
@@ -74,8 +95,10 @@ const SignUpForm = () => {
             required
             className="email-input"
           />
+          {errors.email && (
+            <p className="field-error">{errors.email.join(", ")}</p>
+          )}
         </div>
-
         <div>
           <label htmlFor="password">Password:</label>
           <input
@@ -87,8 +110,10 @@ const SignUpForm = () => {
             required
             className="password-input"
           />
+          {errors.password && (
+            <p className="field-error">{errors.password.join(", ")}</p>
+          )}
         </div>
-
         <div>
           <label htmlFor="password2">Confirm Password:</label>
           <input
@@ -100,8 +125,10 @@ const SignUpForm = () => {
             required
             className="confirm-input"
           />
+          {errors.password2 && (
+            <p className="field-error">{errors.password2.join(", ")}</p>
+          )}
         </div>
-
         <div className="sign-up-buttons">
           <button type="submit" disabled={isFormInvalid()}>
             Sign Up
