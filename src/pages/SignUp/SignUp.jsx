@@ -111,15 +111,8 @@ const SignUpForm = () => {
   return (
     <main className="sign-up-page">
       <h1 className="sign-up-title">Sign Up</h1>
-<<<<<<< HEAD
-      {message && <p className="error-message">{message}</p>}
-
-      <form onSubmit={handleSubmit}>
-        <div className="sign-up-section">
-=======
       <form onSubmit={handleSubmit} noValidate>
         <div>
->>>>>>> dev
           <label htmlFor="username">Username:</label>
           <input
             type="text"
@@ -133,12 +126,7 @@ const SignUpForm = () => {
             <p className="field-error">{errors.username.join(", ")}</p>
           )}
         </div>
-<<<<<<< HEAD
-
-        <div className="sign-up-section">
-=======
         <div>
->>>>>>> dev
           <label htmlFor="email">Email:</label>
           <input
             type="text"
@@ -152,12 +140,7 @@ const SignUpForm = () => {
             <p className="field-error">{errors.email.join(", ")}</p>
           )}
         </div>
-<<<<<<< HEAD
-
-        <div className="sign-up-section">
-=======
         <div>
->>>>>>> dev
           <label htmlFor="password">Password:</label>
           <input
             type="password"
@@ -171,12 +154,7 @@ const SignUpForm = () => {
             <p className="field-error">{errors.password.join(", ")}</p>
           )}
         </div>
-<<<<<<< HEAD
-
-        <div className="sign-up-section">
-=======
         <div>
->>>>>>> dev
           <label htmlFor="password2">Confirm Password:</label>
           <input
             type="password"
