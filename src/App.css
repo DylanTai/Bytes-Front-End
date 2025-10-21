@@ -1,15 +1,10 @@
-.lexend {
-  font-family: "Lexend", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 350;
-  font-style: normal;
-}
+
 
 * {
   margin: 0;
   padding: 0;
   color: black;
-  font-family: "Lexend", sans-serif;
+  font-family: "Handjet", sans-serif;
 }
 
 :root {

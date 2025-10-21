@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
-import * as recipeService from "../../services/RecipeService.js";
+import * as recipeService from "../../services/recipeService.js";
 import "./RecipeDetail.css";
 
 // format date to show only day, not time
@@ -41,30 +41,29 @@ function RecipeDetail() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-      if (!editRecipe.physical || !editRecipe.emotion) {
+    if (!editRecipe.physical || !editRecipe.emotion) {
       alert("Please complete the form before submitting!");
       return;
     }
 
-  try {
+    try {
       const updated = await recipeService.updateRecipe(editRecipe);
-  
+
       if (!updated) {
         setError("There was an error, try again");
       } else {
         setRecipe(updated);
         setIsEditing(false);
       }
-  } catch (error) {
-    
-  }
+    } catch (error) {}
   };
 
   // handle delete function
   const handleDelete = async (event) => {
     event.preventDefault();
 
-    if (!window.confirm("Are you sure you want to delete this Recipeie?")) return;
+    if (!window.confirm("Are you sure you want to delete this Recipeie?"))
+      return;
 
     const deleteRecipe = await recipeService.deleteRecipe(recipe._id);
     if (!deleteRecipe) {
@@ -93,8 +92,12 @@ function RecipeDetail() {
                 ? formatDate(new Date(recipe.timeOfEmotion))
                 : ""}
             </p>
-            <p className="recipe-element">Physical Experience: {recipe.physical}</p>
-            <p className="recipe-element">Intensity of Recipe: {recipe.intensity}</p>
+            <p className="recipe-element">
+              Physical Experience: {recipe.physical}
+            </p>
+            <p className="recipe-element">
+              Intensity of Recipe: {recipe.intensity}
+            </p>
             {recipe.comments?.note && <p>Note: {recipe.comments.note}</p>}
 
             <div className="buttons">
@@ -117,7 +120,9 @@ function RecipeDetail() {
         )
       ) : recipeIsLoaded(editRecipe) ? (
         <form onSubmit={handleSubmit} className="update-recipeform">
-          <h1 className="edit-recipe-detail-title">Update {editRecipe.emotion}</h1>
+          <h1 className="edit-recipe-detail-title">
+            Update {editRecipe.emotion}
+          </h1>
 
           {/* emotion edit */}
           <div className="form-element">
@@ -139,82 +144,83 @@ function RecipeDetail() {
             </select>
           </div>
 
-           
           {/* time of emotion edit */}
-          <div className="form-element">  
-          <label>Day of Recipe: </label>
-          <input
-            type="date"
-            value={
-              editRecipe.timeOfEmotion
-                ? formatDate(new Date(editRecipe.timeOfEmotion))
-                : ""
-            }
-            onChange={(event) =>
-              setEditRecipe({ ...editRecipe, timeOfEmotion: event.target.value })
-            }
-            max={formatDate(new Date())}
-            className="time-edit"
-          />
-          </div> 
-
+          <div className="form-element">
+            <label>Day of Recipe: </label>
+            <input
+              type="date"
+              value={
+                editRecipe.timeOfEmotion
+                  ? formatDate(new Date(editRecipe.timeOfEmotion))
+                  : ""
+              }
+              onChange={(event) =>
+                setEditRecipe({
+                  ...editRecipe,
+                  timeOfEmotion: event.target.value,
+                })
+              }
+              max={formatDate(new Date())}
+              className="time-edit"
+            />
+          </div>
 
           {/* intensity edit */}
           <div className="form-element">
-          <label>
-            On a scale of 1 to 10, select the intensity of the recipe:{" "}
-          </label>
-          <select
-            value={editRecipe.intensity}
-            onChange={(event) =>
-              setEditRecipe({
-                ...editRecipe,
-                intensity: parseInt(event.target.value),
-              })
-            }
-          >
-            <option value="">--</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-          </select>
-            </div>
+            <label>
+              On a scale of 1 to 10, select the intensity of the recipe:{" "}
+            </label>
+            <select
+              value={editRecipe.intensity}
+              onChange={(event) =>
+                setEditRecipe({
+                  ...editRecipe,
+                  intensity: parseInt(event.target.value),
+                })
+              }
+            >
+              <option value="">--</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </div>
 
           {/* physical experience edit */}
           <div className="form-element">
-          <label>Physical experience of recipe: </label>
-          <textarea
-            value={editRecipe.physical}
-            onChange={(event) =>
-              setEditRecipe({ ...editRecipe, physical: event.target.value })
-            }
-            className="edit-physical"
-          />
+            <label>Physical experience of recipe: </label>
+            <textarea
+              value={editRecipe.physical}
+              onChange={(event) =>
+                setEditRecipe({ ...editRecipe, physical: event.target.value })
+              }
+              className="edit-physical"
+            />
           </div>
 
           {/* notes edit */}
           <div className="form-element">
-          <label>Note: </label>
-          <textarea
-            value={editRecipe.comments?.note ?? ""}
-            onChange={(event) =>
-              setEditRecipe({
-                ...editRecipe,
-                comments: {
-                  ...editRecipe.comments,
-                  note: event.target.value,
-                },
-              })
-            }
-            className="edit-note"
-          />
+            <label>Note: </label>
+            <textarea
+              value={editRecipe.comments?.note ?? ""}
+              onChange={(event) =>
+                setEditRecipe({
+                  ...editRecipe,
+                  comments: {
+                    ...editRecipe.comments,
+                    note: event.target.value,
+                  },
+                })
+              }
+              className="edit-note"
+            />
           </div>
 
           <div className="buttons">

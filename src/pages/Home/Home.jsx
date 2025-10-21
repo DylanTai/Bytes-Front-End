@@ -1,13 +1,22 @@
+import RecipeList from "../RecipeList/RecipeList";
+import { useContext } from "react";
+import { UserContext } from "../../contexts/UserContext.jsx";
 import "./Home.css"
 
-const GuestLanding = () => {
+const Home = () => {
+
+  const { user } = useContext(UserContext);
+  if (user) {
+    return <RecipeList />;
+  }
+
   return (
     <main>
-      <h1 className="landing-page-title">Moodies</h1>
-      <p>Your Online Mood Logger</p>
+      <h1 className="landing-page-title">Bytes.AI</h1>
+      <p>Your Online Recipe Box</p>
     </main>
   );
 };
 
-export default GuestLanding;
+export default Home;
 

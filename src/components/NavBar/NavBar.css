@@ -1,80 +1,47 @@
-/* === Original Navbar styling (unchanged) === */
-nav > ul > li,
-.nav-links > ul > li {
-  /* ADDED second selector */
-  list-style-type: none;
-  padding: 8px;
-  border: 3px solid #000000;
-  border-radius: 10px;
-  margin: 10px;
-  background-color: #f1dede;
-  color: black;
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  justify-content: flex-end;
+  margin-right: 30px;
 }
 
-nav a,
-.nav-links a {
-  /* ADDED second selector */
-  color: black;
-  list-style-type: none;
-  text-decoration: none;
-}
-
-nav > ul,
-.nav-links > ul {
-  /* ADDED second selector */
-  background-color: #80727b;
-  width: 50%;
-}
 
 nav {
   display: flex;
   width: 100%;
-  background-color: #80727b;
+  background-color: #F4AC45;
   justify-content: flex-end;
   position: sticky;
   top: 0;
 }
 
-.nav-img-container {
+.nav-img {
   width: 60%;
   padding-top: 5px;
   padding-left: 15px;
 }
-
-h4 {
-  display: flex;
-  align-items: center;
-}
-
-.resource-container {
-  position: absolute;
-  top: 90%;
-  background-color: #80727b !important;
-}
-
-li {
-  color: #f1dede;
-}
-
-a {
-  background: fixed;
-  color: #f1dede;
-}
-
-.auth-btn {
-  background-color: #f1dede;
-  color: #333333;
-  padding: 10px 15px;
-  border-radius: 5px;
-}
-
 nav img {
   height: 50px;
 }
-/* 
-nav li {
-  padding-right: 75px;
-} */
+
+nav button {
+  border: #82200c solid 3px;
+  border-radius: 8px;
+  padding: 7px;
+  background: #B94700;
+  color: white;
+  width: 100px;
+  font-size: 18px;
+}
+
+nav button:hover {
+  background-color: #82200c;
+  color:blanchedalmond;
+  cursor: pointer;
+}
+
 
 /* === New Styling for hamburger menu === */
 

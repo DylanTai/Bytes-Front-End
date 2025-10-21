@@ -1,54 +1,140 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-import { addRecipe } from "../../services/RecipeService.js"
+import {
+  addRecipe,
+  addIngredient,
+  addStep,
+} from "../../services/recipeService.js";
 import "./RecipeForm.css";
 
+//units
+const VOLUME_UNITS = [
+  { value: "cup", label: "Cup" },
+  { value: "tbsp", label: "Tablespoon" },
+  { value: "tsp", label: "Teaspoon" },
+];
 
-const RecipeForm = ({recipes, setRecipes}) => {
+const WEIGHT_UNITS = [
+  { value: "g", label: "Gram" },
+  { value: "oz", label: "Ounce" },
+];
+
+const RecipeForm = ({ recipes, setRecipes }) => {
   const navigate = useNavigate();
 
-   // format date to show only day, not time
-  const formatDate = (date) => {
-    return date.toISOString().split("T")[0];
-  };
-
+  // useState's
   const [recipeData, setRecipeData] = useState({
-    emotion: "",
-    physical: "",
-    intensity: 5,
-    timeOfEmotion: formatDate(new Date()),
-    comments: { note: "" },
+    title: "",
+    notes: "",
+    favorite: null,
   });
 
-  // handleSubmit function
+  const [ingredientsData, setIngredientsData] = useState([
+    {
+      name: "",
+      quantity: 0,
+      volume_unit: "",
+      weight_unit: "",
+    },
+  ]);
+
+  const [stepsData, setStepsData] = useState([
+    {
+      number: 1,
+      description: "",
+    },
+  ]);
+
+  // button handlers
+  const addExtraIngredient = (e) => {
+    setIngredientsData((prev) => {
+      return [
+        ...prev,
+        {
+          name: "",
+          quantity: 0,
+          volume_unit: "",
+          weight_unit: "",
+        },
+      ];
+    });
+  };
+
+  const removeIngredient = (indexToRmove) => {
+    setIngredientsData((prev) =>
+      prev
+        .filter((_, index) => index !== indexToRmove)
+        .map((ingredient) => ({
+          ...ingredient,
+        }))
+    );
+  };
+
+  const addExtraStep = (e) => {
+    setStepsData((prev) => {
+      return [
+        ...prev,
+        {
+          number: prev.length + 1,
+          description: "",
+        },
+      ];
+    });
+  };
+
+  const removeStep = (indexToRmove) => {
+    setStepsData((prev) =>
+      prev
+        .filter((_, index) => index !== indexToRmove)
+        .map((step, newIndex) => ({
+          ...step,
+          number: newIndex + 1,
+        }))
+    );
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    if (!recipeData.physical || !recipeData.emotion) {
-      alert("Please complete the form before submitting!");
-      return;
-    }
-
     try {
-      const recipeRequest = await addRecipe(recipeData);
-  
-  
-      if (recipes)
-        setRecipes([...recipes, recipeRequest]);
-      else
-        setRecipes([recipeRequest]);
-        setRecipeData({
-          emotion: "",
-          physical: "",
-          intensity: 5,
-          timeOfEmotion: formatDate(new Date()),
-          comments: { note: "" },
-        });
-        navigate("/");
+      const newRecipe = await addRecipe(recipeData);
+      setRecipeData(newRecipe);
+      // const newIngredient = await
     } catch (error) {
-      
+      console.error(error);
     }
+    console.log("submitted");
+  };
+
+  // onChange handlers
+  const handleRecipeChange = (event) => {
+    const { name, value } = event.target;
+    setRecipeData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleIngredientChange = (index, event) => {
+    const { name, value } = event.target;
+    setIngredientsData((prev) => {
+      const updated = [...prev];
+      updated[index][name] = value;
+      if (name === "volume_unit" && value) {
+        updated[index].weight_unit = "";
+      }
+      if (name === "weight_unit" && value) {
+        updated[index].volume_unit = "";
+      }
+
+      return updated;
+    });
+  };
+
+  const handleStepChange = (index, event) => {
+    const { name, value } = event.target;
+    setStepsData((prev) => {
+      const updated = [...prev];
+      updated[index][name] = value;
+      return updated;
+    });
   };
 
   return (
@@ -56,97 +142,138 @@ const RecipeForm = ({recipes, setRecipes}) => {
       <h1 className="recipeform-title">Log New Recipe</h1>
 
       <form onSubmit={handleSubmit} className="recipe-form">
-        
-        {/* emotion input */}
         <div className="form-element">
-        <label>Recipe: </label>
-        <select
-          value={recipeData.emotion}
-          onChange={(event) =>
-            setRecipeData({ ...recipeData, emotion: event.target.value })
-          }
-        >
-          <option value=""></option>
-          <option value="Angry">Angry</option>
-          <option value="Anxious">Anxious</option>
-          <option value="Disgusted">Disgusted</option>
-          <option value="Happy">Happy</option>
-          <option value="Sad">Sad</option>
-          <option value="Scared">Scared</option>
-          <option value="Surprised">Surprised</option>
-        </select>
+          <div className="recipe-form">
+            <label htmlFor="recipe-title">Title: </label>
+            <input
+              type="text"
+              id="recipe-title"
+              value={recipeData.title}
+              onChange={handleRecipeChange}
+              name="title"
+            />
+            <label htmlFor="recipe-notes">Notes:</label>
+            <input
+              type="text"
+              id="recipe-notes"
+              value={recipeData.notes}
+              onChange={handleRecipeChange}
+              name="notes"
+            />
+            <label htmlFor="recipe-favorite">Favorite</label>
+            <input
+              type="checkbox"
+              checked={recipeData.favorite}
+              onChange={handleRecipeChange}
+            />
+          </div>
+
+          <div className="ingredient-container">
+            {ingredientsData.map((ingredient, index) => (
+              <div className="ingredient-form" key={index}>
+                <label htmlFor="ingredient-name">Ingredient: </label>
+                <input
+                  type="text"
+                  id="ingredient-name"
+                  value={ingredient.name}
+                  onChange={(e) => {
+                    handleIngredientChange(index, e);
+                  }}
+                  name="name"
+                />
+                <label htmlFor="ingredient-quantity">Quantity</label>
+                <input
+                  type="number"
+                  id="ingredient-quantity"
+                  value={ingredientsData.quantity}
+                  onChange={(e) => handleIngredientChange(index, e)}
+                  name="quantity"
+                />
+
+                <label htmlFor="ingredient-volume">Volume:</label>
+                <select
+                  name="volume_unit"
+                  value={ingredient.volume_unit || ""}
+                  onChange={(e) => {
+                    handleIngredientChange(index, e);
+                  }}
+                  disabled={ingredient.weight_unit !== ""}
+                >
+                  <option value="">---</option>
+                  {VOLUME_UNITS.map((unit) => (
+                    <option key={unit.value} value={unit.value}>
+                      {unit.label}
+                    </option>
+                  ))}
+                </select>
+
+                <label htmlFor="ingredient-weight">Weight:</label>
+                <select
+                  name="weight_unit"
+                  value={ingredient.weight_unit || ""}
+                  onChange={(e) => {
+                    handleIngredientChange(index, e);
+                  }}
+                  disabled={ingredient.volume_unit !== ""}
+                >
+                  <option value="">---</option>
+                  {WEIGHT_UNITS.map((unit) => (
+                    <option key={unit.value} value={unit.value}>
+                      {unit.label}
+                    </option>
+                  ))}
+                </select>
+                {ingredientsData.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      removeIngredient(index);
+                    }}
+                  >
+                    Remove Ingredient
+                  </button>
+                )}
+              </div>
+            ))}
+            <button onClick={addExtraIngredient}>Add Ingredient</button>
+          </div>
+          <div className="steps-component">
+            {stepsData.map((step, index) => (
+              <div className="step-form" key={index}>
+                <label htmlFor={`step-num-${index}`}>step</label>
+                <input
+                  type="number"
+                  id={`step-number-${index}`}
+                  value={step.number}
+                  name="number"
+                  // onChange={(e) => handleStepChange(index, e)}
+                  readOnly
+                />
+                <label htmlFor={`step-description-${index}`}>Description</label>
+                <input
+                  type="text"
+                  id={`step-description-${index}`}
+                  value={step.description}
+                  name="description"
+                  onChange={(e) => handleStepChange(index, e)}
+                />
+                {stepsData.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      removeStep(index);
+                    }}
+                  >
+                    Remove step
+                  </button>
+                )}
+              </div>
+            ))}
+            <button onClick={addExtraStep}>Add step</button>
+          </div>
+
+          <button type="submit">Add Recipe</button>
         </div>
-
-             {/* time of emotion input */}
-        <div className="form-element">
-        <label>Day of Recipe: </label>
-        <input
-          type="date"
-          value={recipeData.timeOfEmotion} 
-          onChange={(event) => {
-            setRecipeData({...recipeData, timeOfEmotion: event.target.value})}
-          }
-          max={formatDate(new Date())}
-          className="time-input"
-        />
-        </div>
-
-              {/* intensity input */}
-        <div className="form-element">
-        <label className="intensity-label">On a scale of 1 to 10, the intensity of the recipe:</label>
-        <select
-          value={recipeData.intensity}
-          onChange={(event) =>
-            setRecipeData({
-              ...recipeData,
-              intensity: parseInt(event.target.value),
-            })
-          }
-        >
-          <option value="">--</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-        </div>
-
-        {/* physical emotional experience input */}
-        <div className="form-element">
-        <label className="physical-label">Physical experience of recipe: </label>
-        <textarea
-          value={recipeData.physical}
-          onChange={(event) =>
-            setRecipeData({ ...recipeData, physical: event.target.value })
-          }
-          placeholder="where do you feel this recipe in your body?"
-        />
-        </div>
-
-  
-
-   
-
-        {/* notes input */}
-        <div className="form-element">
-        <label>Note: </label>
-        <textarea
-          value={recipeData.comments.note}
-          onChange={(event) =>
-            setRecipeData({ ...recipeData,  comments: { ...recipeData.comments, note: event.target.value } })
-          }
-          placeholder="anything else?"
-          className="note-textarea"
-        />
-        </div>
-
-        <button type="submit">Add Recipe</button>
       </form>
     </>
   );

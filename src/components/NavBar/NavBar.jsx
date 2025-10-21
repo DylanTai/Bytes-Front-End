@@ -3,12 +3,10 @@ import { Link } from "react-router";
 import { UserContext } from "../../contexts/UserContext";
 import "./NavBar.css";
 import { Squash as Hamburger } from "hamburger-react";
-import logo from "../../../assets/BytesLogo.png";
+import logo from "../../../assets/Bytes.png";
 
 const NavBar = () => {
-  const [showResource, setShowResource] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
   const { user, setUser } = useContext(UserContext);
 
   const handleSignOut = () => {
@@ -18,25 +16,35 @@ const NavBar = () => {
     }
   };
 
-  const handleClickResources = () => {
-    setShowResource((prev) => !prev);
-  };
-
   const toggleMobileMenu = () => setIsOpen((prev) => !prev);
+
+  const authenticatedOptions = (
+    <>
+      <Link to="/recipes/add"><button>Add Recipe</button></Link>
+      <Link to="/grocery-list"><button>Grocery List</button></Link>
+      <Link to="/profile"><button>Profile</button></Link>
+      <Link to="/" onClick={handleSignOut}><button>Sign Out</button></Link>
+    </>
+  );
+
+  const unauthenticatedOptions = (
+    <>
+      <Link to="/sign-up"><button>Sign Up</button></Link>
+      <Link to="/sign-in"><button>Sign In</button></Link>
+    </>
+  );
 
   return (
     <nav>
-      <div className="nav-img-container">
+      <div className="nav-img">
         <Link to="/">
           <img src={logo} alt="logo" />
         </Link>
       </div>
-
       <button
         className="nav-hamburger"
         aria-label="Toggle navigation"
         aria-expanded={isOpen}
-        // onClick={toggleMobileMenu}
       >
         <Hamburger
           onClick={toggleMobileMenu}
@@ -45,31 +53,11 @@ const NavBar = () => {
           size={22}
         />
       </button>
-
-      <div className={`nav-links ${isOpen ? "open" : ""}`}>
-        {user ? (
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/" onClick={handleSignOut}>
-                Sign Out
-              </Link>
-            </li>
-          </ul>
-        ) : (
-          <ul>
-            <li>
-              <Link to="/sign-up">Sign Up</Link>
-            </li>
-            <li>
-              <Link to="/sign-in">Sign In</Link>
-            </li>
-          </ul>
-        )}
+      <div className="nav-links">
+        {user ? authenticatedOptions : unauthenticatedOptions}
       </div>
     </nav>
   );
 };
+
 export default NavBar;
