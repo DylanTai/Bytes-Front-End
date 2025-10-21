@@ -16,3 +16,6 @@ main {
   height: 90vh;
 }
 
+body {
+  margin-top: 80px;
+}
