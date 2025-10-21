@@ -1,0 +1,4 @@
+.grocery-item.checked .grocery-item-text {
+  text-decoration: line-through;
+  color: #999;
+}
