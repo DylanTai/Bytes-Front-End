@@ -55,10 +55,6 @@ nav button:hover {
   cursor: pointer;
 }
 
-
-/* === New Styling for hamburger menu === */
-
-/* Layout container for all lists (desktop: row) */
 .nav-links {
   display: flex;
   align-items: center;
@@ -66,7 +62,6 @@ nav button:hover {
   width: 75%;
 }
 
-/* Hamburger (hidden on desktop) */
 .nav-hamburger {
   display: none;
   border: 0;
@@ -76,9 +71,7 @@ nav button:hover {
   margin-right: 8px;
 }
 
-/* ===========================
-   Responsive: hamburger panel
-   =========================== */
+/* === Hamburger Menu === */
 @media (max-width: 768px) {
   .nav-hamburger {
     display: inline-flex;
@@ -86,31 +79,37 @@ nav button:hover {
     justify-content: center;
   }
 
-  /* Slide-down panel */
+  nav button:hover {
+  background-color: white;
+  color:blanchedalmond;
+  cursor: pointer;
+}
+
   .nav-links {
     position: absolute;
-    top: 75px; /* adjust if your nav height differs */
+    top: 70px; 
     right: 0;
     right: 0;
-    display: none; /* closed by default */
+    display: none; 
     flex-direction: column;
     padding: 0.5rem 0.75rem;
-    background-color: #80727b;
-    border-top: 1px solid #00000033;
+    background-color: White;
     z-index: 1000;
+    width: 20%;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   }
 
   .nav-links.open {
     display: flex;
   }
 
-  /* Each list stacks and fills width on mobile */
   .nav-links > ul {
-    width: 100%;
+    width: 20%;
     flex-direction: column;
     align-items: stretch;
     gap: 0.25rem;
-    background-color: #80727b;
+    background-color: white;
     margin: 0;
     padding: 0;
   }
@@ -119,14 +118,17 @@ nav button:hover {
     margin: 6px 8px;
   }
 
-  /* Prevent the original nav > ul width rule from squeezing mobile */
   nav > ul {
     width: auto;
   }
 
   .nav-img-container {
-    width: 90%;
+    width: 100%;
     display: flex;
     align-items: center;
   }
+}
+
+.nav-img {
+  width:100%;
 }
