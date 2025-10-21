@@ -4,7 +4,9 @@
   padding: 25px;
   margin-bottom: 45px;
   margin-top: 50px;
-  font-size: 6vh;
+  margin-bottom: 20px;
+  font-family: "Handjet", sans-serif;
+  font-size: 60px;
 }
 
 .recipe-list {
