@@ -3,8 +3,16 @@
   margin-bottom: 20px;
 }
 
+
+/* .sign-up-section {
+  width: 60%;
+} */
+
 input {
   margin: 10px;
+  padding: 0.2rem;
+  border-radius: 6px;
+  font-size: 1rem;
 }
 
 .sign-up-buttons {
@@ -24,3 +32,5 @@ input {
 .confirm-input {
   width: 190px;
 }
+
+

@@ -50,7 +50,7 @@ const SignUpForm = () => {
       {message && <p className="error-message">{message}</p>}
 
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="sign-up-section">
           <label htmlFor="username">Username:</label>
           <input
             type="text"
@@ -63,7 +63,7 @@ const SignUpForm = () => {
           />
         </div>
 
-        <div>
+        <div className="sign-up-section">
           <label htmlFor="email">Email:</label>
           <input
             type="email"
@@ -76,7 +76,7 @@ const SignUpForm = () => {
           />
         </div>
 
-        <div>
+        <div className="sign-up-section">
           <label htmlFor="password">Password:</label>
           <input
             type="password"
@@ -89,7 +89,7 @@ const SignUpForm = () => {
           />
         </div>
 
-        <div>
+        <div className="sign-up-section">
           <label htmlFor="password2">Confirm Password:</label>
           <input
             type="password"
