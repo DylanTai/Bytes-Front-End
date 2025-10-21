@@ -7,6 +7,16 @@
   margin-right: 30px;
 }
 
+.nav-link {
+  color: #82200c;
+  text-decoration: none;
+  padding: 10px;
+  font-weight: 400;
+}
+
+.nav-link:hover {
+  color: #f9ae2c;
+}
 
 nav {
   display: flex;
