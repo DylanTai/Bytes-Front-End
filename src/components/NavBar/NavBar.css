@@ -12,6 +12,8 @@
   text-decoration: none;
   padding: 10px;
   font-weight: 400;
+  width: 70px;
+  text-align: center;
 }
 
 .nav-link:hover {
@@ -39,22 +41,6 @@ nav img {
   height: 50px;
 }
 
-nav button {
-  border: #82200c solid 3px;
-  border-radius: 8px;
-  padding: 7px;
-  background: #B94700;
-  color: white;
-  width: 105px;
-  font-size: 15px;
-}
-
-nav button:hover {
-  background-color: #82200c;
-  color:blanchedalmond;
-  cursor: pointer;
-}
-
 .nav-links {
   display: flex;
   align-items: center;
@@ -80,17 +66,17 @@ nav button:hover {
   }
 
   nav button:hover {
-  background-color: white;
-  color:blanchedalmond;
-  cursor: pointer;
-}
+    background-color: white;
+    color: blanchedalmond;
+    cursor: pointer;
+  }
 
   .nav-links {
     position: absolute;
-    top: 70px; 
+    top: 70px;
     right: 0;
     right: 0;
-    display: none; 
+    display: none;
     flex-direction: column;
     padding: 0.5rem 0.75rem;
     background-color: White;
@@ -130,5 +116,5 @@ nav button:hover {
 }
 
 .nav-img {
-  width:100%;
+  width: 100%;
 }

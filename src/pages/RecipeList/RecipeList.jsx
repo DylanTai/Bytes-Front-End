@@ -99,54 +99,58 @@ const RecipeList = () => {
     <div className="recipe-list-page">
       <h1 className="recipe-list-title">My Recipes</h1>
 
-      {/* Search Bar */}
-      <div className="search-bar">
-        <input
-          type="text"
-          placeholder="Search recipes, ingredients, or steps..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
-        />
+      <div className="list-filters">
+        {/* Search Bar */}
+        <div className="search-bar">
+          <label>Search: </label>
+          <input
+            type="text"
+            placeholder="Search recipes, ingredients, or steps..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="search-input"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="clear-search-btn"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Controls */}
+        <div className="favorites-filter">
+          <label>
+            <input
+              type="checkbox"
+              checked={showFavoritesFirst}
+              onChange={(e) => setShowFavoritesFirst(e.target.checked)}
+              className="show-favorite-btn"
+            />
+            Show 🍪 favorites first
+          </label>
+        </div>
+        <div className="controls">
+          <div className="sort-controls">
+            <label>Sort by: </label>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <option value="Newest">Posted (Newest)</option>
+              <option value="Oldest">Posted (Oldest)</option>
+              <option value="Title (A-Z)">Title (A → Z)</option>
+              <option value="Title (Z-A)">Title (Z → A)</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Results count */}
         {searchQuery && (
-          <button
-            onClick={() => setSearchQuery("")}
-            className="clear-search-btn"
-          >
-            ✕
-          </button>
+          <p className="search-results-count">
+            Found {sortedRecipes.length} recipe{sortedRecipes.length !== 1 ? 's' : ''}
+          </p>
         )}
       </div>
-
-      {/* Controls */}
-      <div className="favorites-filter">
-        <label>
-          <input
-            type="checkbox"
-            checked={showFavoritesFirst}
-            onChange={(e) => setShowFavoritesFirst(e.target.checked)}
-          />
-          Show favorites first
-        </label>
-      </div>
-      <div className="controls">
-        <div className="sort-controls">
-          <label>Sort by: </label>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="Newest">Posted (Newest)</option>
-            <option value="Oldest">Posted (Oldest)</option>
-            <option value="Title (A-Z)">Title (A → Z)</option>
-            <option value="Title (Z-A)">Title (Z → A)</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Results count */}
-      {searchQuery && (
-        <p className="search-results-count">
-          Found {sortedRecipes.length} recipe{sortedRecipes.length !== 1 ? 's' : ''}
-        </p>
-      )}
 
       {/* Recipe List */}
       {currRecipes.length === 0 ? (
