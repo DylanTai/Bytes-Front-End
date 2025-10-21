@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router";
+
 // Components
 import NavBar from "./components/NavBar/NavBar.jsx";
+
 // Pages
 import Home from "./pages/Home/Home.jsx";
 import SignIn from "./pages/SignIn/SignIn.jsx";
@@ -9,13 +11,18 @@ import SignUp from "./pages/SignUp/SignUp.jsx";
 import RecipeList from "./pages/RecipeList/RecipeList.jsx";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail.jsx";
 import RecipeForm from "./pages/RecipeForm/RecipeForm.jsx";
+import GroceryList from "./pages/GroceryList/GroceryList.jsx";
+
 // Protected route wrapper
 import Protected from "./components/Protected/Protected.jsx";
+
 // Context
 import { UserContext } from "./contexts/UserContext.jsx";
+
 // Services
 import * as authService from "./services/authService.js";
 import * as userService from "./services/userService.js";
+
 // Styles
 import "./App.css";
 
@@ -75,6 +82,15 @@ const router = createBrowserRouter([
       </Protected>
     ),
   },
+  {
+    path: "/grocery-list",
+    element: (
+      <Protected>
+        <NavBar />
+        <GroceryList />
+      </Protected>
+    ),
+  },
 ]);
 
 // MAIN APP COMPONENT
@@ -86,7 +102,6 @@ export default function App() {
   useEffect(() => {
     const initAuth = async () => {
       const access = localStorage.getItem('access');
-      
       if (access) {
         try {
           const userData = await userService.getUser();
@@ -105,10 +120,8 @@ export default function App() {
           }
         }
       }
-      
       setLoading(false);
     };
-
     initAuth();
   }, []);
 
