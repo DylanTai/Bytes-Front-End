@@ -27,7 +27,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   const [recipeData, setRecipeData] = useState({
     title: "",
     notes: "",
-    favorite: null,
+    favorite: false,
   });
 
   const [ingredientsData, setIngredientsData] = useState([
@@ -96,17 +96,24 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    console.log("submitted");
     try {
       const newRecipe = await addRecipe(recipeData);
-      // setRecipeData(newRecipe);
+      ingredientsData.map(async (ingredient, index) => {
+        ingredient.recipe = await newRecipe.id;
+      });
+      stepsData.map(async (step, index) => {
+        step.recipe = await newRecipe.id;
+      });
+      // map through ingredientsData array and inject recipe id
+      // map through stepsData array and inject recipe id
+
       await addIngredient(newRecipe.id, ingredientsData);
       await addStep(newRecipe.id, stepsData);
-
       navigate(`/recipes/${newRecipe.id}`);
     } catch (error) {
       console.error(error);
     }
-    console.log("submitted");
   };
 
   // onChange handlers
@@ -165,6 +172,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             />
             <label htmlFor="recipe-favorite">Favorite</label>
             <input
+              id="recipe-favorite"
               type="checkbox"
               checked={recipeData.favorite}
               onChange={handleRecipeChange}
@@ -174,27 +182,29 @@ const RecipeForm = ({ recipes, setRecipes }) => {
           <div className="ingredient-container">
             {ingredientsData.map((ingredient, index) => (
               <div className="ingredient-form" key={index}>
-                <label htmlFor="ingredient-name">Ingredient: </label>
+                <label htmlFor={`ingredient-name-${index}`}>Ingredient: </label>
                 <input
                   type="text"
-                  id="ingredient-name"
+                  id={`ingredient-name-${index}`}
                   value={ingredient.name}
                   onChange={(e) => {
                     handleIngredientChange(index, e);
                   }}
                   name="name"
+                  autoComplete="false"
                 />
-                <label htmlFor="ingredient-quantity">Quantity</label>
+                <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
                 <input
                   type="number"
-                  id="ingredient-quantity"
+                  id={`ingredient-quantity-${index}`}
                   value={ingredientsData.quantity}
                   onChange={(e) => handleIngredientChange(index, e)}
                   name="quantity"
                 />
 
-                <label htmlFor="ingredient-volume">Volume:</label>
+                <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
                 <select
+                  id={`ingredient-volume-${index}`}
                   name="volume_unit"
                   value={ingredient.volume_unit || ""}
                   onChange={(e) => {
@@ -210,8 +220,9 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   ))}
                 </select>
 
-                <label htmlFor="ingredient-weight">Weight:</label>
+                <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
                 <select
+                  id={`ingredient-weight-${index}`}
                   name="weight_unit"
                   value={ingredient.weight_unit || ""}
                   onChange={(e) => {
@@ -228,8 +239,8 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 </select>
                 {ingredientsData.length > 1 && (
                   <button
+                    type="button"
                     onClick={(e) => {
-                      e.preventDefault();
                       removeIngredient(index);
                     }}
                   >
@@ -238,19 +249,23 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 )}
               </div>
             ))}
-            <button onClick={addExtraIngredient}>Add Ingredient</button>
+            <button type="button" onClick={addExtraIngredient}>
+              Add Ingredient
+            </button>
           </div>
           <div className="steps-component">
             {stepsData.map((step, index) => (
               <div className="step-form" key={index}>
-                <label htmlFor={`step-num-${index}`}>step</label>
+                <label htmlFor={`step-number-${index}`}>step</label>
                 <input
                   type="number"
                   id={`step-number-${index}`}
                   value={step.number}
                   name="number"
-                  // onChange={(e) => handleStepChange(index, e)}
                   readOnly
+                  onChange={(e) => {
+                    handleStepChange(index, e);
+                  }}
                 />
                 <label htmlFor={`step-description-${index}`}>Description</label>
                 <input
@@ -258,12 +273,14 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   id={`step-description-${index}`}
                   value={step.description}
                   name="description"
-                  onChange={(e) => handleStepChange(index, e)}
+                  onChange={(e) => {
+                    handleStepChange(index, e);
+                  }}
                 />
                 {stepsData.length > 1 && (
                   <button
+                    type="button"
                     onClick={(e) => {
-                      e.preventDefault();
                       removeStep(index);
                     }}
                   >
@@ -272,7 +289,9 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 )}
               </div>
             ))}
-            <button onClick={addExtraStep}>Add step</button>
+            <button type="button" onClick={addExtraStep}>
+              Add step
+            </button>
           </div>
 
           <button type="submit">Add Recipe</button>
