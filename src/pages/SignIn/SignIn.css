@@ -1,6 +1,8 @@
 .sign-in-title {
   padding: 25px;
   margin-bottom: 20px;
+  font-family: "Handjet", sans-serif;
+  font-size: 60px;
 }
 
 .sign-in-buttons {
@@ -15,6 +17,8 @@ form button {
   padding: 7px;
   background: #B94700;
   color: white;
+  width: 80px;
+  font-size: 18px;
 }
 
 form button:hover {
@@ -23,6 +27,7 @@ form button:hover {
   cursor: pointer;
 }
 
-.username-input {
-  width: 246px;
+label {
+  font-family: "Handjet", sans-serif;
+  font-size: 30px;
 }

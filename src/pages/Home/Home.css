@@ -1,31 +1,12 @@
-
 .handjet {
   font-family: "Handjet", sans-serif;
   font-optical-sizing: auto;
-  font-weight: 500;
+  font-weight: 600;
   font-style: normal;
   font-variation-settings:
     "ELGR" 2,
     "ELSH" 2;
 }
-
-/* @keyframes textColorShift {
-  0% {
-    color: #6e4aa9;
-  }
-  25% {
-    color: #80727b;
-  }
-  50% {
-    color: #4b6cb7;
-  }
-  75% {
-    color: #2d94a9;
-  }
-  100% {
-    color: #6e4aa9;
-  }
-} */
 
 main {
   background-color: whitesmoke;
@@ -34,8 +15,6 @@ main {
 .landing-page-title {
   font-size: 5rem;
   font-weight: 700;
-  /* animation: textColorShift 6s ease-in-out infinite; */
-  /* text-shadow: 0 0 15px rgba(123, 47, 247, 0.5); */
   font-family: "Handjet", sans-serif;
 }
 
