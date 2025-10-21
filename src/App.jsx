@@ -12,6 +12,7 @@ import RecipeList from "./pages/RecipeList/RecipeList.jsx";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail.jsx";
 import RecipeForm from "./pages/RecipeForm/RecipeForm.jsx";
 import GroceryList from "./pages/GroceryList/GroceryList.jsx";
+import RecipeWheel from "./pages/RecipeWheel/RecipeWheel.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
 
 // Protected route wrapper
@@ -89,6 +90,15 @@ const router = createBrowserRouter([
       <Protected>
         <NavBar />
         <GroceryList />
+      </Protected>
+    ),
+  },
+  {
+    path: "/recipe-wheel",
+    element: (
+      <Protected>
+        <NavBar />
+        <RecipeWheel />
       </Protected>
     ),
   },
