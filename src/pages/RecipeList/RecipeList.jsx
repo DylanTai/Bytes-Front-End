@@ -13,6 +13,8 @@ const RecipeList = () => {
   const [recipes, setRecipes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("Newest");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showFavoritesFirst, setShowFavoritesFirst] = useState(false);
   const recipesPerPage = 5;
 
   useEffect(() => {
@@ -26,7 +28,7 @@ const RecipeList = () => {
   const handleAddToGroceryList = async (e, recipeId, recipeTitle) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     try {
       const result = await groceryListService.addRecipeToGroceryList(recipeId);
       alert(result.message);
@@ -35,7 +37,37 @@ const RecipeList = () => {
     }
   };
 
-  const sortedRecipes = [...recipes].sort((a, b) => {
+  // Search filter
+  const searchFilteredRecipes = recipes.filter((recipe) => {
+    if (!searchQuery.trim()) return true;
+
+    const query = searchQuery.toLowerCase();
+
+    // Search in title
+    if (recipe.title.toLowerCase().includes(query)) return true;
+
+    // Search in ingredients
+    if (recipe.ingredients && recipe.ingredients.some(
+      (ingredient) => ingredient.name.toLowerCase().includes(query)
+    )) return true;
+
+    // Search in steps
+    if (recipe.steps && recipe.steps.some(
+      (step) => step.description.toLowerCase().includes(query)
+    )) return true;
+
+    return false;
+  });
+
+  // Sort recipes
+  const sortedRecipes = [...searchFilteredRecipes].sort((a, b) => {
+    // Apply favorites filter first if enabled
+    if (showFavoritesFirst) {
+      if (a.favorite && !b.favorite) return -1;
+      if (!a.favorite && b.favorite) return 1;
+    }
+
+    // Then apply regular sorting
     switch (sortBy) {
       case "Newest":
         return b.id - a.id;
@@ -50,6 +82,7 @@ const RecipeList = () => {
     }
   });
 
+  // Pagination
   const currRecipes = sortedRecipes.slice(
     (currentPage - 1) * recipesPerPage,
     currentPage * recipesPerPage
@@ -57,29 +90,74 @@ const RecipeList = () => {
 
   const pages = Math.ceil(sortedRecipes.length / recipesPerPage);
 
+  // Reset to page 1 when search or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, sortBy, showFavoritesFirst]);
+
   return (
     <div className="recipe-list-page">
       <h1 className="recipe-list-title">My Recipes</h1>
-      <div className="sort-controls">
-        <label>Sort by: </label>
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="Newest">Posted (Newest)</option>
-          <option value="Oldest">Posted (Oldest)</option>
-          <option value="Title (A-Z)">Title (A → Z)</option>
-          <option value="Title (Z-A)">Title (Z → A)</option>
-        </select>
+
+      {/* Search Bar */}
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="Search recipes, ingredients, or steps..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="search-input"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => setSearchQuery("")}
+            className="clear-search-btn"
+          >
+            ✕
+          </button>
+        )}
       </div>
-      <br />
+
+      {/* Controls */}
+      <div className="favorites-filter">
+        <label>
+          <input
+            type="checkbox"
+            checked={showFavoritesFirst}
+            onChange={(e) => setShowFavoritesFirst(e.target.checked)}
+          />
+          Show favorites first
+        </label>
+      </div>
+      <div className="controls">
+        <div className="sort-controls">
+          <label>Sort by: </label>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+            <option value="Newest">Posted (Newest)</option>
+            <option value="Oldest">Posted (Oldest)</option>
+            <option value="Title (A-Z)">Title (A → Z)</option>
+            <option value="Title (Z-A)">Title (Z → A)</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Results count */}
+      {searchQuery && (
+        <p className="search-results-count">
+          Found {sortedRecipes.length} recipe{sortedRecipes.length !== 1 ? 's' : ''}
+        </p>
+      )}
+
+      {/* Recipe List */}
       {currRecipes.length === 0 ? (
-        <p>You have no recipes yet.</p>
+        <p className="no-recipes-message">
+          {searchQuery ? "No recipes match your search." : "You have no recipes yet."}
+        </p>
       ) : (
         <ul className="recipe-list">
           {currRecipes.map((recipe) => (
             <li key={recipe.id} className="recipe-card-wrapper">
-              <Link
-                to={`/recipes/${recipe.id}`}
-                className="recipe-link"
-              >
+              <Link to={`/recipes/${recipe.id}`} className="recipe-link">
                 <div className="recipe-card">
                   <strong>{recipe.title}</strong>
                   {recipe.favorite && <span> 🍪 </span>}
@@ -95,6 +173,8 @@ const RecipeList = () => {
           ))}
         </ul>
       )}
+
+      {/* Pagination */}
       <div className="recipe-list-buttons">
         {pages > 1 && (
           <div className="pagination">
