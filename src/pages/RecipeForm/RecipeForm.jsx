@@ -161,6 +161,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   return (
     <>
+      <div className="recipe-form-page">
       <h1 className="recipeform-title">Log New Recipe</h1>
 
       <form onSubmit={handleSubmit} className="recipe-form">
@@ -211,6 +212,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   value={ingredientsData.quantity}
                   onChange={(e) => handleIngredientChange(index, e)}
                   name="quantity"
+                  className="quantity-input"
                 />
 
                 <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
@@ -222,6 +224,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                     handleIngredientChange(index, e);
                   }}
                   disabled={ingredient.weight_unit !== ""}
+                  className="volume-input"
                 >
                   <option value="">---</option>
                   {VOLUME_UNITS.map((unit) => (
@@ -240,6 +243,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                     handleIngredientChange(index, e);
                   }}
                   disabled={ingredient.volume_unit !== ""}
+                  className="weight-input"
                 >
                   <option value="">---</option>
                   {WEIGHT_UNITS.map((unit) => (
@@ -254,20 +258,21 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                     onClick={(e) => {
                       removeIngredient(index);
                     }}
+                    className="form-btn"
                   >
                     Remove Ingredient
                   </button>
                 )}
               </div>
             ))}
-            <button type="button" onClick={addExtraIngredient}>
+            <button type="button" onClick={addExtraIngredient} className="form-btn">
               Add Ingredient
             </button>
           </div>
-          <div className="steps-component">
+          <div className="steps-container">
             {stepsData.map((step, index) => (
               <div className="step-form" key={index}>
-                <label htmlFor={`step-number-${index}`}>step</label>
+                <label htmlFor={`step-number-${index}`}>Step</label>
                 <input
                   type="number"
                   id={`step-number-${index}`}
@@ -277,6 +282,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   onChange={(e) => {
                     handleStepChange(index, e);
                   }}
+                  className="step-number-input"
                 />
                 <label htmlFor={`step-description-${index}`}>Description</label>
                 <input
@@ -294,22 +300,25 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                     onClick={(e) => {
                       removeStep(index);
                     }}
+                    className="form-btn"
                   >
-                    Remove step
+                    Remove Step
                   </button>
                 )}
               </div>
             ))}
-            <button type="button" onClick={addExtraStep}>
-              Add step
+            <button type="button" onClick={addExtraStep} className="form-btn">
+              Add Step
             </button>
           </div>
-          <button type="submit">Add Recipe</button>
-          <button type="button" onClick={handleCancel}>
+          <button type="submit" className="form-btn">Add Recipe</button>
+          <button type="button" onClick={handleCancel} className="form-btn">
             Cancel
           </button>
         </div>
+
       </form>
+      </div>
     </>
   );
 };
