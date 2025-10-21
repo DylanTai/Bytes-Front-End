@@ -1,10 +1,17 @@
+.recipe-list-page {
+  background-color: #ffe0bd45;
+  border-radius: 80px;
+}
+
 .recipe-list-title {
   display: flex;
   justify-content: center;
   padding: 25px;
   margin-bottom: 45px;
   margin-top: 50px;
-  font-size: 6vh;
+  margin-bottom: 20px;
+  font-family: "Handjet", sans-serif;
+  font-size: 60px;
 }
 
 .recipe-list {
@@ -24,9 +31,9 @@
 
 .recipe-card {
   border: black solid 2px;
-  padding: 30px;
+  padding: 20px;
   border-radius: 10px;
-  background-color: #f1dede;
+  background-color: #ffd599;
   min-width: 220px;
   transition: background-color 0.3s ease;
 }
@@ -38,11 +45,17 @@
 
 .recipe-card p,
 .recipe-card strong {
-  background-color: #f1dede;
+  background-color: #ffd599;
 }
 
 .recipe-card p {
   margin-top: 10px;
+}
+
+.add-ingredients-btn {
+  width: 170px;
+  font-size: 15px;
+  margin-top: 8px;
 }
 
 /* .add-button {

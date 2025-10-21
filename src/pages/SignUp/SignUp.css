@@ -1,6 +1,7 @@
 .sign-up-title {
   padding: 25px;
   margin-bottom: 20px;
+  font-size: 45px;
 }
 
 input {
@@ -32,5 +33,5 @@ input {
 .signup-section {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }

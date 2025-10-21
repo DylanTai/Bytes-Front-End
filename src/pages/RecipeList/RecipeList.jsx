@@ -167,7 +167,7 @@ const RecipeList = () => {
                 className="add-ingredients-btn"
                 onClick={(e) => handleAddToGroceryList(e, recipe.id, recipe.title)}
               >
-                Add Ingredients
+                Add to Grocery List
               </button>
             </li>
           ))}
