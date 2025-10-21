@@ -41,7 +41,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   const [stepsData, setStepsData] = useState([
     {
-      number: 1,
+      step: 1,
       description: "",
     },
   ]);
@@ -76,7 +76,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       return [
         ...prev,
         {
-          number: prev.length + 1,
+          step: prev.length + 1,
           description: "",
         },
       ];
@@ -89,7 +89,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         .filter((_, index) => index !== indexToRmove)
         .map((step, newIndex) => ({
           ...step,
-          number: newIndex + 1,
+          step: newIndex + 1,
         }))
     );
   };
@@ -98,18 +98,36 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     event.preventDefault();
     console.log("submitted");
     try {
+      // Create new Recipe
       const newRecipe = await addRecipe(recipeData);
-      ingredientsData.map(async (ingredient, index) => {
-        ingredient.recipe = await newRecipe.id;
-      });
-      stepsData.map(async (step, index) => {
-        step.recipe = await newRecipe.id;
-      });
+
+      // Create Ingredients for the newly created Recipe
+      const ingredientsPromises = ingredientsData.map((ingredient) =>
+        addIngredient(newRecipe.id, {
+          ...ingredient,
+          recipe: newRecipe.id,
+        })
+      );
+
+      await Promise.all(ingredientsPromises);
+
+      // Create Steps for the newly created Recipe
+      const stepsPromises = stepsData.map((step) =>
+        addStep(newRecipe.id, {
+          ...step,
+          recipe: newRecipe.id,
+        })
+      );
+
+      await Promise.all(stepsPromises);
+
+      // stepsData.map(async (step, index) => {
+      //   step.recipe = await newRecipe.id;
+      //   await addStep(step.recipe, step);
+      // });
       // map through ingredientsData array and inject recipe id
       // map through stepsData array and inject recipe id
 
-      await addIngredient(newRecipe.id, ingredientsData);
-      await addStep(newRecipe.id, stepsData);
       navigate(`/recipes/${newRecipe.id}`);
     } catch (error) {
       console.error(error);
@@ -260,8 +278,8 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 <input
                   type="number"
                   id={`step-number-${index}`}
-                  value={step.number}
-                  name="number"
+                  value={step.step}
+                  name="step"
                   readOnly
                   onChange={(e) => {
                     handleStepChange(index, e);
