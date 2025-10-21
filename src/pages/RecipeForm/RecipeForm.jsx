@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-import { addRecipe } from "../../services/recipeService.js";
+import {
+  addRecipe,
+  addIngredient,
+  addStep,
+} from "../../services/recipeService.js";
 import "./RecipeForm.css";
 
 //units
@@ -23,6 +27,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   const [recipeData, setRecipeData] = useState({
     title: "",
     notes: "",
+    favorite: null,
   });
 
   const [ingredientsData, setIngredientsData] = useState([
@@ -91,6 +96,13 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    try {
+      const newRecipe = await addRecipe(recipeData);
+      setRecipeData(newRecipe);
+      // const newIngredient = await
+    } catch (error) {
+      console.error(error);
+    }
     console.log("submitted");
   };
 
@@ -147,6 +159,12 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               value={recipeData.notes}
               onChange={handleRecipeChange}
               name="notes"
+            />
+            <label htmlFor="recipe-favorite">Favorite</label>
+            <input
+              type="checkbox"
+              checked={recipeData.favorite}
+              onChange={handleRecipeChange}
             />
           </div>
 
@@ -217,7 +235,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 )}
               </div>
             ))}
-            <button onClick={addExtraIngredient}>Add Extra Ingredient</button>
+            <button onClick={addExtraIngredient}>Add Ingredient</button>
           </div>
           <div className="steps-component">
             {stepsData.map((step, index) => (
