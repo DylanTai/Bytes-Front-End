@@ -11,10 +11,13 @@
 nav {
   display: flex;
   width: 100%;
-  background-color: #F4AC45;
+  background-color: white;
   justify-content: flex-end;
   position: sticky;
   top: 0;
+  position: fixed;
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .nav-img {
