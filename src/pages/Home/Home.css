@@ -23,3 +23,11 @@ main p {
   font-family: "Silkscreen", sans-serif;
   font-family: "Handjet", sans-serif;
 }
+
+.home-main {
+  background-color: #ffe0bd45;
+  border-radius: 80px;
+  min-height: 100vh;
+  margin-left: 10px;
+  margin-right: 10px;
+}

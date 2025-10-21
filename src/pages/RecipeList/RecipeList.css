@@ -1,6 +1,10 @@
 .recipe-list-page {
   background-color: #ffe0bd45;
   border-radius: 80px;
+  min-height: calc(100vh - 75px);
+  padding-bottom: 40px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .recipe-list-title {
@@ -12,6 +16,15 @@
   margin-bottom: 20px;
   font-family: "Handjet", sans-serif;
   font-size: 60px;
+  padding-top: 60px;
+}
+
+.search-input {
+  width: 300px;
+}
+
+.show-favorite-btn {
+  width: auto;
 }
 
 .recipe-list {
@@ -22,6 +35,7 @@
   flex-wrap: wrap;
   gap: 20px;
   padding: 0;
+  margin-top: 50px;
 }
 
 .recipe-link {
@@ -33,19 +47,14 @@
   border: black solid 2px;
   padding: 20px;
   border-radius: 10px;
-  background-color: #ffd599;
+  background-color: #ffb54b;
   min-width: 220px;
   transition: background-color 0.3s ease;
 }
 
 .recipe-card:hover {
-  background-color: #e7cfcf;
+  background-color: #ff904b;
   cursor: pointer;
-}
-
-.recipe-card p,
-.recipe-card strong {
-  background-color: #ffd599;
 }
 
 .recipe-card p {
@@ -56,28 +65,13 @@
   width: 170px;
   font-size: 15px;
   margin-top: 8px;
+  background: none;
+  border: none;
+  color: #82200c;
 }
 
-/* .add-button {
-  display: flex;
-  justify-content: center;
-  margin-top: 30px;
-}
-
-button {
-  padding: 7px 14px;
-  border-radius: 10px;
-  background-color: #f1dede;
-  color: #1a0c15;
-  border: #80727b solid 2px;
-  font-size: 15px;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-button:hover {
-  background-color: #80727b;
-  color: #f1dede;
-  cursor: pointer;
+.add-ingredients-btn:hover {
+  color: #f9ae2c;
 }
 
 .recipe-list-buttons {
@@ -86,13 +80,12 @@ button:hover {
   align-items: center;
   margin-top: 40px;
   gap: 20px;
-} */
+}
 
 .sort-controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
   gap: 10px;
 }
 
@@ -101,6 +94,13 @@ button:hover {
   align-items: center;
   justify-content: center;
   gap: 15px;
+}
+
+.list-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 430px) {
