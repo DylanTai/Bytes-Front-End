@@ -55,7 +55,7 @@ const NavBar = () => {
           size={22}
         />
       </button>
-      <div className="nav-links">
+      <div className={`nav-links ${isOpen ? "open" : ""}`}>
         {user ? authenticatedOptions : unauthenticatedOptions}
       </div>
     </nav>
