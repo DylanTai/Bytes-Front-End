@@ -12,7 +12,7 @@ const Home = () => {
 
   return (
     <main>
-      <h1 className="landing-page-title">Bytes</h1>
+      <h1 className="landing-page-title">Bytes.AI</h1>
       <p>Your Online Recipe Box</p>
     </main>
   );
