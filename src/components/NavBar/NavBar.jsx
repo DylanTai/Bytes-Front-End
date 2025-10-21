@@ -21,16 +21,17 @@ const NavBar = () => {
   const authenticatedOptions = (
     <>
       <Link to="/recipes/add"><button>Add Recipe</button></Link>
+      <Link to="/grocery-list"><button>Grocery List</button></Link>
       <Link to="/" onClick={handleSignOut}><button>Sign Out</button></Link>
     </>
-  )
+  );
 
-  const unauthenticatedOptions =(
+  const unauthenticatedOptions = (
     <>
       <Link to="/sign-up"><button>Sign Up</button></Link>
       <Link to="/sign-in"><button>Sign In</button></Link>
     </>
-  )
+  );
 
   return (
     <nav>
@@ -39,12 +40,10 @@ const NavBar = () => {
           <img src={logo} alt="logo" />
         </Link>
       </div>
-
       <button
         className="nav-hamburger"
         aria-label="Toggle navigation"
         aria-expanded={isOpen}
-        // onClick={toggleMobileMenu}
       >
         <Hamburger
           onClick={toggleMobileMenu}
@@ -53,12 +52,11 @@ const NavBar = () => {
           size={22}
         />
       </button>
-
-       <div className="nav-links">
+      <div className="nav-links">
         {user ? authenticatedOptions : unauthenticatedOptions}
       </div>
-
     </nav>
   );
 };
+
 export default NavBar;

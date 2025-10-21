@@ -3,7 +3,6 @@ const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/users`;
 // Helper function for authenticated requests
 const fetchWithAuth = async (url, options = {}) => {
   const access = localStorage.getItem("access");
-
   const authHeaders = {
     ...options.headers,
   };
@@ -20,7 +19,7 @@ const fetchWithAuth = async (url, options = {}) => {
 
 export const getUser = async () => {
   try {
-    const res = await fetchWithAuth(`${BASE_URL}/token/refresh/`, {
+    const res = await fetchWithAuth(`${BASE_URL}/verify/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

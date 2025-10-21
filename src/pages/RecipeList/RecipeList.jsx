@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import * as recipeService from "../../services/recipeService.js";
+import * as groceryListService from "../../services/groceryListService.js";
 import "./RecipeList.css";
 
 const formatDate = (dateString) => {
@@ -11,10 +12,9 @@ const formatDate = (dateString) => {
 const RecipeList = () => {
   const [recipes, setRecipes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState("Newest"); // default sort
+  const [sortBy, setSortBy] = useState("Newest");
   const recipesPerPage = 5;
 
-  // Fetch recipes on mount
   useEffect(() => {
     const fetchRecipes = async () => {
       const data = await recipeService.getRecipes();
@@ -23,11 +23,22 @@ const RecipeList = () => {
     fetchRecipes();
   }, []);
 
-  // Sorting logic
+  const handleAddToGroceryList = async (e, recipeId, recipeTitle) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    try {
+      const result = await groceryListService.addRecipeToGroceryList(recipeId);
+      alert(result.message);
+    } catch (err) {
+      alert("Failed to add ingredients to grocery list.");
+    }
+  };
+
   const sortedRecipes = [...recipes].sort((a, b) => {
     switch (sortBy) {
       case "Newest":
-        return b.id - a.id; // assuming higher ID = newer
+        return b.id - a.id;
       case "Oldest":
         return a.id - b.id;
       case "Title (A-Z)":
@@ -39,17 +50,16 @@ const RecipeList = () => {
     }
   });
 
-  // Pagination logic
   const currRecipes = sortedRecipes.slice(
     (currentPage - 1) * recipesPerPage,
     currentPage * recipesPerPage
   );
+
   const pages = Math.ceil(sortedRecipes.length / recipesPerPage);
 
   return (
     <div className="recipe-list-page">
       <h1 className="recipe-list-title">My Recipes</h1>
-
       <div className="sort-controls">
         <label>Sort by: </label>
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
@@ -59,33 +69,33 @@ const RecipeList = () => {
           <option value="Title (Z-A)">Title (Z → A)</option>
         </select>
       </div>
-
       <br />
-
       {currRecipes.length === 0 ? (
         <p>You have no recipes yet.</p>
       ) : (
         <ul className="recipe-list">
           {currRecipes.map((recipe) => (
-            <Link
-              to={`/recipes/${recipe.id}`}
-              className="recipe-link"
-              key={recipe.id}
-            >
-              <li className="recipe-card">
-                <strong>{recipe.title}</strong>
-                {recipe.favorite && <span> 🍪 </span>}
-              </li>
-            </Link>
+            <li key={recipe.id} className="recipe-card-wrapper">
+              <Link
+                to={`/recipes/${recipe.id}`}
+                className="recipe-link"
+              >
+                <div className="recipe-card">
+                  <strong>{recipe.title}</strong>
+                  {recipe.favorite && <span> 🍪 </span>}
+                </div>
+              </Link>
+              <button
+                className="add-ingredients-btn"
+                onClick={(e) => handleAddToGroceryList(e, recipe.id, recipe.title)}
+              >
+                Add Ingredients
+              </button>
+            </li>
           ))}
         </ul>
       )}
-
       <div className="recipe-list-buttons">
-        <Link to="/add" className="add-button">
-          <button>Add Recipe</button>
-        </Link>
-
         {pages > 1 && (
           <div className="pagination">
             <button
