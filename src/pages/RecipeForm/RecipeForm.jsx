@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import { addRecipe } from "../../services/recipeService.js";
 import "./RecipeForm.css";
 
+//units
 const VOLUME_UNITS = [
   { value: "cup", label: "Cup" },
   { value: "tbsp", label: "Tablespoon" },
@@ -18,6 +19,7 @@ const WEIGHT_UNITS = [
 const RecipeForm = ({ recipes, setRecipes }) => {
   const navigate = useNavigate();
 
+  // useState's
   const [recipeData, setRecipeData] = useState({
     title: "",
     notes: "",
@@ -39,6 +41,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     },
   ]);
 
+  // button handlers
   const addExtraIngredient = (e) => {
     setIngredientsData((prev) => {
       return [
@@ -53,42 +56,45 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     });
   };
 
+  const removeIngredient = (indexToRmove) => {
+    setIngredientsData((prev) =>
+      prev
+        .filter((_, index) => index !== indexToRmove)
+        .map((ingredient) => ({
+          ...ingredient,
+        }))
+    );
+  };
+
   const addExtraStep = (e) => {
     setStepsData((prev) => {
       return [
         ...prev,
         {
-          number: 1,
+          number: prev.length + 1,
           description: "",
         },
       ];
     });
   };
 
+  const removeStep = (indexToRmove) => {
+    setStepsData((prev) =>
+      prev
+        .filter((_, index) => index !== indexToRmove)
+        .map((step, newIndex) => ({
+          ...step,
+          number: newIndex + 1,
+        }))
+    );
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log("submitted");
-    // if (!recipeData.physical || !recipeData.emotion) {
-    //   alert("Please complete the form before submitting!");
-    //   return;
-    // }
-
-    // try {
-    //   const recipeRequest = await addRecipe(recipeData);
-
-    //   if (recipes) setRecipes([...recipes, recipeRequest]);
-    //   else setRecipes([recipeRequest]);
-    //   setRecipeData({
-    //     emotion: "",
-    //     physical: "",
-    //     intensity: 5,
-    //     timeOfEmotion: formatDate(new Date()),
-    //     comments: { note: "" },
-    //   });
-    //   navigate("/");
-    // } catch (error) {}
   };
 
+  // onChange handlers
   const handleRecipeChange = (event) => {
     const { name, value } = event.target;
     setRecipeData((prev) => ({ ...prev, [name]: value }));
@@ -199,9 +205,18 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                     </option>
                   ))}
                 </select>
+                {ingredientsData.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      removeIngredient(index);
+                    }}
+                  >
+                    Remove Ingredient
+                  </button>
+                )}
               </div>
             ))}
-
             <button onClick={addExtraIngredient}>Add Extra Ingredient</button>
           </div>
           <div className="steps-component">
@@ -210,20 +225,33 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 <label htmlFor={`step-num-${index}`}>step</label>
                 <input
                   type="number"
-                  id="step-number"
+                  id={`step-number-${index}`}
                   value={step.number}
-                  onChange={(e) => handleStepChange(index, e)}
+                  name="number"
+                  // onChange={(e) => handleStepChange(index, e)}
+                  readOnly
                 />
                 <label htmlFor={`step-description-${index}`}>Description</label>
                 <input
                   type="text"
-                  id="step-description"
+                  id={`step-description-${index}`}
                   value={step.description}
+                  name="description"
                   onChange={(e) => handleStepChange(index, e)}
-                ></input>
+                />
+                {stepsData.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      removeStep(index);
+                    }}
+                  >
+                    Remove step
+                  </button>
+                )}
               </div>
             ))}
-            <button onClick={addExtraStep}>Add Extra step</button>
+            <button onClick={addExtraStep}>Add step</button>
           </div>
 
           <button type="submit">Add Recipe</button>
@@ -234,21 +262,3 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 };
 
 export default RecipeForm;
-
-{
-  /* <select
-            value={recipeData.emotion}
-            onChange={(event) =>
-              setRecipeData({ ...recipeData, emotion: event.target.value })
-            }
-          >
-            <option value=""></option>
-            <option value="Angry">Angry</option>
-            <option value="Anxious">Anxious</option>
-            <option value="Disgusted">Disgusted</option>
-            <option value="Happy">Happy</option>
-            <option value="Sad">Sad</option>
-            <option value="Scared">Scared</option>
-            <option value="Surprised">Surprised</option>
-          </select> */
-}
