@@ -7,7 +7,6 @@ import "./SignUp.css";
 const SignUpForm = () => {
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
-  const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     username: "",
@@ -19,56 +18,100 @@ const SignUpForm = () => {
   const { username, email, password, password2 } = formData;
 
   const handleChange = (evt) => {
-    setMessage("");
-    setErrors({});
-    setFormData({ ...formData, [evt.target.name]: evt.target.value });
+    const { name, value } = evt.target;
+    setFormData({ ...formData, [name]: value });
+    
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      const newErrors = { ...errors };
+      delete newErrors[name];
+      setErrors(newErrors);
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Username validation
+    if (!username.trim()) {
+      newErrors.username = ["Username is required."];
+    } else if (username.length < 3) {
+      newErrors.username = ["Username must be at least 3 characters."];
+    }
+
+    // Email validation
+    if (!email.trim()) {
+      newErrors.email = ["Email is required."];
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = ["Enter a valid email address."];
+    }
+
+    // Password validation
+    if (!password) {
+      newErrors.password = ["Password is required."];
+    } else if (password.length < 6) {
+      newErrors.password = ["Password must be at least 6 characters."];
+    }
+
+    // Confirm password validation
+    if (!password2) {
+      newErrors.password2 = ["Please confirm your password."];
+    } else if (password !== password2) {
+      newErrors.password2 = ["Passwords do not match."];
+    }
+
+    return newErrors;
   };
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
-    setErrors({});
-    setMessage("");
-
-    if (password !== password2) {
-      setErrors({ password2: ["Passwords do not match."] });
-      return;
-    }
-
+    
+    // Get frontend validation errors
+    const frontendErrors = validateForm();
+    
+    // Always try to submit to get backend errors too
     try {
       const newUser = await signUp(formData);
       setUser(newUser);
       navigate("/");
     } catch (error) {
       console.error("Sign-up failed:", error);
-      console.log("Error response:", error.response); // Debug log
+      
+      // Combine frontend and backend errors
+      let allErrors = { ...frontendErrors };
       
       // Handle Django validation errors
       if (error.response && error.response.data) {
         const errorData = error.response.data;
-        console.log("Error data:", errorData); // Debug log
         
         // Check if it's field-specific errors
         if (typeof errorData === 'object' && !errorData.detail) {
-          setErrors(errorData);
+          // Merge backend errors with frontend errors
+          Object.keys(errorData).forEach(field => {
+            if (!allErrors[field]) {
+              allErrors[field] = errorData[field];
+            }
+          });
         } else {
           // Generic error message
-          setMessage(errorData.detail || error.message || "Failed to create account.");
+          if (!allErrors.username) {
+            allErrors.username = [errorData.detail || error.message || "Failed to create account."];
+          }
         }
       } else {
-        setMessage(error.message || "Failed to create account.");
+        if (!allErrors.username) {
+          allErrors.username = [error.message || "Failed to create account."];
+        }
       }
+      
+      setErrors(allErrors);
     }
-  };
-
-  const isFormInvalid = () => {
-    return !(username && email && password && password === password2);
   };
 
   return (
     <main className="sign-up-page">
       <h1 className="sign-up-title">Sign Up</h1>
-      {message && <p className="error-message">{message}</p>}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div>
           <label htmlFor="username">Username:</label>
           <input
@@ -77,8 +120,7 @@ const SignUpForm = () => {
             value={username}
             name="username"
             onChange={handleChange}
-            required
-            className="username-input"
+            className={`username-input ${errors.username ? 'input-error' : ''}`}
           />
           {errors.username && (
             <p className="field-error">{errors.username.join(", ")}</p>
@@ -87,13 +129,12 @@ const SignUpForm = () => {
         <div>
           <label htmlFor="email">Email:</label>
           <input
-            type="email"
+            type="text"
             id="email"
             value={email}
             name="email"
             onChange={handleChange}
-            required
-            className="email-input"
+            className={`email-input ${errors.email ? 'input-error' : ''}`}
           />
           {errors.email && (
             <p className="field-error">{errors.email.join(", ")}</p>
@@ -107,8 +148,7 @@ const SignUpForm = () => {
             value={password}
             name="password"
             onChange={handleChange}
-            required
-            className="password-input"
+            className={`password-input ${errors.password ? 'input-error' : ''}`}
           />
           {errors.password && (
             <p className="field-error">{errors.password.join(", ")}</p>
@@ -122,15 +162,14 @@ const SignUpForm = () => {
             value={password2}
             name="password2"
             onChange={handleChange}
-            required
-            className="confirm-input"
+            className={`confirm-input ${errors.password2 ? 'input-error' : ''}`}
           />
           {errors.password2 && (
             <p className="field-error">{errors.password2.join(", ")}</p>
           )}
         </div>
         <div className="sign-up-buttons">
-          <button type="submit" disabled={isFormInvalid()}>
+          <button type="submit">
             Sign Up
           </button>
           <button type="button" onClick={() => navigate("/")}>
