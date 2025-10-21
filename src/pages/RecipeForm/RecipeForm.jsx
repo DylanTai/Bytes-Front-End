@@ -98,8 +98,11 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     event.preventDefault();
     try {
       const newRecipe = await addRecipe(recipeData);
-      setRecipeData(newRecipe);
-      // const newIngredient = await
+      // setRecipeData(newRecipe);
+      await addIngredient(newRecipe.id, ingredientsData);
+      await addStep(newRecipe.id, stepsData);
+
+      navigate(`/recipes/${newRecipe.id}`);
     } catch (error) {
       console.error(error);
     }
