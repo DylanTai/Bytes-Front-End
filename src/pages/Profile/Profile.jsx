@@ -13,6 +13,11 @@ const Profile = () => {
   const [usernameErrors, setUsernameErrors] = useState({});
   const [usernameSuccess, setUsernameSuccess] = useState("");
 
+  // Email form state
+  const [emailForm, setEmailForm] = useState({ email: user?.email || "" });
+  const [emailErrors, setEmailErrors] = useState({});
+  const [emailSuccess, setEmailSuccess] = useState("");
+
   // Password form state
   const [passwordForm, setPasswordForm] = useState({
     current_password: "",
@@ -48,6 +53,31 @@ const Profile = () => {
         setUsernameErrors(error.response.data);
       } else {
         setUsernameErrors({ username: [error.message || "Failed to update username."] });
+      }
+    }
+  };
+
+  // Handle email change
+  const handleEmailChange = (e) => {
+    setEmailForm({ email: e.target.value });
+    setEmailErrors({});
+    setEmailSuccess("");
+  };
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setEmailErrors({});
+    setEmailSuccess("");
+
+    try {
+      const result = await userService.updateEmail(emailForm.email);
+      setEmailSuccess("Email updated successfully!");
+      setUser(result.user);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        setEmailErrors(error.response.data);
+      } else {
+        setEmailErrors({ email: [error.message || "Failed to update email."] });
       }
     }
   };
@@ -131,6 +161,30 @@ const Profile = () => {
           </div>
           <button type="submit" className="submit-button">
             Update Username
+          </button>
+        </form>
+      </section>
+
+      {/* Update Email Section */}
+      <section className="profile-section">
+        <h2>Update Email</h2>
+        {emailSuccess && <p className="success-message">{emailSuccess}</p>}
+        <form onSubmit={handleEmailSubmit} noValidate>
+          <div className="form-group">
+            <label htmlFor="email">New Email:</label>
+            <input
+              type="text"
+              id="email"
+              value={emailForm.email}
+              onChange={handleEmailChange}
+              className={emailErrors.email ? "input-error" : ""}
+            />
+            {emailErrors.email && (
+              <p className="field-error">{emailErrors.email.join(", ")}</p>
+            )}
+          </div>
+          <button type="submit" className="submit-button">
+            Update Email
           </button>
         </form>
       </section>
