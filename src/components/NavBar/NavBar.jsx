@@ -20,14 +20,17 @@ const NavBar = () => {
 
   const authenticatedOptions = (
     <>
+      <Link to="/"><button>Home</button></Link>
       <Link to="/recipes/add"><button>Add Recipe</button></Link>
       <Link to="/grocery-list"><button>Grocery List</button></Link>
+      <Link to="/profile"><button>Profile</button></Link>
       <Link to="/" onClick={handleSignOut}><button>Sign Out</button></Link>
     </>
   );
 
   const unauthenticatedOptions = (
     <>
+      <Link to="/"><button>Home</button></Link>
       <Link to="/sign-up"><button>Sign Up</button></Link>
       <Link to="/sign-in"><button>Sign In</button></Link>
     </>

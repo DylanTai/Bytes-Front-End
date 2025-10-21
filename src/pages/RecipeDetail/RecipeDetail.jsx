@@ -1,240 +1,134 @@
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import * as recipeService from "../../services/recipeService.js";
 import "./RecipeDetail.css";
 
-// format date to show only day, not time
-const formatDate = (date) => {
-  return date.toISOString().split("T")[0];
-};
-
-function RecipeDetail() {
-  const params = useParams();
+const RecipeDetail = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-
-  const [recipe, setRecipe] = useState({
-    emotion: "",
-    physical: "",
-    intensity: 5,
-    timeOfEmotion: formatDate(new Date()),
-    comments: { note: "" },
-  });
-  const [editRecipe, setEditRecipe] = useState({
-    emotion: "",
-    physical: "",
-    intensity: 5,
-    timeOfEmotion: formatDate(new Date()),
-    comments: { note: "" },
-  });
-  const [isEditing, setIsEditing] = useState(false);
-  const [error, setError] = useState("");
+  const [recipe, setRecipe] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getCurrentRecipe = async () => {
-      const recipe = await recipeService.getRecipe(params.recipeId);
-      setRecipe(recipe);
-    };
-    getCurrentRecipe();
-  }, []);
-
-  // handle submit function
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!editRecipe.physical || !editRecipe.emotion) {
-      alert("Please complete the form before submitting!");
-      return;
-    }
-
-    try {
-      const updated = await recipeService.updateRecipe(editRecipe);
-
-      if (!updated) {
-        setError("There was an error, try again");
-      } else {
-        setRecipe(updated);
-        setIsEditing(false);
+    const fetchRecipe = async () => {
+      try {
+        const data = await recipeService.getRecipe(id);
+        setRecipe(data);
+      } catch (error) {
+        console.error("Failed to fetch recipe:", error);
+        setError("Recipe not found or you don't have permission to view it.");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {}
-  };
+    };
 
-  // handle delete function
-  const handleDelete = async (event) => {
-    event.preventDefault();
+    fetchRecipe();
+  }, [id]);
 
-    if (!window.confirm("Are you sure you want to delete this Recipeie?"))
-      return;
-
-    const deleteRecipe = await recipeService.deleteRecipe(recipe._id);
-    if (!deleteRecipe) {
-      setError("There was an error, please try again!");
-    } else {
-      setIsEditing(false);
-      navigate("/");
+  const handleDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete "${recipe.title}"? This action cannot be undone.`)) {
+      try {
+        await recipeService.deleteRecipe(id);
+        alert("Recipe deleted successfully!");
+        navigate("/");
+      } catch (error) {
+        console.error("Failed to delete recipe:", error);
+        alert("Failed to delete recipe.");
+      }
     }
   };
 
-  const recipeIsLoaded = (checkRecipe) => {
-    return checkRecipe && checkRecipe._id;
-  };
+  if (loading) {
+    return <div className="recipe-detail-page"><p>Loading...</p></div>;
+  }
+
+  if (error || !recipe) {
+    return (
+      <div className="recipe-detail-page">
+        <div className="error-message">
+          <h2>{error || "Recipe not found"}</h2>
+          <button onClick={() => navigate("/")} className="back-button">
+            Back to Recipes
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      {!isEditing ? (
-        recipeIsLoaded(recipe) ? (
-          <div className="recipe-detail">
-            <h1 className="recipe-detail-title">{recipe.emotion}</h1>
-            <p>{error}</p>
+    <div className="recipe-detail-page">
+      {/* Header with title and buttons */}
+      <div className="recipe-header">
+        <h1 className="recipe-title">
+          {recipe.title}
+          {recipe.favorite && <span className="favorite-icon"> 🍪</span>}
+        </h1>
+        <div className="recipe-actions">
+          <Link to={`/recipes/${id}/edit`}>
+            <button className="edit-button">Edit</button>
+          </Link>
+          <button onClick={handleDelete} className="delete-button">
+            Delete
+          </button>
+        </div>
+      </div>
 
-            <p className="recipe-element">
-              Day of Recipe:{" "}
-              {recipe.timeOfEmotion
-                ? formatDate(new Date(recipe.timeOfEmotion))
-                : ""}
-            </p>
-            <p className="recipe-element">
-              Physical Experience: {recipe.physical}
-            </p>
-            <p className="recipe-element">
-              Intensity of Recipe: {recipe.intensity}
-            </p>
-            {recipe.comments?.note && <p>Note: {recipe.comments.note}</p>}
-
-            <div className="buttons">
-              <button
-                type="button"
-                onClick={() => {
-                  setEditRecipe(recipe);
-                  setIsEditing(true);
-                }}
-              >
-                Edit Recipe
-              </button>
-              <button type="button" onClick={handleDelete}>
-                Remove Recipe
-              </button>
-            </div>
-          </div>
-        ) : (
-          <h3>Loading...</h3>
-        )
-      ) : recipeIsLoaded(editRecipe) ? (
-        <form onSubmit={handleSubmit} className="update-recipeform">
-          <h1 className="edit-recipe-detail-title">
-            Update {editRecipe.emotion}
-          </h1>
-
-          {/* emotion edit */}
-          <div className="form-element">
-            <label>Recipe: </label>
-            <select
-              value={editRecipe.emotion}
-              onChange={(event) =>
-                setEditRecipe({ ...editRecipe, emotion: event.target.value })
-              }
-            >
-              <option value=""></option>
-              <option value="Angry">Angry</option>
-              <option value="Anxious">Anxious</option>
-              <option value="Disgusted">Disgusted</option>
-              <option value="Happy">Happy</option>
-              <option value="Sad">Sad</option>
-              <option value="Scared">Scared</option>
-              <option value="Surprised">Surprised</option>
-            </select>
-          </div>
-
-          {/* time of emotion edit */}
-          <div className="form-element">
-            <label>Day of Recipe: </label>
-            <input
-              type="date"
-              value={
-                editRecipe.timeOfEmotion
-                  ? formatDate(new Date(editRecipe.timeOfEmotion))
-                  : ""
-              }
-              onChange={(event) =>
-                setEditRecipe({
-                  ...editRecipe,
-                  timeOfEmotion: event.target.value,
-                })
-              }
-              max={formatDate(new Date())}
-              className="time-edit"
-            />
-          </div>
-
-          {/* intensity edit */}
-          <div className="form-element">
-            <label>
-              On a scale of 1 to 10, select the intensity of the recipe:{" "}
-            </label>
-            <select
-              value={editRecipe.intensity}
-              onChange={(event) =>
-                setEditRecipe({
-                  ...editRecipe,
-                  intensity: parseInt(event.target.value),
-                })
-              }
-            >
-              <option value="">--</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-            </select>
-          </div>
-
-          {/* physical experience edit */}
-          <div className="form-element">
-            <label>Physical experience of recipe: </label>
-            <textarea
-              value={editRecipe.physical}
-              onChange={(event) =>
-                setEditRecipe({ ...editRecipe, physical: event.target.value })
-              }
-              className="edit-physical"
-            />
-          </div>
-
-          {/* notes edit */}
-          <div className="form-element">
-            <label>Note: </label>
-            <textarea
-              value={editRecipe.comments?.note ?? ""}
-              onChange={(event) =>
-                setEditRecipe({
-                  ...editRecipe,
-                  comments: {
-                    ...editRecipe.comments,
-                    note: event.target.value,
-                  },
-                })
-              }
-              className="edit-note"
-            />
-          </div>
-
-          <div className="buttons">
-            <button type="submit">Update Recipe</button>
-            <button type="button" onClick={() => setIsEditing(false)}>
-              Cancel Update
-            </button>
-          </div>
-        </form>
-      ) : (
-        <h3>Loading...</h3>
+      {/* Notes Section */}
+      {recipe.notes && (
+        <section className="recipe-section">
+          <h2>Notes</h2>
+          <p className="recipe-notes">{recipe.notes}</p>
+        </section>
       )}
-    </>
+
+      {/* Ingredients Section */}
+      <section className="recipe-section">
+        <h2>Ingredients</h2>
+        {recipe.ingredients && recipe.ingredients.length > 0 ? (
+          <ul className="ingredients-list">
+            {recipe.ingredients.map((ingredient) => {
+              const unit = ingredient.volume_unit || ingredient.weight_unit || "";
+              const quantityWithUnit = unit ? `${ingredient.quantity} ${unit}` : `${ingredient.quantity}`;
+              return (
+                <li key={ingredient.id} className="ingredient-item">
+                  {quantityWithUnit} {ingredient.name}
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p className="empty-message">No ingredients added yet.</p>
+        )}
+      </section>
+
+      {/* Steps Section */}
+      <section className="recipe-section">
+        <h2>Steps</h2>
+        {recipe.steps && recipe.steps.length > 0 ? (
+          <ol className="steps-list">
+            {recipe.steps
+              .sort((a, b) => a.step - b.step)
+              .map((step) => (
+                <li key={step.id} className="step-item">
+                  <span className="step-description">{step.description}</span>
+                </li>
+              ))}
+          </ol>
+        ) : (
+          <p className="empty-message">No steps added yet.</p>
+        )}
+      </section>
+
+      {/* Back button */}
+      <div className="back-button-container">
+        <button onClick={() => navigate("/")} className="back-button">
+          Back to Recipes
+        </button>
+      </div>
+    </div>
   );
-}
+};
 
 export default RecipeDetail;
