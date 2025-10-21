@@ -178,6 +178,21 @@ export const getSteps = async (recipeId) => {
   }
 };
 
+export const updateStep = async (recipeId, stepData, stepId) => {
+  try {
+    const isFormData = stepData instanceof FormData;
+    const res = await fetchWithAuth(`${BASE_URL}${recipeId}/steps/${stepId}/`, {
+      method: "PUT",
+      body: isFormData ? stepData : JSON(stepData),
+      headers: isFormData ? {} : { "Content-type": "application/json" },
+    });
+    if (!res.ok) throw new Error("Failed to update step");
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating the step");
+  }
+};
+
 export const addStep = async (recipeId, stepData) => {
   try {
     const res = await fetchWithAuth(`${BASE_URL}${recipeId}/steps/`, {

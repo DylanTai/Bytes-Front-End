@@ -8,14 +8,20 @@ const RecipeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [recipe, setRecipe] = useState(null);
+  const [ingredients, setIngredients] = useState(null);
+  const [steps, setSteps] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const data = await recipeService.getRecipe(id);
-        setRecipe(data);
+        const recipeData = await recipeService.getRecipe(id);
+        const ingredientsData = await recipeService.getIngredients(id);
+        const stepsData = await recipeService.getSteps(id);
+        setRecipe(recipeData);
+        setIngredients(ingredientsData);
+        setSteps(stepsData);
       } catch (error) {
         console.error("Failed to fetch recipe:", error);
         setError("Recipe not found or you don't have permission to view it.");
@@ -28,7 +34,11 @@ const RecipeDetail = () => {
   }, [id]);
 
   const handleDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete "${recipe.title}"? This action cannot be undone.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete "${recipe.title}"? This action cannot be undone.`
+      )
+    ) {
       try {
         await recipeService.deleteRecipe(id);
         alert("Recipe deleted successfully!");
@@ -41,7 +51,11 @@ const RecipeDetail = () => {
   };
 
   if (loading) {
-    return <div className="recipe-detail-page"><p>Loading...</p></div>;
+    return (
+      <div className="recipe-detail-page">
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   if (error || !recipe) {
@@ -86,11 +100,14 @@ const RecipeDetail = () => {
       {/* Ingredients Section */}
       <section className="recipe-section">
         <h2>Ingredients</h2>
-        {recipe.ingredients && recipe.ingredients.length > 0 ? (
+        {ingredients && ingredients.length > 0 ? (
           <ul className="ingredients-list">
-            {recipe.ingredients.map((ingredient) => {
-              const unit = ingredient.volume_unit || ingredient.weight_unit || "";
-              const quantityWithUnit = unit ? `${ingredient.quantity} ${unit}` : `${ingredient.quantity}`;
+            {ingredients.map((ingredient) => {
+              const unit =
+                ingredient.volume_unit || ingredient.weight_unit || "";
+              const quantityWithUnit = unit
+                ? `${ingredient.quantity} ${unit}`
+                : `${ingredient.quantity}`;
               return (
                 <li key={ingredient.id} className="ingredient-item">
                   {quantityWithUnit} {ingredient.name}
@@ -106,9 +123,9 @@ const RecipeDetail = () => {
       {/* Steps Section */}
       <section className="recipe-section">
         <h2>Steps</h2>
-        {recipe.steps && recipe.steps.length > 0 ? (
+        {steps && steps.length > 0 ? (
           <ol className="steps-list">
-            {recipe.steps
+            {steps
               .sort((a, b) => a.step - b.step)
               .map((step) => (
                 <li key={step.id} className="step-item">

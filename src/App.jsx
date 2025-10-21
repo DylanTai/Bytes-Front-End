@@ -10,6 +10,7 @@ import SignIn from "./pages/SignIn/SignIn.jsx";
 import SignUp from "./pages/SignUp/SignUp.jsx";
 import RecipeList from "./pages/RecipeList/RecipeList.jsx";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail.jsx";
+import RecipeEdit from "./pages/RecipeEdit/RecipeEdit.jsx";
 import RecipeForm from "./pages/RecipeForm/RecipeForm.jsx";
 import GroceryList from "./pages/GroceryList/GroceryList.jsx";
 import RecipeWheel from "./pages/RecipeWheel/RecipeWheel.jsx";
@@ -76,6 +77,15 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/recipes/:recipeId/edit",
+    element: (
+      <Protected>
+        <NavBar />
+        <RecipeEdit />
+      </Protected>
+    ),
+  },
+  {
     path: "/recipes/add",
     element: (
       <Protected>
@@ -121,7 +131,7 @@ export default function App() {
   // Check for existing authentication on mount
   useEffect(() => {
     const initAuth = async () => {
-      const access = localStorage.getItem('access');
+      const access = localStorage.getItem("access");
       if (access) {
         try {
           const userData = await userService.getUser();
@@ -134,8 +144,8 @@ export default function App() {
             setUser(userData);
           } catch (refreshError) {
             // Refresh failed, clear storage
-            localStorage.removeItem('access');
-            localStorage.removeItem('refresh');
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
             setUser(null);
           }
         }
