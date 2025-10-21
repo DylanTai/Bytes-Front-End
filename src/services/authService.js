@@ -11,15 +11,16 @@ export const signUp = async (formData) => {
 
     if (!res.ok) {
       const errorData = await res.json();
-      throw new Error(errorData.error || "Sign up failed");
+      // Create error object that includes the response data
+      const error = new Error("Sign up failed");
+      error.response = { data: errorData };
+      throw error;
     }
 
     const data = await res.json();
-
     // Save JWT tokens for future authenticated requests
     localStorage.setItem("access", data.access);
     localStorage.setItem("refresh", data.refresh);
-
     return data.user; // return the user object
   } catch (err) {
     console.error("Error signing up:", err);
@@ -42,10 +43,8 @@ export const signIn = async (formData) => {
     }
 
     const data = await res.json();
-
     localStorage.setItem("access", data.access);
     localStorage.setItem("refresh", data.refresh);
-
     return data.user;
   } catch (err) {
     console.error("Error signing in:", err);
@@ -55,14 +54,12 @@ export const signIn = async (formData) => {
 
 export const getUser = async () => {
   const access = localStorage.getItem("access");
-
   if (!access) {
     throw new Error("No token found");
   }
 
   try {
     const res = await fetch(`${BASE_URL}/profile/`, {
-      // or whatever your user endpoint is
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${access}`,
@@ -112,6 +109,7 @@ export const refreshAccessToken = async () => {
   });
 
   if (!res.ok) throw new Error("Token refresh failed");
+
   const data = await res.json();
   localStorage.setItem("access", data.access);
   return data.access;
