@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 
 import {
-  addRecipe,
   addIngredient,
   addStep,
   getRecipe,
   getIngredients,
   getSteps,
+  updateRecipe,
+  updateIngredient,
+  updateStep,
 } from "../../services/recipeService.js";
 import "./RecipeEdit.css";
 
@@ -114,38 +116,69 @@ const EditRecipe = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("submitted");
     try {
-      // Create new Recipe
-      const newRecipe = await addRecipe(recipeData);
+      // Create new Recipe (recipeId)
+      await updateRecipe(recipeId, recipeData);
 
-      // Create Ingredients for the newly created Recipe
-      const ingredientsPromises = ingredientsData.map((ingredient) =>
-        addIngredient(newRecipe.id, {
+      const updateIngredientsData = ingredientsData.filter((ingredient) => {
+        return ingredient.id;
+      });
+
+      const newIngredientsData = ingredientsData.filter((ingredient) => {
+        return !ingredient.id;
+      });
+
+      const updateStepsData = stepsData.filter((step) => {
+        return step.id;
+      });
+
+      const newStepsData = stepsData.filter((step) => {
+        return !step.id;
+      });
+
+      const ingredientsPromises = newIngredientsData.map((ingredient) =>
+        addIngredient(recipeId, {
           ...ingredient,
-          recipe: newRecipe.id,
+          recipe: recipeId,
         })
       );
 
       await Promise.all(ingredientsPromises);
 
-      const stepsPromises = stepsData.map((step) =>
-        addStep(newRecipe.id, {
+      const stepsPromises = newStepsData.map((step) =>
+        addStep(recipeId, {
           ...step,
-          recipe: newRecipe.id,
+          recipe: recipeId,
         })
       );
 
       await Promise.all(stepsPromises);
-      navigate(`/recipes/${newRecipe.id}`);
+
+      const ingredientsEditPromises = updateIngredientsData.map((ingredient) =>
+        updateIngredient(recipeId, ingredient.id, ingredient)
+      );
+
+      await Promise.all(ingredientsEditPromises);
+
+      const stepsEditPromises = updateStepsData.map((step) =>
+        updateStep(recipeId, step.id, step)
+      );
+
+      await Promise.all(stepsEditPromises);
+
+      navigate(`/recipes/${recipeId}`);
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleRecipeChange = (event) => {
-    const { name, value } = event.target;
-    setRecipeData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = event.target;
+
+    setRecipeData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleIngredientChange = (index, event) => {
@@ -203,6 +236,7 @@ const EditRecipe = () => {
             <input
               id="recipe-favorite"
               type="checkbox"
+              name="favorite"
               checked={recipeData.favorite}
               onChange={handleRecipeChange}
             />

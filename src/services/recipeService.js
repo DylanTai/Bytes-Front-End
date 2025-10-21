@@ -152,6 +152,21 @@ export const updateIngredient = async (
   return await res.json();
 };
 
+export const updateStep = async (recipeId, stepId, stepData) => {
+  try {
+    // const isFormData = stepData instanceof FormData;
+    const res = await fetchWithAuth(`${BASE_URL}${recipeId}/steps/${stepId}/`, {
+      method: "PUT",
+      body: JSON.stringify(stepData),
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!res.ok) throw new Error("Failed to update step");
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating the step");
+  }
+};
+
 export const deleteIngredient = async (recipeId, ingredientId) => {
   const res = await fetchWithAuth(
     `${BASE_URL}${recipeId}/ingredients/${ingredientId}/`,
@@ -175,21 +190,6 @@ export const getSteps = async (recipeId) => {
   } catch (error) {
     console.error("Error fetching steps:", error);
     throw error;
-  }
-};
-
-export const updateStep = async (recipeId, stepData, stepId) => {
-  try {
-    const isFormData = stepData instanceof FormData;
-    const res = await fetchWithAuth(`${BASE_URL}${recipeId}/steps/${stepId}/`, {
-      method: "PUT",
-      body: isFormData ? stepData : JSON(stepData),
-      headers: isFormData ? {} : { "Content-type": "application/json" },
-    });
-    if (!res.ok) throw new Error("Failed to update step");
-    return await res.json();
-  } catch (error) {
-    console.error("Error updating the step");
   }
 };
 
