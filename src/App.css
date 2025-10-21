@@ -1,7 +1,6 @@
-.lexend {
-  font-family: "Lexend", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 350;
+.gugi-regular {
+  font-family: "Gugi", sans-serif;
+  font-weight: 400;
   font-style: normal;
 }
 
@@ -9,7 +8,7 @@
   margin: 0;
   padding: 0;
   color: black;
-  font-family: "Lexend", sans-serif;
+  font-family: "Gugi", sans-serif;
 }
 
 :root {
