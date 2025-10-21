@@ -108,7 +108,6 @@ const RecipeForm = ({ recipes, setRecipes }) => {
           recipe: newRecipe.id,
         })
       );
-
       await Promise.all(ingredientsPromises);
 
       // Create Steps for the newly created Recipe
@@ -118,16 +117,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
           recipe: newRecipe.id,
         })
       );
-
       await Promise.all(stepsPromises);
-
-      // stepsData.map(async (step, index) => {
-      //   step.recipe = await newRecipe.id;
-      //   await addStep(step.recipe, step);
-      // });
-      // map through ingredientsData array and inject recipe id
-      // map through stepsData array and inject recipe id
-
       navigate(`/recipes/${newRecipe.id}`);
     } catch (error) {
       console.error(error);
@@ -196,7 +186,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             <input
               id="recipe-favorite"
               type="checkbox"
-              checked={recipeData.favorite}
+              defaultChecked={recipeData.favorite}
               onChange={handleRecipeChange}
             />
           </div>
