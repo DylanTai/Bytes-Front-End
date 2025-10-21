@@ -26,6 +26,7 @@ import * as userService from "./services/userService.js";
 
 // Styles
 import "./App.css";
+import EditRecipe from "./pages/EditRecipe/EditRecipe.jsx";
 
 // ROUTER CONFIGURATION
 const router = createBrowserRouter([
@@ -75,6 +76,15 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/recipes/:recipeId/edit",
+    element: (
+      <Protected>
+        <NavBar />
+        <EditRecipe />
+      </Protected>
+    ),
+  },
+  {
     path: "/recipes/add",
     element: (
       <Protected>
@@ -111,7 +121,7 @@ export default function App() {
   // Check for existing authentication on mount
   useEffect(() => {
     const initAuth = async () => {
-      const access = localStorage.getItem('access');
+      const access = localStorage.getItem("access");
       if (access) {
         try {
           const userData = await userService.getUser();
@@ -124,8 +134,8 @@ export default function App() {
             setUser(userData);
           } catch (refreshError) {
             // Refresh failed, clear storage
-            localStorage.removeItem('access');
-            localStorage.removeItem('refresh');
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
             setUser(null);
           }
         }
