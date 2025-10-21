@@ -1,10 +1,8 @@
-
-
 * {
   margin: 0;
   padding: 0;
   color: black;
-  font-family: "Handjet", sans-serif;
+  font-family: "Hubot Sans", sans-serif;
 }
 
 :root {
@@ -16,4 +14,8 @@ main {
   align-items: center;
   justify-content: center;
   height: 90vh;
+}
+
+body {
+  margin-top: 80px;
 }

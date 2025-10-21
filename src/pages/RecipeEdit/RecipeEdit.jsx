@@ -1,12 +1,15 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router";
 
 import {
   addRecipe,
   addIngredient,
   addStep,
+  getRecipe,
+  getIngredients,
+  getSteps,
 } from "../../services/recipeService.js";
-import "./RecipeForm.css";
+import "./RecipeEdit.css";
 
 //units
 const VOLUME_UNITS = [
@@ -20,8 +23,9 @@ const WEIGHT_UNITS = [
   { value: "oz", label: "Ounce" },
 ];
 
-const RecipeForm = ({ recipes, setRecipes }) => {
+const EditRecipe = () => {
   const navigate = useNavigate();
+  const { recipeId } = useParams();
 
   // useState's
   const [recipeData, setRecipeData] = useState({
@@ -45,6 +49,20 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       description: "",
     },
   ]);
+
+  useEffect(() => {
+    const getDetails = async () => {
+      const recipeValue = await getRecipe(recipeId);
+      const ingredientsValue = await getIngredients(recipeId);
+      const stepsValue = await getSteps(recipeId);
+
+      setRecipeData(recipeValue);
+      setIngredientsData(ingredientsValue);
+      setStepsData(stepsValue);
+    };
+
+    getDetails();
+  }, []);
 
   // button handlers
   const addExtraIngredient = (e) => {
@@ -111,7 +129,6 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
       await Promise.all(ingredientsPromises);
 
-      // Create Steps for the newly created Recipe
       const stepsPromises = stepsData.map((step) =>
         addStep(newRecipe.id, {
           ...step,
@@ -120,21 +137,12 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       );
 
       await Promise.all(stepsPromises);
-
-      // stepsData.map(async (step, index) => {
-      //   step.recipe = await newRecipe.id;
-      //   await addStep(step.recipe, step);
-      // });
-      // map through ingredientsData array and inject recipe id
-      // map through stepsData array and inject recipe id
-
       navigate(`/recipes/${newRecipe.id}`);
     } catch (error) {
       console.error(error);
     }
   };
 
-  // onChange handlers
   const handleRecipeChange = (event) => {
     const { name, value } = event.target;
     setRecipeData((prev) => ({ ...prev, [name]: value }));
@@ -164,9 +172,8 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       return updated;
     });
   };
-
   const handleCancel = () => {
-    navigate(`/recipes/`);
+    navigate(`/recipes/${recipeId}`);
   };
 
   return (
@@ -200,6 +207,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               onChange={handleRecipeChange}
             />
           </div>
+
           <div className="ingredient-container">
             {ingredientsData.map((ingredient, index) => (
               <div className="ingredient-form" key={index}>
@@ -218,7 +226,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 <input
                   type="number"
                   id={`ingredient-quantity-${index}`}
-                  value={ingredientsData.quantity}
+                  value={ingredient.quantity}
                   onChange={(e) => handleIngredientChange(index, e)}
                   name="quantity"
                 />
@@ -314,7 +322,8 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               Add step
             </button>
           </div>
-          <button type="submit">Add Recipe</button>
+
+          <button type="submit">Update Recipe</button>
           <button type="button" onClick={handleCancel}>
             Cancel
           </button>
@@ -324,4 +333,4 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   );
 };
 
-export default RecipeForm;
+export default EditRecipe;

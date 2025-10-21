@@ -20,17 +20,20 @@ const NavBar = () => {
 
   const authenticatedOptions = (
     <>
-      <Link to="/recipes/add"><button>Add Recipe</button></Link>
-      <Link to="/grocery-list"><button>Grocery List</button></Link>
-      <Link to="/profile"><button>Profile</button></Link>
-      <Link to="/" onClick={handleSignOut}><button>Sign Out</button></Link>
+      <Link to="/" className="nav-link">Home</Link>
+      <Link to="/recipes/add" className="nav-link">Add Recipe</Link>
+      <Link to="/grocery-list" className="nav-link">Grocery List</Link>
+      <Link to="/recipe-wheel" className="nav-link">Recipe Wheel</Link>
+      <Link to="/profile" className="nav-link">Profile</Link>
+      <Link to="/" onClick={handleSignOut} className="nav-link">Sign Out</Link>
     </>
   );
 
   const unauthenticatedOptions = (
     <>
-      <Link to="/sign-up"><button>Sign Up</button></Link>
-      <Link to="/sign-in"><button>Sign In</button></Link>
+      <Link to="/" className="nav-link">Home</Link>
+      <Link to="/sign-up" className="nav-link">Sign Up</Link>
+      <Link to="/sign-in" className="nav-link">Sign In</Link>
     </>
   );
 
@@ -53,7 +56,7 @@ const NavBar = () => {
           size={22}
         />
       </button>
-      <div className="nav-links">
+      <div className={`nav-links ${isOpen ? "open" : ""}`}>
         {user ? authenticatedOptions : unauthenticatedOptions}
       </div>
     </nav>
