@@ -12,6 +12,7 @@ import RecipeList from "./pages/RecipeList/RecipeList.jsx";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail.jsx";
 import RecipeForm from "./pages/RecipeForm/RecipeForm.jsx";
 import GroceryList from "./pages/GroceryList/GroceryList.jsx";
+import Profile from "./pages/Profile/Profile.jsx";
 
 // Protected route wrapper
 import Protected from "./components/Protected/Protected.jsx";
@@ -88,6 +89,15 @@ const router = createBrowserRouter([
       <Protected>
         <NavBar />
         <GroceryList />
+      </Protected>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <Protected>
+        <NavBar />
+        <Profile />
       </Protected>
     ),
   },
