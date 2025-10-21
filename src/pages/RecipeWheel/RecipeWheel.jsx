@@ -63,6 +63,7 @@ const RecipeWheel = () => {
   const handleSpin = () => {
     if (isSpinning || recipes.length === 0) return;
     setSelectedRecipe(null);
+    setHasSpun(true);
     spinVelocityRef.current = 20 + Math.random() * 10; // Random initial velocity
     setIsSpinning(true);
   };
@@ -86,11 +87,13 @@ const RecipeWheel = () => {
 
   return (
     <div className="recipe-wheel-page">
-      <h1 className="wheel-title">Recipe Wheel!</h1>
+      <h1 className="wheel-title">Recipe Wheel</h1>
       
       <div className="wheel-container">
-        {/* Indicator Arrow */}
-        <div className="wheel-indicator">▼</div>
+        {/* Indicator Pointer - Simple black triangle */}
+        <div className="wheel-pointer">
+          ▼
+        </div>
 
         {/* The Wheel */}
         <svg
@@ -151,6 +154,7 @@ const RecipeWheel = () => {
         {hoveredIndex !== null && (
           <div className="recipe-tooltip">
             {recipes[hoveredIndex].title}
+            {recipes[hoveredIndex].favorite && " 🍪"}
           </div>
         )}
       </div>
@@ -161,7 +165,7 @@ const RecipeWheel = () => {
         disabled={isSpinning}
         className="spin-button"
       >
-        {isSpinning ? "SPINNING..." : "SPIN!"}
+        {isSpinning ? "spinning..." : "Spin the WHEEL!"}
       </button>
 
       {/* Selected Recipe */}
