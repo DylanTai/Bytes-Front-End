@@ -46,6 +46,35 @@ textarea {
   background-color: white;;
 }
 
+.tags-container {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.tags-container h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.tag-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.tag-checkbox input[type="checkbox"] {
+  cursor: pointer;
+}
 
 /* for cell phones */
 @media (max-width: 430px) {

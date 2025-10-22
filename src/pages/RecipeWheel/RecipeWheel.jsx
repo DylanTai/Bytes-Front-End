@@ -213,7 +213,7 @@ const RecipeWheel = () => {
         disabled={isSpinning}
         className="spin-button"
       >
-        {isSpinning ? "SPINNING..." : "SPIN!"}
+        {isSpinning ? "Spinning..." : "Spin!"}
       </button>
 
       {/* Selected Recipe */}

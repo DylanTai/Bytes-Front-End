@@ -1,18 +1,113 @@
 const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/recipes/`;
 
-// Helper function for authenticated requests
+// Decode JWT to check expiration
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expirationTime = payload.exp * 1000; // Convert to milliseconds
+    const currentTime = Date.now();
+    
+    // Check if token expires in less than 1 minute
+    return (expirationTime - currentTime) < 60000;
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return true;
+  }
+};
+
+// Refresh the access token
+const refreshAccessToken = async () => {
+  const refresh = localStorage.getItem("refresh");
+  if (!refresh) {
+    throw new Error("No refresh token available");
+  }
+ 
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BACK_END_SERVER_URL}/users/token/refresh/`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh }),
+      }
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem("access", data.access);
+      return data.access;
+    } else {
+      // Refresh token is invalid
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+      window.location.href = "/sign-in";
+      throw new Error("Refresh token invalid");
+    }
+  } catch (error) {
+    console.error("Token refresh failed:", error);
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    window.location.href = "/sign-in";
+    throw error;
+  }
+};
+
+// Helper function for authenticated requests with proactive token refresh
 const fetchWithAuth = async (url, options = {}) => {
-  const access = localStorage.getItem("access");
+  let access = localStorage.getItem("access");
+
+  // Check if token is expired or about to expire
+  if (isTokenExpired(access)) {
+    console.log("Token expired or about to expire, refreshing...");
+    try {
+      access = await refreshAccessToken();
+    } catch (error) {
+      // If refresh fails, redirect happens in refreshAccessToken
+      throw error;
+    }
+  }
+
   const authHeaders = {
     ...options.headers,
   };
+  
   if (access) {
     authHeaders["Authorization"] = `Bearer ${access}`;
   }
-  return await fetch(url, {
+
+  let response = await fetch(url, {
     ...options,
     headers: authHeaders,
   });
+
+  // If still unauthorized after refresh attempt, try one more time
+  if (response.status === 401) {
+    const refresh = localStorage.getItem("refresh");
+    if (refresh) {
+      try {
+        console.log("Received 401, attempting token refresh...");
+        access = await refreshAccessToken();
+        
+        // Retry original request with new token
+        authHeaders["Authorization"] = `Bearer ${access}`;
+        response = await fetch(url, {
+          ...options,
+          headers: authHeaders,
+        });
+      } catch (error) {
+        console.error("Token refresh failed:", error);
+        // Redirect happens in refreshAccessToken
+      }
+    } else {
+      // No refresh token available
+      localStorage.removeItem("access");
+      window.location.href = "/sign-in";
+    }
+  }
+
+  return response;
 };
 
 // Recipe CRUD Operations
