@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import {
@@ -6,22 +6,26 @@ import {
   addIngredient,
   addStep,
 } from "../../services/recipeService.js";
+import {
+  VOLUME_UNITS,
+  WEIGHT_UNITS,
+  AVAILABLE_TAGS,
+  calculateAllUnits,
+} from "../../config/recipeConfig.js";
 import "./RecipeForm.css";
-
-//units
-const VOLUME_UNITS = [
-  { value: "cup", label: "Cup" },
-  { value: "tbsp", label: "Tablespoon" },
-  { value: "tsp", label: "Teaspoon" },
-];
-
-const WEIGHT_UNITS = [
-  { value: "g", label: "Gram" },
-  { value: "oz", label: "Ounce" },
-];
 
 const RecipeForm = ({ recipes, setRecipes }) => {
   const navigate = useNavigate();
+
+  // Check if user is authenticated on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      // Redirect to login if no token
+      alert("Please log in to create a recipe.");
+      navigate("/sign-in");
+    }
+  }, [navigate]);
 
   // useState's
   const [recipeData, setRecipeData] = useState({
@@ -46,6 +50,11 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     },
   ]);
 
+  const [tags, setTags] = useState([]);
+
+  // Track pre-calculated unit values for each ingredient to prevent rounding errors
+  const [calculatedUnits, setCalculatedUnits] = useState([{}]);
+
   // button handlers
   const addExtraIngredient = (e) => {
     setIngredientsData((prev) => {
@@ -59,6 +68,8 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         },
       ];
     });
+    // Add empty calculated units for new ingredient
+    setCalculatedUnits((prev) => [...prev, {}]);
   };
 
   const removeIngredient = (indexToRmove) => {
@@ -69,6 +80,8 @@ const RecipeForm = ({ recipes, setRecipes }) => {
           ...ingredient,
         }))
     );
+    // Remove calculated units for removed ingredient
+    setCalculatedUnits((prev) => prev.filter((_, index) => index !== indexToRmove));
   };
 
   const addExtraStep = (e) => {
@@ -97,9 +110,13 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log("submitted");
+
     try {
-      // Create new Recipe
-      const newRecipe = await addRecipe(recipeData);
+      // Create new Recipe with tags
+      const newRecipe = await addRecipe({
+        ...recipeData,
+        tags: tags,
+      });
 
       // Create Ingredients for the newly created Recipe
       const ingredientsPromises = ingredientsData.map((ingredient) =>
@@ -120,26 +137,127 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       await Promise.all(stepsPromises);
       navigate(`/recipes/${newRecipe.id}`);
     } catch (error) {
-      console.error(error);
+      console.error("Error in handleSubmit:", error);
+      
+      // Handle authentication errors
+      if (error.message === "Failed to create recipe") {
+        alert("Authentication error. Your session may have expired. Please log in again.");
+        navigate("/sign-in");
+      } else {
+        alert(`An error occurred: ${error.message}`);
+      }
     }
   };
 
   // onChange handlers
   const handleRecipeChange = (event) => {
-    const { name, value } = event.target;
-    setRecipeData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = event.target;
+    setRecipeData((prev) => ({ 
+      ...prev, 
+      [name]: type === "checkbox" ? checked : value 
+    }));
   };
 
   const handleIngredientChange = (index, event) => {
     const { name, value } = event.target;
     setIngredientsData((prev) => {
       const updated = [...prev];
-      updated[index][name] = value;
-      if (name === "volume_unit" && value) {
-        updated[index].weight_unit = "";
+      const currentIngredient = updated[index];
+      
+      // Handle quantity change
+      if (name === "quantity") {
+        updated[index].quantity = value;
+        
+        // If a unit is already selected, recalculate all possible values
+        if (currentIngredient.volume_unit) {
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = calculateAllUnits(value, currentIngredient.volume_unit, true);
+            return updatedCalc;
+          });
+        } else if (currentIngredient.weight_unit) {
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = calculateAllUnits(value, currentIngredient.weight_unit, false);
+            return updatedCalc;
+          });
+        }
       }
-      if (name === "weight_unit" && value) {
-        updated[index].volume_unit = "";
+      // Handle volume unit change
+      else if (name === "volume_unit") {
+        const oldUnit = currentIngredient.volume_unit;
+        const newUnit = value;
+        
+        // If clearing the unit (setting to ""), clear quantity and calculated values
+        if (!newUnit) {
+          updated[index].quantity = 0;
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = {};
+            return updatedCalc;
+          });
+        }
+        // If selecting a unit for the first time (from ""), calculate all units
+        else if (!oldUnit && newUnit) {
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = calculateAllUnits(currentIngredient.quantity, newUnit, true);
+            return updatedCalc;
+          });
+        }
+        // If switching between units, look up the pre-calculated value
+        else if (oldUnit && newUnit && oldUnit !== newUnit) {
+          const calculatedValue = calculatedUnits[index]?.[newUnit];
+          if (calculatedValue !== undefined) {
+            updated[index].quantity = calculatedValue;
+          }
+        }
+        
+        updated[index].volume_unit = newUnit;
+        // Clear weight unit when volume is selected
+        if (newUnit) {
+          updated[index].weight_unit = "";
+        }
+      }
+      // Handle weight unit change
+      else if (name === "weight_unit") {
+        const oldUnit = currentIngredient.weight_unit;
+        const newUnit = value;
+        
+        // If clearing the unit (setting to ""), clear quantity and calculated values
+        if (!newUnit) {
+          updated[index].quantity = 0;
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = {};
+            return updatedCalc;
+          });
+        }
+        // If selecting a unit for the first time (from ""), calculate all units
+        else if (!oldUnit && newUnit) {
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = calculateAllUnits(currentIngredient.quantity, newUnit, false);
+            return updatedCalc;
+          });
+        }
+        // If switching between units, look up the pre-calculated value
+        else if (oldUnit && newUnit && oldUnit !== newUnit) {
+          const calculatedValue = calculatedUnits[index]?.[newUnit];
+          if (calculatedValue !== undefined) {
+            updated[index].quantity = calculatedValue;
+          }
+        }
+        
+        updated[index].weight_unit = newUnit;
+        // Clear volume unit when weight is selected
+        if (newUnit) {
+          updated[index].volume_unit = "";
+        }
+      }
+      // Handle other field changes (name)
+      else {
+        updated[index][name] = value;
       }
 
       return updated;
@@ -152,6 +270,18 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       const updated = [...prev];
       updated[index][name] = value;
       return updated;
+    });
+  };
+
+  const handleTagChange = (tagValue) => {
+    setTags((prev) => {
+      if (prev.includes(tagValue)) {
+        // Remove tag if already selected
+        return prev.filter((tag) => tag !== tagValue);
+      } else {
+        // Add tag if not selected
+        return [...prev, tagValue];
+      }
     });
   };
 
@@ -187,10 +317,28 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             <input
               id="recipe-favorite"
               type="checkbox"
-              defaultChecked={recipeData.favorite}
+              checked={recipeData.favorite}
               onChange={handleRecipeChange}
+              name="favorite"
             />
           </div>
+          
+          <div className="tags-container">
+            <h3>Tags</h3>
+            <div className="tags-grid">
+              {AVAILABLE_TAGS.map((tag) => (
+                <label key={tag.value} className="tag-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={tags.includes(tag.value)}
+                    onChange={() => handleTagChange(tag.value)}
+                  />
+                  {tag.label}
+                </label>
+              ))}
+            </div>
+          </div>
+
           <div className="ingredient-container">
             {ingredientsData.map((ingredient, index) => (
               <div className="ingredient-form" key={index}>
@@ -208,8 +356,9 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                 <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
                 <input
                   type="number"
+                  step="0.01"
                   id={`ingredient-quantity-${index}`}
-                  value={ingredientsData.quantity}
+                  value={ingredient.quantity}
                   onChange={(e) => handleIngredientChange(index, e)}
                   name="quantity"
                   className="quantity-input"

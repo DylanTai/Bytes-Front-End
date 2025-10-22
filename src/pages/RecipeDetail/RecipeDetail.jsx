@@ -1,8 +1,8 @@
+import "./RecipeDetail.css";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router";
 import * as recipeService from "../../services/recipeService.js";
-import "./RecipeDetail.css";
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -52,7 +52,7 @@ const RecipeDetail = () => {
 
   if (loading) {
     return (
-      <div className="recipe-detail-page">
+      <div className="recipe-detail-loading">
         <p>Loading...</p>
       </div>
     );
@@ -60,13 +60,11 @@ const RecipeDetail = () => {
 
   if (error || !recipe) {
     return (
-      <div className="recipe-detail-page">
-        <div className="error-message">
-          <h2>{error || "Recipe not found"}</h2>
-          <button onClick={() => navigate("/")} className="back-button">
-            Back to Recipes
-          </button>
-        </div>
+      <div className="recipe-detail-error">
+        <h2>{error || "Recipe not found"}</h2>
+        <button onClick={() => navigate("/")} className="back-button">
+          Back to Recipes
+        </button>
       </div>
     );
   }
@@ -89,28 +87,48 @@ const RecipeDetail = () => {
         </div>
       </div>
 
+      {/* Tags Section */}
+      {recipe.tags && recipe.tags.length > 0 && (
+        <div className="recipe-tags">
+          <h2>Tags</h2>
+          <div className="tags-list">
+            {recipe.tags.map((tag, index) => {
+              const tagLabel = tag.replace(/_/g, ' ');
+              const formattedLabel = tagLabel.charAt(0).toUpperCase() + tagLabel.slice(1);
+              
+              return (
+                <div key={index} className="tag-item">
+                  {formattedLabel}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Notes Section */}
       {recipe.notes && (
-        <section className="recipe-section">
+        <div className="recipe-notes">
           <h2>Notes</h2>
-          <p className="recipe-notes">{recipe.notes}</p>
-        </section>
+          <p>{recipe.notes}</p>
+        </div>
       )}
 
       {/* Ingredients Section */}
-      <section className="recipe-section">
+      <div className="recipe-ingredients">
         <h2>Ingredients</h2>
         {ingredients && ingredients.length > 0 ? (
-          <ul className="ingredients-list">
+          <ul>
             {ingredients.map((ingredient) => {
-              const unit =
-                ingredient.volume_unit || ingredient.weight_unit || "";
-              const quantityWithUnit = unit
-                ? `${ingredient.quantity} ${unit}`
-                : `${ingredient.quantity}`;
+              const unit = ingredient.volume_unit || ingredient.weight_unit;
+              
               return (
                 <li key={ingredient.id} className="ingredient-item">
-                  {quantityWithUnit} {ingredient.name}
+                  <span className="ingredient-quantity">{ingredient.quantity}</span>
+                  {' '}
+                  {unit && <span className="ingredient-unit">{unit}</span>}
+                  {' '}
+                  <span className="ingredient-name">{ingredient.name}</span>
                 </li>
               );
             })}
@@ -118,13 +136,13 @@ const RecipeDetail = () => {
         ) : (
           <p className="empty-message">No ingredients added yet.</p>
         )}
-      </section>
+      </div>
 
       {/* Steps Section */}
-      <section className="recipe-section">
+      <div className="recipe-steps">
         <h2>Steps</h2>
         {steps && steps.length > 0 ? (
-          <ol className="steps-list">
+          <ol>
             {steps
               .sort((a, b) => a.step - b.step)
               .map((step) => (
@@ -136,10 +154,10 @@ const RecipeDetail = () => {
         ) : (
           <p className="empty-message">No steps added yet.</p>
         )}
-      </section>
+      </div>
 
       {/* Back button */}
-      <div className="back-button-container">
+      <div className="recipe-footer">
         <button onClick={() => navigate("/")} className="back-button">
           Back to Recipes
         </button>
