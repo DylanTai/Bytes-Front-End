@@ -6,6 +6,7 @@ import "./RecipeWheel.css";
 const RecipeWheel = () => {
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState([]);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [hasSpun, setHasSpun] = useState(false);
@@ -22,15 +23,20 @@ const RecipeWheel = () => {
     fetchRecipes();
   }, []);
 
+  // Filter recipes based on favorites checkbox
+  const displayedRecipes = showFavoritesOnly 
+    ? recipes.filter(recipe => recipe.favorite)
+    : recipes;
+
   // Slow idle rotation (only if hasn't spun yet)
   useEffect(() => {
-    if (!isSpinning && !hasSpun && recipes.length > 0) {
+    if (!isSpinning && !hasSpun && displayedRecipes.length > 0) {
       const idleRotate = setInterval(() => {
         setRotation((prev) => (prev + 0.1) % 360);
       }, 50);
       return () => clearInterval(idleRotate);
     }
-  }, [isSpinning, hasSpun, recipes.length]);
+  }, [isSpinning, hasSpun, displayedRecipes.length]);
 
   // Spin animation with deceleration
   useEffect(() => {
@@ -45,9 +51,9 @@ const RecipeWheel = () => {
           setIsSpinning(false);
           // Calculate which recipe was selected
           const normalizedRotation = (360 - (rotation % 360)) % 360;
-          const segmentAngle = 360 / recipes.length;
+          const segmentAngle = 360 / displayedRecipes.length;
           const selectedIndex = Math.floor(normalizedRotation / segmentAngle);
-          setSelectedRecipe(recipes[selectedIndex]);
+          setSelectedRecipe(displayedRecipes[selectedIndex]);
         }
       };
       animationRef.current = requestAnimationFrame(animate);
@@ -58,10 +64,10 @@ const RecipeWheel = () => {
         }
       };
     }
-  }, [isSpinning, rotation, recipes]);
+  }, [isSpinning, rotation, displayedRecipes]);
 
   const handleSpin = () => {
-    if (isSpinning || recipes.length === 0) return;
+    if (isSpinning || displayedRecipes.length === 0) return;
     setSelectedRecipe(null);
     setHasSpun(true);
     spinVelocityRef.current = 20 + Math.random() * 10; // Random initial velocity
@@ -74,26 +80,52 @@ const RecipeWheel = () => {
     }
   };
 
-  if (recipes.length === 0) {
+  if (displayedRecipes.length === 0) {
     return (
       <div className="recipe-wheel-page">
-        <h1>Recipe Wheel</h1>
-        <p className="no-recipes">You need at least one recipe to spin the wheel!</p>
+        <h1 className="wheel-title">Recipe Wheel!</h1>
+        
+        <div className="favorites-filter">
+          <label>
+            <input
+              type="checkbox"
+              checked={showFavoritesOnly}
+              onChange={(e) => setShowFavoritesOnly(e.target.checked)}
+            />
+            <span>Favorites Only 🍪</span>
+          </label>
+        </div>
+        
+        <p className="no-recipes">
+          {showFavoritesOnly 
+            ? "You have no favorite recipes! Mark some recipes as favorites to use this filter."
+            : "You need at least one recipe to spin the wheel!"}
+        </p>
       </div>
     );
   }
 
-  const segmentAngle = 360 / recipes.length;
+  const segmentAngle = 360 / displayedRecipes.length;
 
   return (
     <div className="recipe-wheel-page">
       <h1 className="wheel-title">Recipe Wheel</h1>
+
+      {/* Favorites Filter */}
+      <div className="favorites-filter">
+        <label>
+          <input
+            type="checkbox"
+            checked={showFavoritesOnly}
+            onChange={(e) => setShowFavoritesOnly(e.target.checked)}
+          />
+          <span>Favorites Only 🍪</span>
+        </label>
+      </div>
       
       <div className="wheel-container">
-        {/* Indicator Pointer - Simple black triangle */}
-        <div className="wheel-pointer">
-          ▼
-        </div>
+        {/* Indicator Pointer */}
+        <div className="wheel-pointer">▼</div>
 
         {/* The Wheel */}
         <svg
@@ -101,50 +133,66 @@ const RecipeWheel = () => {
           viewBox="0 0 400 400"
           style={{ transform: `rotate(${rotation}deg)` }}
         >
-          {recipes.map((recipe, index) => {
-            const startAngle = index * segmentAngle;
-            const endAngle = (index + 1) * segmentAngle;
-            const startRad = (startAngle - 90) * (Math.PI / 180);
-            const endRad = (endAngle - 90) * (Math.PI / 180);
+          {displayedRecipes.length === 1 ? (
+            // Draw a full circle when there's only one recipe
+            <circle
+              cx="200"
+              cy="200"
+              r="180"
+              fill="#FF6B6B"
+              stroke="white"
+              strokeWidth="2"
+              className="wheel-segment"
+              onMouseEnter={() => setHoveredIndex(0)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              style={{ cursor: "pointer" }}
+            />
+          ) : (
+            displayedRecipes.map((recipe, index) => {
+              const startAngle = index * segmentAngle;
+              const endAngle = (index + 1) * segmentAngle;
+              const startRad = (startAngle - 90) * (Math.PI / 180);
+              const endRad = (endAngle - 90) * (Math.PI / 180);
 
-            const x1 = 200 + 180 * Math.cos(startRad);
-            const y1 = 200 + 180 * Math.sin(startRad);
-            const x2 = 200 + 180 * Math.cos(endRad);
-            const y2 = 200 + 180 * Math.sin(endRad);
+              const x1 = 200 + 180 * Math.cos(startRad);
+              const y1 = 200 + 180 * Math.sin(startRad);
+              const x2 = 200 + 180 * Math.cos(endRad);
+              const y2 = 200 + 180 * Math.sin(endRad);
 
-            const largeArcFlag = segmentAngle > 180 ? 1 : 0;
+              const largeArcFlag = segmentAngle > 180 ? 1 : 0;
 
-            const pathData = [
-              `M 200,200`,
-              `L ${x1},${y1}`,
-              `A 180,180 0 ${largeArcFlag},1 ${x2},${y2}`,
-              `Z`,
-            ].join(" ");
+              const pathData = [
+                `M 200,200`,
+                `L ${x1},${y1}`,
+                `A 180,180 0 ${largeArcFlag},1 ${x2},${y2}`,
+                `Z`,
+              ].join(" ");
 
-            const colors = [
-              "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A",
-              "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E2",
-              "#F8B739", "#52B788", "#E07A5F", "#81B29A"
-            ];
+              const colors = [
+                "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A",
+                "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E2",
+                "#F8B739", "#52B788", "#E07A5F", "#81B29A"
+              ];
 
-            return (
-              <g key={recipe.id}>
-                <path
-                  d={pathData}
-                  fill={colors[index % colors.length]}
-                  stroke="white"
-                  strokeWidth="2"
-                  className="wheel-segment"
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  style={{
-                    opacity: hoveredIndex === index ? 0.8 : 1,
-                    cursor: "pointer",
-                  }}
-                />
-              </g>
-            );
-          })}
+              return (
+                <g key={recipe.id}>
+                  <path
+                    d={pathData}
+                    fill={colors[index % colors.length]}
+                    stroke="white"
+                    strokeWidth="2"
+                    className="wheel-segment"
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                    style={{
+                      opacity: hoveredIndex === index ? 0.8 : 1,
+                      cursor: "pointer",
+                    }}
+                  />
+                </g>
+              );
+            })
+          )}
 
           {/* Center circle */}
           <circle cx="200" cy="200" r="30" fill="white" stroke="#333" strokeWidth="3" />
@@ -153,8 +201,8 @@ const RecipeWheel = () => {
         {/* Hover tooltip */}
         {hoveredIndex !== null && (
           <div className="recipe-tooltip">
-            {recipes[hoveredIndex].title}
-            {recipes[hoveredIndex].favorite && " 🍪"}
+            {displayedRecipes[hoveredIndex].title}
+            {displayedRecipes[hoveredIndex].favorite && " 🍪"}
           </div>
         )}
       </div>
@@ -165,7 +213,7 @@ const RecipeWheel = () => {
         disabled={isSpinning}
         className="spin-button"
       >
-        {isSpinning ? "spinning..." : "Spin the WHEEL!"}
+        {isSpinning ? "SPINNING..." : "SPIN!"}
       </button>
 
       {/* Selected Recipe */}

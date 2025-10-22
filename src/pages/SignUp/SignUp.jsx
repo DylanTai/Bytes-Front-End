@@ -168,11 +168,11 @@ const SignUpForm = () => {
             <p className="field-error">{errors.password2.join(", ")}</p>
           )}
         </div>
-        <div className="sign-up-buttons">
-          <button type="submit">
+        <div className="sign-up-buttons-container">
+          <button type="submit" className="sign-up-btns">
             Sign Up
           </button>
-          <button type="button" onClick={() => navigate("/")}>
+          <button type="button" onClick={() => navigate("/")} className="sign-up-btns">
             Cancel
           </button>
         </div>

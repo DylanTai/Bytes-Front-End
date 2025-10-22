@@ -1,3 +1,12 @@
+.recipe-form-page {
+  background-color: #ffe0bd45;
+  border-radius: 80px;
+  min-height: calc(100vh - 75px);
+  padding-bottom: 40px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
 .recipeform-title {
   display: flex;
   justify-content: center;
@@ -6,7 +15,8 @@
   margin-top: 50px;
   margin-bottom: 20px;
   font-family: "Handjet", sans-serif;
-  font-size: 60px;
+  font-size: 50px;
+  padding-top: 60px;
 }
 
 .recipe-form {
@@ -19,10 +29,13 @@
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  flex-direction: column;
 }
 
 label {
   padding-right: 15px;
+  padding-left: 15px;
+  font-size: 18px;
 }
 
 select {
@@ -30,31 +43,79 @@ select {
   background-color: white;
 }
 
-textarea {
-  width: 264px;
-  height: 47px;
-  background-color: white;
+.quantity-input,
+.weight-input,
+.volume-input {
+  width: 100px;
 }
 
-.note-textarea {
+.ingredient-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.ingredient-form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.recipe-notes {
   width: 442px;
   height: 47px;
   background-color: white;
 }
 
-.time-input {
-  background-color: white;;
+.recipe-notes-input {
+  width: 500px;
 }
 
+.step-number-input {
+  width: 50px;
+}
+
+.step-direction-input {
+  width: 550px;
+}
+
+.form-btn {
+  color: #82200c;
+  text-decoration: none;
+  padding: 10px;
+  font-weight: 400;
+  text-align: center;
+  background: none;
+  border: none;
+      width: 150px;
+    font-size: 18px;
+}
+
+.form-btn:hover {
+  color: #f9ae2c;
+  cursor: pointer;
+}
+
+.form-btn-container {
+  margin-top: 35px;
+}
 
 /* for cell phones */
 @media (max-width: 430px) {
-
   .note-textarea {
     width: 294px;
   }
 
-  .physical-label, .intensity-label {
+  .physical-label,
+  .intensity-label {
     text-align: center;
   }
 

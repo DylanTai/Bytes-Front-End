@@ -1,30 +1,41 @@
+.sign-in-page {
+  background-color: #ffe0bd45;
+  border-radius: 80px;
+  min-height: calc(100vh - 75px);
+  padding-bottom: 40px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
 .sign-in-title {
   padding: 25px;
   margin-bottom: 20px;
   font-size: 45px;
 }
 
-.sign-in-buttons {
+.sign-in-buttons-container {
   display: flex;
   justify-content: space-around;
   margin-top: 30px;
 }
 
-form button {
-  border: #82200c solid 3px;
-  border-radius: 8px;
-  padding: 7px;
-  background: #B94700;
-  color: white;
+.sign-in-btns {
+  color: #82200c;
+  text-decoration: none;
+  padding: 10px;
+  font-weight: 400;
   width: 100px;
-  font-size: 18px;
+  text-align: center;
+  background: none;
+  border: none;
+  font-size: 20px;
 }
 
-form button:hover {
-  background-color: #82200c;
-  color:blanchedalmond;
+.sign-in-btns:hover {
+  color: #f9ae2c;
   cursor: pointer;
 }
+
 
 label {
   font-size: 20px;
