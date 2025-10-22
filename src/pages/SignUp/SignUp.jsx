@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { signUp } from "../../services/authService.js";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import "./SignUp.css";
+import "../../utils/formError/formErrors.css";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
@@ -120,11 +121,10 @@ const SignUpForm = () => {
             value={username}
             name="username"
             onChange={handleChange}
-            className={`username-input ${errors.username ? 'input-error' : ''}`}
+            className={`username-input ${errors.username ? "input-error" : ""}`}
+            placeholder={errors.username ? errors.username[0] : ""}
+            aria-invalid={errors.username ? "true" : "false"}
           />
-          {errors.username && (
-            <p className="field-error">{errors.username.join(", ")}</p>
-          )}
         </div>
         <div className="signup-section">
           <label htmlFor="email">Email:</label>
@@ -134,11 +134,10 @@ const SignUpForm = () => {
             value={email}
             name="email"
             onChange={handleChange}
-            className={`email-input ${errors.email ? 'input-error' : ''}`}
+            className={`email-input ${errors.email ? "input-error" : ""}`}
+            placeholder={errors.email ? errors.email[0] : ""}
+            aria-invalid={errors.email ? "true" : "false"}
           />
-          {errors.email && (
-            <p className="field-error">{errors.email.join(", ")}</p>
-          )}
         </div>
         <div className="signup-section">
           <label htmlFor="password">Password:</label>
@@ -148,11 +147,10 @@ const SignUpForm = () => {
             value={password}
             name="password"
             onChange={handleChange}
-            className={`password-input ${errors.password ? 'input-error' : ''}`}
+            className={`password-input ${errors.password ? "input-error" : ""}`}
+            placeholder={errors.password ? errors.password[0] : ""}
+            aria-invalid={errors.password ? "true" : "false"}
           />
-          {errors.password && (
-            <p className="field-error">{errors.password.join(", ")}</p>
-          )}
         </div>
         <div className="signup-section">
           <label htmlFor="password2">Confirm Password:</label>
@@ -162,11 +160,10 @@ const SignUpForm = () => {
             value={password2}
             name="password2"
             onChange={handleChange}
-            className={`confirm-input ${errors.password2 ? 'input-error' : ''}`}
+            className={`confirm-input ${errors.password2 ? "input-error" : ""}`}
+            placeholder={errors.password2 ? errors.password2[0] : ""}
+            aria-invalid={errors.password2 ? "true" : "false"}
           />
-          {errors.password2 && (
-            <p className="field-error">{errors.password2.join(", ")}</p>
-          )}
         </div>
         <div className="sign-up-buttons">
           <button type="submit">

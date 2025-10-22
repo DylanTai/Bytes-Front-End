@@ -12,8 +12,19 @@ import {
   WEIGHT_UNITS,
   AVAILABLE_TAGS,
   calculateAllUnits,
-} from "../../config/recipeConfig.js";
+} from "../../utils/recipeConfig/recipeConfig.js";
 import "./RecipeForm.css";
+import "../../utils/formError/formErrors.css";
+import {
+  createRecipeErrorState,
+  cloneRecipeErrorState,
+  addFieldError,
+  addGeneralError,
+  addIngredientError,
+  addStepError,
+  applyDetailsToRecipeErrors,
+  hasRecipeErrors,
+} from "../../utils/formError/formErrors.js";
 
 const RecipeForm = ({ recipes, setRecipes }) => {
   const navigate = useNavigate();
@@ -53,234 +64,187 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   const [tags, setTags] = useState([]);
 
-  const [formErrors, setFormErrors] = useState([]);
+  const [errors, setErrors] = useState(() =>
+    createRecipeErrorState(ingredientsData.length, stepsData.length)
+  );
 
   // Track pre-calculated unit values for each ingredient to prevent rounding errors
   const [calculatedUnits, setCalculatedUnits] = useState([{}]);
 
-  const formatValidationErrors = (details) => {
-    if (!details || typeof details !== "object") {
-      return ["Unable to create recipe. Please review your entries and try again."];
-    }
+  const resetErrorsStructure = (ingredientCount, stepCount) =>
+    createRecipeErrorState(ingredientCount, stepCount);
 
-    const messages = [];
-
-    const formatFieldLabel = (field) => {
-      if (!field || field === "non_field_errors") {
-        return "General";
-      }
-
-      return field
-        .replace(/\.\d+/g, "")
-        .replace(/\./g, " ")
-        .replace(/_/g, " ")
-        .trim()
-        .split(" ")
-        .filter(Boolean)
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-    };
-
-    const collectMessages = (value, keyPath = "") => {
-      if (Array.isArray(value)) {
-        value.forEach((item, index) => {
-          if (typeof item === "string") {
-            const label = formatFieldLabel(keyPath);
-            messages.push(`${label}: ${item}`);
-          } else if (item && typeof item === "object") {
-            const nextKey = keyPath ? `${keyPath}.${index}` : `${index}`;
-            collectMessages(item, nextKey);
-          }
-        });
-      } else if (value && typeof value === "object") {
-        Object.entries(value).forEach(([childKey, childValue]) => {
-          const nextKey = keyPath ? `${keyPath}.${childKey}` : childKey;
-          collectMessages(childValue, nextKey);
-        });
-      } else if (typeof value === "string") {
-        const label = formatFieldLabel(keyPath);
-        messages.push(`${label}: ${value}`);
-      }
-    };
-
-    collectMessages(details);
-
-    if (!messages.length) {
-      messages.push("Unable to create recipe. Please review your entries and try again.");
-    }
-
-    return messages;
-  };
-
-  const getIngredientLabel = (index, name) => {
-    const position = Number.isInteger(index) ? index + 1 : undefined;
-    const base = `Ingredient${position ? ` ${position}` : ""}`;
-    const trimmedName = name?.trim();
-    return trimmedName ? `${base} (${trimmedName})` : base;
-  };
-
-  const getStepLabel = (index, stepNumber) => {
-    const number = stepNumber ?? (Number.isInteger(index) ? index + 1 : undefined);
-    return `Step${number ? ` ${number}` : ""}`;
-  };
-
-  const mergeErrorDetails = (target = {}, source = {}) => {
-    const result = { ...(target || {}) };
-    if (!source || typeof source !== "object") {
-      return result;
-    }
-
-    Object.entries(source).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        result[key] = Array.isArray(result[key])
-          ? [...result[key], ...value]
-          : [...value];
-      } else if (value && typeof value === "object") {
-        result[key] = mergeErrorDetails(result[key] || {}, value);
-      } else if (value !== undefined && value !== null) {
-        result[key] = value;
-      }
+  const clearGeneralErrors = () => {
+    setErrors((prev) => {
+      if (!prev.general?.length) return prev;
+      const next = cloneRecipeErrorState(prev);
+      next.general = [];
+      return next;
     });
-
-    return result;
   };
 
-  const applyContextToDetails = (details, context) => {
-    if (!context) {
-      return details;
-    }
+  const clearFieldError = (field) => {
+    setErrors((prev) => {
+      if (!prev.fields?.[field]?.length) return prev;
+      const next = cloneRecipeErrorState(prev);
+      delete next.fields[field];
+      return next;
+    });
+  };
 
-    if (!details) {
-      return details;
-    }
-
-    if (Array.isArray(details) || typeof details !== "object") {
-      const normalized = Array.isArray(details) ? details : [String(details)];
-
-      if (context.type === "ingredient") {
-        return { [getIngredientLabel(context.index, context.name)]: normalized };
+  const clearIngredientError = (index, field) => {
+    setErrors((prev) => {
+      const entry = prev.ingredients?.[index];
+      if (!entry) return prev;
+      if (field) {
+        if (!entry[field]?.length) return prev;
+      } else if (!Object.keys(entry).length) {
+        return prev;
       }
-
-      if (context.type === "step") {
-        return { [getStepLabel(context.index, context.stepNumber)]: normalized };
+      const next = cloneRecipeErrorState(prev);
+      if (field) {
+        delete next.ingredients[index][field];
+      } else {
+        next.ingredients[index] = {};
       }
+      return next;
+    });
+  };
 
-      return { General: normalized };
-    }
-
-    if (context.type === "ingredient") {
-      return { [getIngredientLabel(context.index, context.name)]: details };
-    }
-
-    if (context.type === "step") {
-      return { [getStepLabel(context.index, context.stepNumber)]: details };
-    }
-
-    return details;
+  const clearStepError = (index, field) => {
+    setErrors((prev) => {
+      const entry = prev.steps?.[index];
+      if (!entry) return prev;
+      if (field) {
+        if (!entry[field]?.length) return prev;
+      } else if (!Object.keys(entry).length) {
+        return prev;
+      }
+      const next = cloneRecipeErrorState(prev);
+      if (field) {
+        delete next.steps[index][field];
+      } else {
+        next.steps[index] = {};
+      }
+      return next;
+    });
   };
 
   const buildClientValidationErrors = () => {
-    const details = {};
+    const validationErrors = createRecipeErrorState(
+      ingredientsData.length,
+      stepsData.length
+    );
 
     const title = recipeData.title?.trim();
     if (!title) {
-      details.title = ["Title is required."];
+      addFieldError(validationErrors, "title", "Title is required.");
     }
 
     if (recipeData.notes && recipeData.notes.length > 250) {
-      details.notes = ["Notes must be 250 characters or fewer."];
+      addFieldError(
+        validationErrors,
+        "notes",
+        "Notes must be 250 characters or fewer."
+      );
     }
 
     ingredientsData.forEach((ingredient, index) => {
-      const messages = [];
-      const trimmedName = ingredient.name?.trim();
-
-      if (!trimmedName) {
-        messages.push("Ingredient name is required.");
-      }
-
-      if (messages.length) {
-        details[getIngredientLabel(index, ingredient.name)] = messages;
+      if (!ingredient.name?.trim()) {
+        addIngredientError(validationErrors, index, "name", "Ingredient name is required.");
       }
     });
 
     stepsData.forEach((step, index) => {
-      const messages = [];
-      const trimmedDescription = step.description?.trim();
-
-      if (!trimmedDescription) {
-        messages.push("Step description is required.");
-      }
-
-      if (messages.length) {
-        details[getStepLabel(index, step.step)] = messages;
+      if (!step.description?.trim()) {
+        addStepError(
+          validationErrors,
+          index,
+          "description",
+          "Step description is required."
+        );
       }
     });
 
-    return details;
+    return validationErrors;
   };
 
   // button handlers
-  const addExtraIngredient = (e) => {
-    setIngredientsData((prev) => {
-      return [
-        ...prev,
-        {
-          name: "",
-          quantity: 0,
-          volume_unit: "",
-          weight_unit: "",
-        },
-      ];
-    });
-    // Add empty calculated units for new ingredient
+  const addExtraIngredient = () => {
+    setIngredientsData((prev) => [
+      ...prev,
+      {
+        name: "",
+        quantity: 0,
+        volume_unit: "",
+        weight_unit: "",
+      },
+    ]);
     setCalculatedUnits((prev) => [...prev, {}]);
+    setErrors((prev) => {
+      const next = cloneRecipeErrorState(prev);
+      next.ingredients.push({});
+      return next;
+    });
   };
 
-  const removeIngredient = (indexToRmove) => {
+  const removeIngredient = (indexToRemove) => {
     setIngredientsData((prev) =>
       prev
-        .filter((_, index) => index !== indexToRmove)
+        .filter((_, index) => index !== indexToRemove)
         .map((ingredient) => ({
           ...ingredient,
         }))
     );
-    // Remove calculated units for removed ingredient
-    setCalculatedUnits((prev) => prev.filter((_, index) => index !== indexToRmove));
-  };
-
-  const addExtraStep = (e) => {
-    setStepsData((prev) => {
-      return [
-        ...prev,
-        {
-          step: prev.length + 1,
-          description: "",
-        },
-      ];
+    setCalculatedUnits((prev) => prev.filter((_, index) => index !== indexToRemove));
+    setErrors((prev) => {
+      const next = cloneRecipeErrorState(prev);
+      next.ingredients.splice(indexToRemove, 1);
+      return next;
     });
   };
 
-  const removeStep = (indexToRmove) => {
+  const addExtraStep = () => {
+    setStepsData((prev) => [
+      ...prev,
+      {
+        step: prev.length + 1,
+        description: "",
+      },
+    ]);
+    setErrors((prev) => {
+      const next = cloneRecipeErrorState(prev);
+      next.steps.push({});
+      return next;
+    });
+  };
+
+  const removeStep = (indexToRemove) => {
     setStepsData((prev) =>
       prev
-        .filter((_, index) => index !== indexToRmove)
+        .filter((_, index) => index !== indexToRemove)
         .map((step, newIndex) => ({
           ...step,
           step: newIndex + 1,
         }))
     );
+    setErrors((prev) => {
+      const next = cloneRecipeErrorState(prev);
+      next.steps.splice(indexToRemove, 1);
+      return next;
+    });
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setFormErrors([]);
 
-    const clientDetails = buildClientValidationErrors();
-    if (Object.keys(clientDetails).length > 0) {
-      setFormErrors(formatValidationErrors(clientDetails));
+    const validationErrors = buildClientValidationErrors();
+    if (hasRecipeErrors(validationErrors)) {
+      setErrors(validationErrors);
       return;
     }
+
+    setErrors(resetErrorsStructure(ingredientsData.length, stepsData.length));
 
     try {
       const payload = {
@@ -348,37 +312,38 @@ const RecipeForm = ({ recipes, setRecipes }) => {
           return;
         }
 
-        const combinedDetails = collectedErrors.reduce((acc, currentError) => {
-          if (!currentError?.details) return acc;
+        const backendErrors = createRecipeErrorState(
+          ingredientsData.length,
+          stepsData.length
+        );
 
-          const contextualized = applyContextToDetails(
-            currentError.details,
-            currentError.context
+        collectedErrors.forEach((currentError) => {
+          if (currentError?.details) {
+            applyDetailsToRecipeErrors(
+              backendErrors,
+              currentError.details,
+              currentError.context
+            );
+          } else if (currentError?.message) {
+            addGeneralError(backendErrors, currentError.message, currentError.context);
+          } else {
+            addGeneralError(
+              backendErrors,
+              "An unexpected error occurred while saving the recipe.",
+              currentError?.context
+            );
+          }
+        });
+
+        if (!hasRecipeErrors(backendErrors)) {
+          addGeneralError(
+            backendErrors,
+            "Unable to create recipe due to an unexpected error. Please try again."
           );
-
-          return mergeErrorDetails(acc, contextualized);
-        }, {});
-
-        if (Object.keys(combinedDetails).length > 0) {
-          await deleteRecipe(newRecipe.id).catch(() => {});
-          setFormErrors(formatValidationErrors(combinedDetails));
-          return;
-        }
-
-        const fallbackMessages = collectedErrors
-          .map((error) => error?.message)
-          .filter(Boolean);
-
-        if (fallbackMessages.length > 0) {
-          await deleteRecipe(newRecipe.id).catch(() => {});
-          setFormErrors(fallbackMessages);
-          return;
         }
 
         await deleteRecipe(newRecipe.id).catch(() => {});
-        setFormErrors([
-          "Unable to create recipe due to an unexpected error. Please try again.",
-        ]);
+        setErrors(backendErrors);
         return;
       }
 
@@ -387,8 +352,18 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       console.error("Error in handleSubmit:", error);
 
       if (error.status === 400) {
-        const contextualized = applyContextToDetails(error.details, error.context);
-        setFormErrors(formatValidationErrors(contextualized));
+        const backendErrors = createRecipeErrorState(
+          ingredientsData.length,
+          stepsData.length
+        );
+        applyDetailsToRecipeErrors(backendErrors, error.details, error.context);
+        if (!hasRecipeErrors(backendErrors)) {
+          addGeneralError(
+            backendErrors,
+            error.message || "Validation failed. Please review your entries."
+          );
+        }
+        setErrors(backendErrors);
         return;
       }
 
@@ -405,14 +380,19 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   // onChange handlers
   const handleRecipeChange = (event) => {
     const { name, value, type, checked } = event.target;
-    setRecipeData((prev) => ({ 
-      ...prev, 
-      [name]: type === "checkbox" ? checked : value 
+    setRecipeData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
     }));
+    clearFieldError(name);
+    clearGeneralErrors();
   };
 
   const handleIngredientChange = (index, event) => {
     const { name, value } = event.target;
+    clearIngredientError(index, name);
+    clearIngredientError(index, "general");
+    clearGeneralErrors();
     setIngredientsData((prev) => {
       const updated = [...prev];
       const currentIngredient = updated[index];
@@ -519,6 +499,9 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   const handleStepChange = (index, event) => {
     const { name, value } = event.target;
+    clearStepError(index, name);
+    clearStepError(index, "general");
+    clearGeneralErrors();
     setStepsData((prev) => {
       const updated = [...prev];
       updated[index][name] = value;
@@ -527,6 +510,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   };
 
   const handleTagChange = (tagValue) => {
+    clearGeneralErrors();
     setTags((prev) => {
       if (prev.includes(tagValue)) {
         // Remove tag if already selected
@@ -548,17 +532,17 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       <h1 className="recipeform-title">Log New Recipe</h1>
 
       <form onSubmit={handleSubmit} className="recipe-form">
-        {formErrors.length > 0 && (
+        {errors.general?.length > 0 && (
           <div className="error-messages" role="alert">
             <ul>
-              {formErrors.map((message, index) => (
+              {errors.general.map((message, index) => (
                 <li key={index}>{message}</li>
               ))}
             </ul>
           </div>
         )}
         <div className="form-element">
-          <div className="recipe-form">
+          <div className="recipe-field-row">
             <label htmlFor="recipe-title">Title: </label>
             <input
               type="text"
@@ -566,7 +550,12 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               value={recipeData.title}
               onChange={handleRecipeChange}
               name="title"
+              className={errors.fields?.title?.length ? "input-error" : ""}
+              placeholder={errors.fields?.title?.[0] || ""}
+              aria-invalid={errors.fields?.title?.length ? "true" : "false"}
             />
+          </div>
+          <div className="recipe-field-row">
             <label htmlFor="recipe-notes">Notes:</label>
             <input
               type="text"
@@ -574,7 +563,12 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               value={recipeData.notes}
               onChange={handleRecipeChange}
               name="notes"
+              className={errors.fields?.notes?.length ? "input-error" : ""}
+              placeholder={errors.fields?.notes?.[0] || ""}
+              aria-invalid={errors.fields?.notes?.length ? "true" : "false"}
             />
+          </div>
+          <div className="recipe-field-row">
             <label htmlFor="recipe-favorite">Favorite</label>
             <input
               id="recipe-favorite"
@@ -614,6 +608,11 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   }}
                   name="name"
                   autoComplete="false"
+                  className={
+                    errors.ingredients?.[index]?.name?.length ? "input-error" : ""
+                  }
+                  placeholder={errors.ingredients?.[index]?.name?.[0] || ""}
+                  aria-invalid={errors.ingredients?.[index]?.name?.length ? "true" : "false"}
                 />
                 <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
                 <input
@@ -623,7 +622,11 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   value={ingredient.quantity}
                   onChange={(e) => handleIngredientChange(index, e)}
                   name="quantity"
-                  className="quantity-input"
+                  className={`quantity-input ${
+                    errors.ingredients?.[index]?.quantity?.length ? "input-error" : ""
+                  }`}
+                  placeholder={errors.ingredients?.[index]?.quantity?.[0] || ""}
+                  aria-invalid={errors.ingredients?.[index]?.quantity?.length ? "true" : "false"}
                 />
 
                 <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
@@ -635,7 +638,11 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                     handleIngredientChange(index, e);
                   }}
                   disabled={ingredient.weight_unit !== ""}
-                  className="volume-input"
+                  className={`volume-input ${
+                    errors.ingredients?.[index]?.volume_unit?.length ? "input-error" : ""
+                  }`}
+                  aria-invalid={errors.ingredients?.[index]?.volume_unit?.length ? "true" : "false"}
+                  title={errors.ingredients?.[index]?.volume_unit?.[0] || ""}
                 >
                   <option value="">---</option>
                   {VOLUME_UNITS.map((unit) => (
@@ -654,7 +661,11 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                     handleIngredientChange(index, e);
                   }}
                   disabled={ingredient.volume_unit !== ""}
-                  className="weight-input"
+                  className={`weight-input ${
+                    errors.ingredients?.[index]?.weight_unit?.length ? "input-error" : ""
+                  }`}
+                  aria-invalid={errors.ingredients?.[index]?.weight_unit?.length ? "true" : "false"}
+                  title={errors.ingredients?.[index]?.weight_unit?.[0] || ""}
                 >
                   <option value="">---</option>
                   {WEIGHT_UNITS.map((unit) => (
@@ -663,6 +674,11 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                     </option>
                   ))}
                 </select>
+                {errors.ingredients?.[index]?.general?.length && (
+                  <p className="field-error">
+                    {errors.ingredients[index].general.join(", ")}
+                  </p>
+                )}
                 {ingredientsData.length > 1 && (
                   <button
                     type="button"
@@ -704,7 +720,17 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   onChange={(e) => {
                     handleStepChange(index, e);
                   }}
+                  className={
+                    errors.steps?.[index]?.description?.length ? "input-error" : ""
+                  }
+                  placeholder={errors.steps?.[index]?.description?.[0] || ""}
+                  aria-invalid={errors.steps?.[index]?.description?.length ? "true" : "false"}
                 />
+                {errors.steps?.[index]?.general?.length && (
+                  <p className="field-error">
+                    {errors.steps[index].general.join(", ")}
+                  </p>
+                )}
                 {stepsData.length > 1 && (
                   <button
                     type="button"

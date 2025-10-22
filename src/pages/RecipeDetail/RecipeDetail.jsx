@@ -74,8 +74,8 @@ const RecipeDetail = () => {
       {/* Header with title and buttons */}
       <div className="recipe-header">
         <h1 className="recipe-title">
+          {recipe.favorite && <span className="favorite-icon">🍪 </span>}
           {recipe.title}
-          {recipe.favorite && <span className="favorite-icon"> 🍪</span>}
         </h1>
         <div className="recipe-actions">
           <Link to={`/recipes/${id}/edit`}>

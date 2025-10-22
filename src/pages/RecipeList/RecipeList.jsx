@@ -27,7 +27,7 @@ const RecipeList = () => {
     try {
       // Import conversion utilities
       const { areUnitsCompatible, convertQuantity, findOptimalUnit } = 
-        await import("../../config/recipeConfig.js");
+        await import("../../utils/recipeConfig/recipeConfig.js");
       
       // Fetch current grocery list and recipe details
       const [currentItems, recipe] = await Promise.all([
@@ -256,8 +256,8 @@ const RecipeList = () => {
             <li key={recipe.id} className="recipe-card-wrapper">
               <Link to={`/recipes/${recipe.id}`} className="recipe-link">
                 <div className="recipe-card">
+                  {recipe.favorite && <span>🍪 </span>}
                   <strong>{recipe.title}</strong>
-                  {recipe.favorite && <span> 🍪 </span>}
                 </div>
               </Link>
               <button

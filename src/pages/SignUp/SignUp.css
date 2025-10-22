@@ -18,20 +18,14 @@ input {
   margin-top: 30px;
 }
 
-.input-error {
-  border: 2px solid #d32f2f !important;
-  background-color: #ffebee;
-}
-
-.field-error {
-  color: #d32f2f;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  margin-bottom: 0.5rem;
-}
-
 .signup-section {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.signup-section label {
+  min-width: 160px;
+  text-align: right;
 }

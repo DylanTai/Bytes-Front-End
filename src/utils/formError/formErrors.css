@@ -1,0 +1,16 @@
+.input-error {
+  border: 1px solid #d32f2f;
+  background-color: rgba(211, 47, 47, 0.08);
+}
+
+.input-error::placeholder {
+  color: #d32f2f;
+  opacity: 1;
+}
+
+.field-error {
+  color: #d32f2f;
+  font-size: 0.875rem;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}

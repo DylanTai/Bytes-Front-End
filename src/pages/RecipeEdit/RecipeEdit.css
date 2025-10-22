@@ -35,10 +35,14 @@
   display: flex;
   align-items: center;
   margin-bottom: 20px;
+  flex-direction: column;
+  width: 100%;
+  max-width: 700px;
 }
 
 label {
   padding-right: 15px;
+  padding-left: 15px;
 }
 
 select {
@@ -60,6 +64,64 @@ textarea {
 
 .time-input {
   background-color: white;;
+}
+
+.ingredient-container,
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+}
+
+.ingredient-form,
+.step-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 0;
+}
+
+.ingredient-form label,
+.step-form label {
+  padding: 0;
+}
+
+.ingredient-container .form-btn,
+.steps-container .form-btn {
+  align-self: flex-start;
+}
+
+.step-number-input {
+  width: 60px;
+}
+
+.recipe-field-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.recipe-field-row label {
+  min-width: 110px;
+  text-align: right;
+}
+
+.form-btn {
+  color: #82200c;
+  text-decoration: none;
+  padding: 10px;
+  font-weight: 400;
+  width: 120px;
+  text-align: center;
+  background: none;
+  border: none;
+}
+
+.form-btn:hover {
+  color: #f9ae2c;
 }
 
 .tags-container {
