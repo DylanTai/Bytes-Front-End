@@ -3,16 +3,16 @@ const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/recipes/`;
 // Decode JWT to check expiration
 const isTokenExpired = (token) => {
   if (!token) return true;
-  
+
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(token.split(".")[1]));
     const expirationTime = payload.exp * 1000; // Convert to milliseconds
     const currentTime = Date.now();
-    
+
     // Check if token expires in less than 1 minute
-    return (expirationTime - currentTime) < 60000;
+    return expirationTime - currentTime < 60000;
   } catch (error) {
-    console.error('Error decoding token:', error);
+    console.error("Error decoding token:", error);
     return true;
   }
 };
@@ -23,7 +23,7 @@ const refreshAccessToken = async () => {
   if (!refresh) {
     throw new Error("No refresh token available");
   }
- 
+
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BACK_END_SERVER_URL}/users/token/refresh/`,
@@ -72,7 +72,7 @@ const fetchWithAuth = async (url, options = {}) => {
   const authHeaders = {
     ...options.headers,
   };
-  
+
   if (access) {
     authHeaders["Authorization"] = `Bearer ${access}`;
   }
@@ -89,7 +89,7 @@ const fetchWithAuth = async (url, options = {}) => {
       try {
         console.log("Received 401, attempting token refresh...");
         access = await refreshAccessToken();
-        
+
         // Retry original request with new token
         authHeaders["Authorization"] = `Bearer ${access}`;
         response = await fetch(url, {
@@ -154,7 +154,28 @@ export const addRecipe = async (recipeData) => {
       body: isFormData ? recipeData : JSON.stringify(recipeData),
       headers: isFormData ? {} : { "Content-Type": "application/json" },
     });
-    if (!res.ok) throw new Error("Failed to create recipe");
+
+    if (!res.ok) {
+      // Get error details from response
+      const errorData = await res.json().catch(() => ({}));
+
+      if (res.status === 400) {
+        // Validation error
+        const error = new Error("Validation failed");
+        error.status = 400;
+        error.details = errorData;
+        throw error;
+      } else if (res.status === 401) {
+        // Authentication error
+        const error = new Error("Authentication failed");
+        error.status = 401;
+        throw error;
+      } else {
+        // Other error
+        throw new Error("Failed to create recipe");
+      }
+    }
+
     return await res.json();
   } catch (error) {
     console.error("Error creating recipe:", error);
@@ -170,7 +191,22 @@ export const updateRecipe = async (id, recipeData) => {
       body: isFormData ? recipeData : JSON.stringify(recipeData),
       headers: isFormData ? {} : { "Content-Type": "application/json" },
     });
-    if (!res.ok) throw new Error("Failed to update recipe");
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+
+      if (res.status === 400) {
+        const error = new Error("Validation failed");
+        error.status = 400;
+        error.details = errorData;
+        throw error;
+      } else if (res.status === 401) {
+        const error = new Error("Authentication failed");
+        error.status = 401;
+        throw error;
+      }
+
+      throw new Error("Failed to update recipe");
+    }
     return await res.json();
   } catch (error) {
     console.error("Error updating recipe:", error);
@@ -222,7 +258,22 @@ export const addIngredient = async (recipeId, ingredientData) => {
         "Content-Type": "application/json",
       },
     });
-    if (!res.ok) throw new Error("Failed to add ingredient");
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+
+      if (res.status === 400) {
+        const error = new Error("Validation failed");
+        error.status = 400;
+        error.details = errorData;
+        throw error;
+      } else if (res.status === 401) {
+        const error = new Error("Authentication failed");
+        error.status = 401;
+        throw error;
+      }
+
+      throw new Error("Failed to add ingredient");
+    }
     return await res.json();
   } catch (error) {
     console.error("Error adding ingredient:", error);
@@ -235,16 +286,36 @@ export const updateIngredient = async (
   ingredientId,
   ingredientData
 ) => {
-  const res = await fetchWithAuth(
-    `${BASE_URL}${recipeId}/ingredients/${ingredientId}/`,
-    {
-      method: "PUT",
-      body: JSON.stringify(ingredientData),
-      headers: { "Content-Type": "application/json" },
+  try {
+    const res = await fetchWithAuth(
+      `${BASE_URL}${recipeId}/ingredients/${ingredientId}/`,
+      {
+        method: "PUT",
+        body: JSON.stringify(ingredientData),
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+
+      if (res.status === 400) {
+        const error = new Error("Validation failed");
+        error.status = 400;
+        error.details = errorData;
+        throw error;
+      } else if (res.status === 401) {
+        const error = new Error("Authentication failed");
+        error.status = 401;
+        throw error;
+      }
+
+      throw new Error("Failed to update ingredient");
     }
-  );
-  if (!res.ok) throw new Error("Failed to update ingredient");
-  return await res.json();
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating ingredient:", error);
+    throw error;
+  }
 };
 
 export const updateStep = async (recipeId, stepId, stepData) => {
@@ -255,10 +326,26 @@ export const updateStep = async (recipeId, stepId, stepData) => {
       body: JSON.stringify(stepData),
       headers: { "Content-Type": "application/json" },
     });
-    if (!res.ok) throw new Error("Failed to update step");
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+
+      if (res.status === 400) {
+        const error = new Error("Validation failed");
+        error.status = 400;
+        error.details = errorData;
+        throw error;
+      } else if (res.status === 401) {
+        const error = new Error("Authentication failed");
+        error.status = 401;
+        throw error;
+      }
+
+      throw new Error("Failed to update step");
+    }
     return await res.json();
   } catch (error) {
-    console.error("Error updating the step");
+    console.error("Error updating the step", error);
+    throw error;
   }
 };
 
@@ -297,7 +384,22 @@ export const addStep = async (recipeId, stepData) => {
         "Content-Type": "application/json",
       },
     });
-    if (!res.ok) throw new Error("Failed to add step");
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+
+      if (res.status === 400) {
+        const error = new Error("Validation failed");
+        error.status = 400;
+        error.details = errorData;
+        throw error;
+      } else if (res.status === 401) {
+        const error = new Error("Authentication failed");
+        error.status = 401;
+        throw error;
+      }
+
+      throw new Error("Failed to add step");
+    }
     return await res.json();
   } catch (error) {
     console.error("Error adding step:", error);
