@@ -406,3 +406,18 @@ export const addStep = async (recipeId, stepData) => {
     throw error;
   }
 };
+
+export async function generateRecipe(prompt, token) {
+  const res = await fetch("/api/recipes/generate/", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ prompt }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to generate recipe");
+  }
+  return await res.json();
+}
