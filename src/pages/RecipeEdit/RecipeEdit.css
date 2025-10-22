@@ -1,4 +1,4 @@
-.recipeform-title {
+/* .recipeform-title {
   display: flex;
   justify-content: center;
   padding: 25px;
@@ -13,6 +13,22 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.error-messages {
+  background-color: #fdecea;
+  border: 1px solid #f5c2c7;
+  border-radius: 6px;
+  color: #611a15;
+  margin-bottom: 20px;
+  max-width: 600px;
+  padding: 12px 16px;
+  width: 100%;
+}
+
+.error-messages ul {
+  margin: 0;
+  padding-left: 20px;
 }
 
 .form-element {
@@ -49,8 +65,6 @@ textarea {
 .tags-container {
   margin: 20px 0;
   padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
 }
 
 .tags-container h3 {
@@ -77,7 +91,7 @@ textarea {
 }
 
 /* for cell phones */
-@media (max-width: 430px) {
+/* @media (max-width: 430px) {
 
   .note-textarea {
     width: 294px;
@@ -91,4 +105,4 @@ textarea {
     width: 80%;
     justify-content: center;
   }
-}
+} */ 
