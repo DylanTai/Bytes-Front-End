@@ -84,18 +84,26 @@ const RecipeDetail = () => {
           <button onClick={handleDelete} className="delete-button">
             Delete
           </button>
+
+          {/* Back button */}
+          <div className="recipe-footer">
+            <button onClick={() => navigate("/")} className="back-button">
+              Back to Recipes
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Tags Section */}
       {recipe.tags && recipe.tags.length > 0 && (
         <div className="recipe-tags">
-          <h2>Tags</h2>
+          <h2 className="detail-tag-label">Tags: </h2>
           <div className="tags-list">
             {recipe.tags.map((tag, index) => {
-              const tagLabel = tag.replace(/_/g, ' ');
-              const formattedLabel = tagLabel.charAt(0).toUpperCase() + tagLabel.slice(1);
-              
+              const tagLabel = tag.replace(/_/g, " ");
+              const formattedLabel =
+                tagLabel.charAt(0).toUpperCase() + tagLabel.slice(1);
+
               return (
                 <div key={index} className="tag-item">
                   {formattedLabel}
@@ -108,26 +116,26 @@ const RecipeDetail = () => {
 
       {/* Notes Section */}
       {recipe.notes && (
-        <div className="recipe-notes">
-          <h2>Notes</h2>
+        <div className="detail-recipe-notes">
+          <h2 className="detail-notes-label">Notes: </h2>
           <p>{recipe.notes}</p>
         </div>
       )}
 
       {/* Ingredients Section */}
       <div className="recipe-ingredients">
-        <h2>Ingredients</h2>
+        <h2>Ingredients: </h2>
         {ingredients && ingredients.length > 0 ? (
           <ul>
             {ingredients.map((ingredient) => {
               const unit = ingredient.volume_unit || ingredient.weight_unit;
-              
+
               return (
                 <li key={ingredient.id} className="ingredient-item">
-                  <span className="ingredient-quantity">{ingredient.quantity}</span>
-                  {' '}
-                  {unit && <span className="ingredient-unit">{unit}</span>}
-                  {' '}
+                  <span className="ingredient-quantity">
+                    {ingredient.quantity}
+                  </span>{" "}
+                  {unit && <span className="ingredient-unit">{unit}</span>}{" "}
                   <span className="ingredient-name">{ingredient.name}</span>
                 </li>
               );
@@ -140,7 +148,7 @@ const RecipeDetail = () => {
 
       {/* Steps Section */}
       <div className="recipe-steps">
-        <h2>Steps</h2>
+        <h2 className="detail-steps-label">Steps: </h2>
         {steps && steps.length > 0 ? (
           <ol>
             {steps
@@ -154,13 +162,6 @@ const RecipeDetail = () => {
         ) : (
           <p className="empty-message">No steps added yet.</p>
         )}
-      </div>
-
-      {/* Back button */}
-      <div className="recipe-footer">
-        <button onClick={() => navigate("/")} className="back-button">
-          Back to Recipes
-        </button>
       </div>
     </div>
   );

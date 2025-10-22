@@ -1,0 +1,8 @@
+.profile-page {
+  background-color: #ffe0bd45;
+  border-radius: 80px;
+  min-height: calc(100vh - 75px);
+  padding-bottom: 40px;
+  margin-left: 10px;
+  margin-right: 10px;
+}

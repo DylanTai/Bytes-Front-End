@@ -215,7 +215,7 @@ const RecipeList = () => {
 
         {/* Controls */}
         <div className="favorites-filter">
-          <label>
+          <label className="fav-label">
             <input
               type="checkbox"
               checked={showFavoritesFirst}
