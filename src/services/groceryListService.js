@@ -35,17 +35,32 @@ export const addRecipeToGroceryList = async (recipeId) => {
   }
 };
 
-export const updateGroceryItem = async (itemId, checked) => {
+export const updateGroceryItem = async (itemId, checked, additionalData = {}) => {
   try {
     const res = await fetch(`${BASE_URL}/item/${itemId}/`, {
       method: "PATCH",
       headers: getAuthHeaders(),
-      body: JSON.stringify({ checked }),
+      body: JSON.stringify({ checked, ...additionalData }),
     });
     if (!res.ok) throw new Error("Failed to update item");
     return await res.json();
   } catch (err) {
     console.error("Error updating grocery item:", err);
+    throw err;
+  }
+};
+
+export const addGroceryItem = async (itemData) => {
+  try {
+    const res = await fetch(`${BASE_URL}/add-item/`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(itemData),
+    });
+    if (!res.ok) throw new Error("Failed to add grocery item");
+    return await res.json();
+  } catch (err) {
+    console.error("Error adding grocery item:", err);
     throw err;
   }
 };

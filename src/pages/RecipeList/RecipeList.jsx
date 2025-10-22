@@ -4,11 +4,6 @@ import * as recipeService from "../../services/recipeService.js";
 import * as groceryListService from "../../services/groceryListService.js";
 import "./RecipeList.css";
 
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return isNaN(date) ? "Unknown date" : date.toISOString().split("T")[0];
-};
-
 const RecipeList = () => {
   const [recipes, setRecipes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,9 +25,107 @@ const RecipeList = () => {
     e.stopPropagation();
 
     try {
-      const result = await groceryListService.addRecipeToGroceryList(recipeId);
-      alert(result.message);
+      // Import conversion utilities
+      const { areUnitsCompatible, convertQuantity, findOptimalUnit } = 
+        await import("../../config/recipeConfig.js");
+      
+      // Fetch current grocery list and recipe details
+      const [currentItems, recipe] = await Promise.all([
+        groceryListService.getGroceryList(),
+        recipeService.getRecipe(recipeId)
+      ]);
+      
+      let addedCount = 0;
+      let updatedCount = 0;
+      
+      // Process each ingredient
+      for (const ingredient of recipe.ingredients) {
+        // Find existing item with same name (case-insensitive)
+        const existingItem = currentItems.find(
+          item => item.name.toLowerCase() === ingredient.name.toLowerCase()
+        );
+        
+        if (existingItem) {
+          const ingredientUnit = ingredient.volume_unit || ingredient.weight_unit;
+          const existingUnit = existingItem.volume_unit || existingItem.weight_unit;
+          
+          // Check if both have units and if they're compatible (both volume or both weight)
+          if (ingredientUnit && existingUnit && areUnitsCompatible(ingredientUnit, existingUnit)) {
+            const isVolume = !!ingredient.volume_unit;
+            
+            // Convert ingredient quantity to existing item's unit
+            const convertedQuantity = convertQuantity(
+              ingredient.quantity,
+              ingredientUnit,
+              existingUnit,
+              isVolume
+            );
+            
+            // Add quantities together
+            const totalQuantity = existingItem.quantity + convertedQuantity;
+            
+            // Find optimal unit for display (closest to 1 but >= 1)
+            const optimal = findOptimalUnit(totalQuantity, existingUnit, isVolume);
+            
+            // Update the existing item with new quantity and optimal unit
+            await groceryListService.updateGroceryItem(
+              existingItem.id, 
+              false, // Uncheck when adding more
+              {
+                quantity: optimal.quantity,
+                volume_unit: isVolume ? optimal.unit : '',
+                weight_unit: isVolume ? '' : optimal.unit
+              }
+            );
+            
+            updatedCount++;
+            continue; // Skip adding as new item
+          }
+
+          // Neither matching item has any unit (simple count)
+          if (!ingredientUnit && !existingUnit) {
+            const totalQuantity = existingItem.quantity + ingredient.quantity;
+
+            await groceryListService.updateGroceryItem(
+              existingItem.id,
+              false,
+              {
+                quantity: totalQuantity,
+                volume_unit: "",
+                weight_unit: "",
+              }
+            );
+
+            updatedCount++;
+            continue; // Skip adding as new item
+          }
+        }
+        
+        // If no match found or units are incompatible, add as new item
+        await groceryListService.addGroceryItem({
+          name: ingredient.name,
+          quantity: ingredient.quantity,
+          volume_unit: ingredient.volume_unit || '',
+          weight_unit: ingredient.weight_unit || '',
+          checked: false
+        });
+        
+        addedCount++;
+      }
+      
+      // Build success message
+      const messages = [];
+      if (addedCount > 0) {
+        messages.push(`Added ${addedCount} new ingredient${addedCount !== 1 ? 's' : ''}`);
+      }
+      if (updatedCount > 0) {
+        messages.push(`Updated ${updatedCount} existing ingredient${updatedCount !== 1 ? 's' : ''}`);
+      }
+      
+      alert(messages.join(' and ') + ` from "${recipeTitle}"`);
+      
     } catch (err) {
+      console.error("Error adding to grocery list:", err);
       alert("Failed to add ingredients to grocery list.");
     }
   };
