@@ -49,11 +49,24 @@ select {
   width: 100px;
 }
 
-.ingredient-container,
-.steps-container {
+.ingredient-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.ingredient-form {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
 }
 
 .recipe-notes {
@@ -62,8 +75,16 @@ select {
   background-color: white;
 }
 
+.recipe-notes-input {
+  width: 500px;
+}
+
 .step-number-input {
-  width: 20px;
+  width: 50px;
+}
+
+.step-direction-input {
+  width: 550px;
 }
 
 .form-btn {
@@ -71,16 +92,20 @@ select {
   text-decoration: none;
   padding: 10px;
   font-weight: 400;
-  width: 80px;
   text-align: center;
   background: none;
   border: none;
-  font-size: 14px;
+      width: 150px;
+    font-size: 18px;
 }
 
 .form-btn:hover {
   color: #f9ae2c;
   cursor: pointer;
+}
+
+.form-btn-container {
+  margin-top: 35px;
 }
 
 /* for cell phones */

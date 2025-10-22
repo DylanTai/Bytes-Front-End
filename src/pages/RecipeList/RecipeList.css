@@ -25,6 +25,11 @@
 
 .show-favorite-btn {
   width: auto;
+  color: black;
+}
+
+.fav-label {
+  color: black;
 }
 
 .recipe-list {
@@ -73,10 +78,6 @@
 .add-ingredients-btn:hover {
   color: #f9ae2c;
   cursor: pointer;
-}
-
-.fav-checkbox {
-  color: black;
 }
 
 .recipe-list-buttons {

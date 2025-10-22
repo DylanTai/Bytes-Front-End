@@ -122,7 +122,7 @@ const RecipeList = () => {
 
         {/* Controls */}
         <div className="favorites-filter">
-          <label className="fav-checkbox">
+          <label className="fav-label">
             <input
               type="checkbox"
               checked={showFavoritesFirst}

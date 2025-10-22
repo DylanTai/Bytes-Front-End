@@ -167,29 +167,36 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       <form onSubmit={handleSubmit} className="recipe-form">
         <div className="form-element">
           <div className="recipe-form">
-            <label htmlFor="recipe-title">Title: </label>
-            <input
-              type="text"
-              id="recipe-title"
-              value={recipeData.title}
-              onChange={handleRecipeChange}
-              name="title"
-            />
-            <label htmlFor="recipe-notes">Notes:</label>
-            <input
-              type="text"
-              id="recipe-notes"
-              value={recipeData.notes}
-              onChange={handleRecipeChange}
-              name="notes"
-            />
-            <label htmlFor="recipe-favorite">Favorite</label>
-            <input
-              id="recipe-favorite"
-              type="checkbox"
-              defaultChecked={recipeData.favorite}
-              onChange={handleRecipeChange}
-            />
+            <div className="recipe-title-container">
+              <label htmlFor="recipe-title">Title: </label>
+              <input
+                type="text"
+                id="recipe-title"
+                value={recipeData.title}
+                onChange={handleRecipeChange}
+                name="title"
+              />
+            </div>
+            <div className="recipe-notes-container">
+              <label htmlFor="recipe-notes">Notes:</label>
+              <input
+                type="text"
+                id="recipe-notes"
+                value={recipeData.notes}
+                onChange={handleRecipeChange}
+                name="notes"
+                className="recipe-notes-input"
+              />
+            </div>
+            <div className="recipe-fav-container">
+              <label htmlFor="recipe-favorite">Favorite</label>
+              <input
+                id="recipe-favorite"
+                type="checkbox"
+                defaultChecked={recipeData.favorite}
+                onChange={handleRecipeChange}
+              />
+            </div>
           </div>
           <div className="ingredient-container">
             {ingredientsData.map((ingredient, index) => (
@@ -293,6 +300,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   onChange={(e) => {
                     handleStepChange(index, e);
                   }}
+                  className="step-direction-input"
                 />
                 {stepsData.length > 1 && (
                   <button
@@ -311,10 +319,14 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               Add Step
             </button>
           </div>
+          
+          <div className="form-btn-container">
           <button type="submit" className="form-btn">Add Recipe</button>
           <button type="button" onClick={handleCancel} className="form-btn">
             Cancel
           </button>
+          </div>
+
         </div>
 
       </form>
