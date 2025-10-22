@@ -57,8 +57,178 @@ const RecipeEdit = () => {
 
   const [tags, setTags] = useState([]);
 
+  const [formErrors, setFormErrors] = useState([]);
+
   // Track pre-calculated unit values for each ingredient to prevent rounding errors
   const [calculatedUnits, setCalculatedUnits] = useState([]);
+
+  const formatValidationErrors = (details) => {
+    if (!details || typeof details !== "object") {
+      return ["Unable to update recipe. Please review your entries and try again."];
+    }
+
+    const messages = [];
+
+    const formatFieldLabel = (field) => {
+      if (!field || field === "non_field_errors") {
+        return "General";
+      }
+
+      return field
+        .replace(/\.\d+/g, "")
+        .replace(/\./g, " ")
+        .replace(/_/g, " ")
+        .trim()
+        .split(" ")
+        .filter(Boolean)
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    };
+
+    const collectMessages = (value, keyPath = "") => {
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          if (typeof item === "string") {
+            const label = formatFieldLabel(keyPath);
+            messages.push(`${label}: ${item}`);
+          } else if (item && typeof item === "object") {
+            const nextKey = keyPath ? `${keyPath}.${index}` : `${index}`;
+            collectMessages(item, nextKey);
+          }
+        });
+      } else if (value && typeof value === "object") {
+        Object.entries(value).forEach(([childKey, childValue]) => {
+          const nextKey = keyPath ? `${keyPath}.${childKey}` : childKey;
+          collectMessages(childValue, nextKey);
+        });
+      } else if (typeof value === "string") {
+        const label = formatFieldLabel(keyPath);
+        messages.push(`${label}: ${value}`);
+      }
+    };
+
+    collectMessages(details);
+
+    if (!messages.length) {
+      messages.push("Unable to update recipe. Please review your entries and try again.");
+    }
+
+    return messages;
+  };
+
+  const getIngredientLabel = (index, name, isExisting = false) => {
+    const position = Number.isInteger(index) ? index + 1 : undefined;
+    const prefix = isExisting ? "Ingredient (Existing)" : "Ingredient";
+    const base = `${prefix}${position ? ` ${position}` : ""}`;
+    const trimmedName = name?.trim();
+    return trimmedName ? `${base} (${trimmedName})` : base;
+  };
+
+  const getStepLabel = (index, stepNumber, isExisting = false) => {
+    const number = stepNumber ?? (Number.isInteger(index) ? index + 1 : undefined);
+    const prefix = isExisting ? "Step (Existing)" : "Step";
+    return `${prefix}${number ? ` ${number}` : ""}`;
+  };
+
+  const mergeErrorDetails = (target = {}, source = {}) => {
+    const result = { ...(target || {}) };
+    if (!source || typeof source !== "object") {
+      return result;
+    }
+
+    Object.entries(source).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        result[key] = Array.isArray(result[key])
+          ? [...result[key], ...value]
+          : [...value];
+      } else if (value && typeof value === "object") {
+        result[key] = mergeErrorDetails(result[key] || {}, value);
+      } else if (value !== undefined && value !== null) {
+        result[key] = value;
+      }
+    });
+
+    return result;
+  };
+
+  const applyContextToDetails = (details, context) => {
+    if (!context || !details) {
+      return details;
+    }
+
+    if (Array.isArray(details) || typeof details !== "object") {
+      const normalized = Array.isArray(details) ? details : [String(details)];
+
+      if (context.type === "ingredient") {
+        return {
+          [getIngredientLabel(context.index, context.name, context.isExisting)]: normalized,
+        };
+      }
+
+      if (context.type === "step") {
+        return {
+          [getStepLabel(context.index, context.stepNumber, context.isExisting)]: normalized,
+        };
+      }
+
+      return { General: normalized };
+    }
+
+    if (context.type === "ingredient") {
+      return {
+        [getIngredientLabel(context.index, context.name, context.isExisting)]: details,
+      };
+    }
+
+    if (context.type === "step") {
+      return {
+        [getStepLabel(context.index, context.stepNumber, context.isExisting)]: details,
+      };
+    }
+
+    return details;
+  };
+
+  const buildClientValidationErrors = () => {
+    const details = {};
+
+    const title = recipeData.title?.trim();
+    if (!title) {
+      details.title = ["Title is required."];
+    }
+
+    if (recipeData.notes && recipeData.notes.length > 250) {
+      details.notes = ["Notes must be 250 characters or fewer."];
+    }
+
+    ingredientsData.forEach((ingredient, index) => {
+      const messages = [];
+      const trimmedName = ingredient.name?.trim();
+
+      if (!trimmedName) {
+        messages.push("Ingredient name is required.");
+      }
+
+      if (messages.length) {
+        details[getIngredientLabel(index, ingredient.name, Boolean(ingredient.id))] = messages;
+      }
+    });
+
+    stepsData.forEach((step, index) => {
+      const messages = [];
+      const trimmedDescription = step.description?.trim();
+
+      if (!trimmedDescription) {
+        messages.push("Step description is required.");
+      }
+
+      if (messages.length) {
+        details[getStepLabel(index, step.step, Boolean(step.id))] = messages;
+      }
+    });
+
+    return details;
+  };
 
   useEffect(() => {
     const getDetails = async () => {
@@ -67,7 +237,12 @@ const RecipeEdit = () => {
         const ingredientsValue = await getIngredients(recipeId);
         const stepsValue = await getSteps(recipeId);
 
-        setRecipeData(recipeValue);
+        setRecipeData({
+          title: recipeValue.title || "",
+          notes: recipeValue.notes || "",
+          favorite: Boolean(recipeValue.favorite),
+          image: recipeValue.image ?? null,
+        });
         setIngredientsData(ingredientsValue);
         
         // Initialize calculated units for existing ingredients
@@ -158,69 +333,197 @@ const RecipeEdit = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setFormErrors([]);
+
+    const clientDetails = buildClientValidationErrors();
+    if (Object.keys(clientDetails).length > 0) {
+      setFormErrors(formatValidationErrors(clientDetails));
+      return;
+    }
+
     try {
-      // Update Recipe with tags
-      await updateRecipe(recipeId, {
-        ...recipeData,
-        tags: tags,
-      });
+      const payload = {
+        title: recipeData.title.trim(),
+        notes: recipeData.notes?.trim() || "",
+        favorite: Boolean(recipeData.favorite),
+        tags,
+      };
 
-      const updateIngredientsData = ingredientsData.filter((ingredient) => {
-        return ingredient.id;
-      });
+      if (recipeData.image !== undefined) {
+        payload.image = recipeData.image;
+      }
 
-      const newIngredientsData = ingredientsData.filter((ingredient) => {
-        return !ingredient.id;
-      });
+      await updateRecipe(recipeId, payload);
 
-      const updateStepsData = stepsData.filter((step) => {
-        return step.id;
-      });
+      const ingredientCreateErrors = [];
+      const ingredientUpdateErrors = [];
+      const stepCreateErrors = [];
+      const stepUpdateErrors = [];
 
-      const newStepsData = stepsData.filter((step) => {
-        return !step.id;
-      });
+      const ingredientCreatePromises = ingredientsData
+        .map((ingredient, index) => ({ ingredient, index }))
+        .filter(({ ingredient }) => !ingredient.id)
+        .map(({ ingredient, index }) =>
+          addIngredient(recipeId, {
+            ...ingredient,
+            name: ingredient.name?.trim(),
+            recipe: recipeId,
+          }).catch((error) => {
+            ingredientCreateErrors.push({
+              status: error?.status,
+              details: error?.details,
+              message: error?.message,
+              context: {
+                type: "ingredient",
+                index,
+                name: ingredient.name,
+                isExisting: false,
+              },
+            });
+          })
+        );
 
-      const ingredientsPromises = newIngredientsData.map((ingredient) =>
-        addIngredient(recipeId, {
-          ...ingredient,
-          recipe: recipeId,
-        })
-      );
+      const ingredientUpdatePromises = ingredientsData
+        .map((ingredient, index) => ({ ingredient, index }))
+        .filter(({ ingredient }) => ingredient.id)
+        .map(({ ingredient, index }) =>
+          updateIngredient(recipeId, ingredient.id, {
+            ...ingredient,
+            name: ingredient.name?.trim(),
+          }).catch((error) => {
+            ingredientUpdateErrors.push({
+              status: error?.status,
+              details: error?.details,
+              message: error?.message,
+              context: {
+                type: "ingredient",
+                index,
+                name: ingredient.name,
+                isExisting: true,
+              },
+            });
+          })
+        );
 
-      await Promise.all(ingredientsPromises);
+      const stepCreatePromises = stepsData
+        .map((step, index) => ({ step, index }))
+        .filter(({ step }) => !step.id)
+        .map(({ step, index }) =>
+          addStep(recipeId, {
+            ...step,
+            description: step.description?.trim(),
+            recipe: recipeId,
+          }).catch((error) => {
+            stepCreateErrors.push({
+              status: error?.status,
+              details: error?.details,
+              message: error?.message,
+              context: {
+                type: "step",
+                index,
+                stepNumber: step.step,
+                isExisting: false,
+              },
+            });
+          })
+        );
 
-      const stepsPromises = newStepsData.map((step) =>
-        addStep(recipeId, {
-          ...step,
-          recipe: recipeId,
-        })
-      );
+      const stepUpdatePromises = stepsData
+        .map((step, index) => ({ step, index }))
+        .filter(({ step }) => step.id)
+        .map(({ step, index }) =>
+          updateStep(recipeId, step.id, {
+            ...step,
+            description: step.description?.trim(),
+          }).catch((error) => {
+            stepUpdateErrors.push({
+              status: error?.status,
+              details: error?.details,
+              message: error?.message,
+              context: {
+                type: "step",
+                index,
+                stepNumber: step.step,
+                isExisting: true,
+              },
+            });
+          })
+        );
 
-      await Promise.all(stepsPromises);
+      await Promise.all([
+        ...ingredientCreatePromises,
+        ...ingredientUpdatePromises,
+        ...stepCreatePromises,
+        ...stepUpdatePromises,
+      ]);
 
-      const ingredientsEditPromises = updateIngredientsData.map((ingredient) =>
-        updateIngredient(recipeId, ingredient.id, ingredient)
-      );
+      const collectedErrors = [
+        ...ingredientCreateErrors,
+        ...ingredientUpdateErrors,
+        ...stepCreateErrors,
+        ...stepUpdateErrors,
+      ];
 
-      await Promise.all(ingredientsEditPromises);
+      if (collectedErrors.length) {
+        const authError = collectedErrors.find(
+          (error) =>
+            error?.status === 401 || error?.message === "Authentication failed"
+        );
 
-      const stepsEditPromises = updateStepsData.map((step) =>
-        updateStep(recipeId, step.id, step)
-      );
+        if (authError) {
+          alert("Authentication error. Your session may have expired. Please log in again.");
+          navigate("/sign-in");
+          return;
+        }
 
-      await Promise.all(stepsEditPromises);
+        const combinedDetails = collectedErrors.reduce((acc, currentError) => {
+          if (!currentError?.details) return acc;
+
+          const contextualized = applyContextToDetails(
+            currentError.details,
+            currentError.context
+          );
+
+          return mergeErrorDetails(acc, contextualized);
+        }, {});
+
+        if (Object.keys(combinedDetails).length > 0) {
+          setFormErrors(formatValidationErrors(combinedDetails));
+          return;
+        }
+
+        const fallbackMessages = collectedErrors
+          .map((error) => error?.message)
+          .filter(Boolean);
+
+        if (fallbackMessages.length > 0) {
+          setFormErrors(fallbackMessages);
+          return;
+        }
+
+        setFormErrors([
+          "Unable to update recipe due to an unexpected error. Please try again.",
+        ]);
+        return;
+      }
 
       navigate(`/recipes/${recipeId}`);
     } catch (error) {
       console.error("Error updating recipe:", error);
-      
-      if (error.message.includes("Failed to update")) {
+
+      if (error.status === 400) {
+        const contextualized = applyContextToDetails(error.details, error.context);
+        setFormErrors(formatValidationErrors(contextualized));
+        return;
+      }
+
+      if (error.status === 401 || error.message === "Authentication failed") {
         alert("Authentication error. Your session may have expired. Please log in again.");
         navigate("/sign-in");
-      } else {
-        alert(`An error occurred: ${error.message}`);
+        return;
       }
+
+      alert(`An error occurred: ${error.message}`);
     }
   };
 
@@ -369,6 +672,15 @@ const RecipeEdit = () => {
       <h1 className="recipeform-title">Edit Recipe</h1>
 
       <form onSubmit={handleSubmit} className="recipe-form">
+        {formErrors.length > 0 && (
+          <div className="error-messages" role="alert">
+            <ul>
+              {formErrors.map((message, index) => (
+                <li key={index}>{message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="form-element">
           <div className="recipe-form">
             <label htmlFor="recipe-title">Title: </label>
