@@ -15,6 +15,7 @@ import RecipeForm from "./pages/RecipeForm/RecipeForm.jsx";
 import GroceryList from "./pages/GroceryList/GroceryList.jsx";
 import RecipeWheel from "./pages/RecipeWheel/RecipeWheel.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
+import RecipeAi from "./pages/RecipeAi/RecipeAi.jsx";
 
 // Protected route wrapper
 import Protected from "./components/Protected/Protected.jsx";
