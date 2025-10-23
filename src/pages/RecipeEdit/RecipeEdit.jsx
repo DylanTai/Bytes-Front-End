@@ -413,12 +413,24 @@ const RecipeEdit = () => {
   }
 
   return (
-    <div className="recipe-edit-page">
-      <h1 className="recipeedit-title">Edit Recipe</h1>
+    <>
+      <div className="recipe-form-page">
+      <h1 className="recipeform-title">Edit Recipe</h1>
 
-      <form onSubmit={handleSubmit} className="recipe-form">
+
+      <form onSubmit={handleSubmit} className="edit-recipe-form">
+        {formErrors.length > 0 && (
+          <div className="error-messages" role="alert">
+            <ul>
+              {formErrors.map((message, index) => (
+                <li key={index}>{message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="form-element">
           <div className="recipe-form">
+            <div>
             <label htmlFor="recipe-title">Title: </label>
             <input
               type="text"
@@ -427,8 +439,8 @@ const RecipeEdit = () => {
               onChange={handleRecipeChange}
               name="title"
               required
+              className="recipe-title-input"
             />
-
             <label htmlFor="recipe-notes">Notes:</label>
             <input
               type="text"
@@ -436,16 +448,20 @@ const RecipeEdit = () => {
               value={recipeData.notes}
               onChange={handleRecipeChange}
               name="notes"
+              className="recipe-notes-input"
             />
-
+            </div>
+            <div>
             <label htmlFor="recipe-favorite">Favorite</label>
             <input
               id="recipe-favorite"
               type="checkbox"
               checked={recipeData.favorite}
               onChange={handleRecipeChange}
+              className="recipe-favorite-input"
               name="favorite"
             />
+            </div>
 
             {/* Image Upload Section */}
             <div className="image-upload-section">
@@ -499,8 +515,7 @@ const RecipeEdit = () => {
             </div>
           </div>
 
-          <div className="ingredient-container">
-            <h3>Ingredients</h3>
+          <div className="edit-ingredient-container">
             {ingredientsData.map((ingredient, index) => (
               <div className="ingredient-form" key={index}>
                 <label htmlFor={`ingredient-name-${index}`}>Ingredient: </label>
@@ -557,23 +572,24 @@ const RecipeEdit = () => {
                     </option>
                   ))}
                 </select>
-
-                <button
-                  type="button"
-                  onClick={() => removeIngredient(index)}
-                  className="form-btn"
-                >
-                  Remove Ingredient
-                </button>
+                {ingredientsData.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      removeIngredient(index);
+                    }}
+                    className="form-btn"
+                  >
+                    Remove Ingredient
+                  </button>
+                )}
               </div>
             ))}
             <button type="button" onClick={addExtraIngredient} className="form-btn">
               Add Ingredient
             </button>
           </div>
-
-          <div className="steps-container">
-            <h3>Steps</h3>
+          <div className="edit-steps-component">
             {stepsData.map((step, index) => (
               <div className="step-form" key={index}>
                 <label htmlFor={`step-number-${index}`}>Step:</label>
@@ -583,41 +599,49 @@ const RecipeEdit = () => {
                   value={step.step}
                   name="step"
                   readOnly
+                  onChange={(e) => {
+                    handleStepChange(index, e);
+                  }}
                   className="step-number-input"
                 />
-
-                <label htmlFor={`step-description-${index}`}>Description:</label>
-                <input
+                <label htmlFor={`step-description-${index}`}>Description</label>
+                <textarea
                   type="text"
                   id={`step-description-${index}`}
                   value={step.description}
                   name="description"
-                  onChange={(e) => handleStepChange(index, e)}
+                  onChange={(e) => {
+                    handleStepChange(index, e);
+                  }}
                 />
-
-                <button
-                  type="button"
-                  onClick={() => removeStep(index)}
-                  className="form-btn"
-                >
-                  Remove Step
-                </button>
+                {stepsData.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      removeStep(index);
+                    }}
+                    className="form-btn"
+                  >
+                    Remove step
+                  </button>
+                )}
               </div>
             ))}
             <button type="button" onClick={addExtraStep} className="form-btn">
               Add Step
             </button>
           </div>
-
-          <button type="submit" className="form-btn">
-            Update Recipe
-          </button>
+            <div className="recipe-form-btns">
+          <button type="submit" className="form-btn">Update Recipe</button>
           <button type="button" onClick={handleCancel} className="form-btn">
             Cancel
           </button>
+          </div>
+
         </div>
       </form>
-    </div>
+      </div>
+    </>
   );
 };
 

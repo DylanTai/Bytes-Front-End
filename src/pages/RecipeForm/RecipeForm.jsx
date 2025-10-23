@@ -470,90 +470,100 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   ))}
                 </select>
 
-                <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
-                <select
-                  id={`ingredient-weight-${index}`}
-                  name="weight_unit"
-                  value={ingredient.weight_unit || ""}
-                  onChange={(e) => {
-                    handleIngredientChange(index, e);
-                  }}
-                  disabled={ingredient.volume_unit !== ""}
-                  className="weight-input"
-                >
-                  <option value="">---</option>
-                  {WEIGHT_UNITS.map((unit) => (
-                    <option key={unit.value} value={unit.value}>
-                      {unit.label}
-                    </option>
-                  ))}
-                </select>
-                {ingredientsData.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      removeIngredient(index);
+                  <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
+                  <select
+                    id={`ingredient-weight-${index}`}
+                    name="weight_unit"
+                    value={ingredient.weight_unit || ""}
+                    onChange={(e) => {
+                      handleIngredientChange(index, e);
                     }}
-                    className="form-btn"
+                    disabled={ingredient.volume_unit !== ""}
+                    className="weight-input"
                   >
-                    Remove Ingredient
-                  </button>
-                )}
-              </div>
-            ))}
-            <button type="button" onClick={addExtraIngredient} className="form-btn">
-              Add Ingredient
-            </button>
-          </div>
-          <div className="steps-container">
-            {stepsData.map((step, index) => (
-              <div className="step-form" key={index}>
-                <label htmlFor={`step-number-${index}`}>Step</label>
-                <input
-                  type="number"
-                  id={`step-number-${index}`}
-                  value={step.step}
-                  name="step"
-                  readOnly
-                  onChange={(e) => {
-                    handleStepChange(index, e);
-                  }}
-                  className="step-number-input"
-                />
-                <label htmlFor={`step-description-${index}`}>Description</label>
-                <input
-                  type="text"
-                  id={`step-description-${index}`}
-                  value={step.description}
-                  name="description"
-                  onChange={(e) => {
-                    handleStepChange(index, e);
-                  }}
-                />
-                {stepsData.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      removeStep(index);
+                    <option value="">---</option>
+                    {WEIGHT_UNITS.map((unit) => (
+                      <option key={unit.value} value={unit.value}>
+                        {unit.label}
+                      </option>
+                    ))}
+                  </select>
+                  {ingredientsData.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        removeIngredient(index);
+                      }}
+                      className="form-btn"
+                    >
+                      Remove Ingredient
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addExtraIngredient}
+                className="form-btn"
+              >
+                Add Ingredient
+              </button>
+            </div>
+            <div className="steps-container">
+              {stepsData.map((step, index) => (
+                <div className="step-form" key={index}>
+                  <label htmlFor={`step-number-${index}`}>Step</label>
+                  <input
+                    type="number"
+                    id={`step-number-${index}`}
+                    value={step.step}
+                    name="step"
+                    readOnly
+                    onChange={(e) => {
+                      handleStepChange(index, e);
                     }}
-                    className="form-btn"
-                  >
-                    Remove Step
-                  </button>
-                )}
-              </div>
-            ))}
-            <button type="button" onClick={addExtraStep} className="form-btn">
-              Add Step
-            </button>
+                    className="step-number-input"
+                  />
+                  <label htmlFor={`step-description-${index}`}>
+                    Description
+                  </label>
+                  <textarea
+                    type="text"
+                    id={`step-description-${index}`}
+                    value={step.description}
+                    name="description"
+                    onChange={(e) => {
+                      handleStepChange(index, e);
+                    }}
+                    className="step-description-input"
+                  />
+                  {stepsData.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        removeStep(index);
+                      }}
+                      className="form-btn"
+                    >
+                      Remove Step
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button type="button" onClick={addExtraStep} className="form-btn edit-add-step-btn">
+                Add Step
+              </button>
+            </div>
+            <div className="recipe-form-btns">
+              <button type="submit" className="form-btn">
+                Add Recipe
+              </button>
+              <button type="button" onClick={handleCancel} className="form-btn">
+                Cancel
+              </button>
+            </div>
           </div>
-          <button type="submit" className="form-btn">Add Recipe</button>
-          <button type="button" onClick={handleCancel} className="form-btn">
-            Cancel
-          </button>
-        </div>
-
-      </form>
+        </form>
       </div>
     </>
   );

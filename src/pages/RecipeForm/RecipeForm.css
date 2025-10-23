@@ -77,8 +77,8 @@ select {
 .tags-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-  width: 75%;
+   gap: 0px;
+  width: 60%;
 }
 
 .tag-checkbox {
@@ -91,6 +91,8 @@ select {
 
 .tag-checkbox input[type="checkbox"] {
   cursor: pointer;
+  width: 18px;
+  height: 18px;
 }
 
 /* ingredient styling */
@@ -110,7 +112,9 @@ select {
 .ingredient-form {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  justify-content: center;
+  align-items: center;   
+  flex-wrap: wrap;
 }
 
 /* step styling */
@@ -183,19 +187,3 @@ select {
   padding-left: 20px;
 }
 
-/* for cell phones */
-@media (max-width: 430px) {
-  .note-textarea {
-    width: 294px;
-  }
-
-  .physical-label,
-  .intensity-label {
-    text-align: center;
-  }
-
-  .form-element {
-    width: 80%;
-    justify-content: center;
-  }
-}
