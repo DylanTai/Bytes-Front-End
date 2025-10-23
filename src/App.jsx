@@ -15,7 +15,7 @@ import RecipeForm from "./pages/RecipeForm/RecipeForm.jsx";
 import GroceryList from "./pages/GroceryList/GroceryList.jsx";
 import RecipeWheel from "./pages/RecipeWheel/RecipeWheel.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
-import RecipeAi from "./pages/RecipeAi/RecipeAi.jsx";
+import RecipeAI from "./pages/RecipeAI/RecipeAI.jsx";
 
 // Protected route wrapper
 import Protected from "./components/Protected/Protected.jsx";
@@ -92,6 +92,15 @@ const router = createBrowserRouter([
       <Protected>
         <NavBar />
         <RecipeForm />
+      </Protected>
+    ),
+  },
+  {
+    path: "/recipes/AI",
+    element: (
+      <Protected>
+        <NavBar />
+        <RecipeAI />
       </Protected>
     ),
   },
