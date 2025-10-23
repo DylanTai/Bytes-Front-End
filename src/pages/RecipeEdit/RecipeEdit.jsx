@@ -36,6 +36,7 @@ const RecipeEdit = () => {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [calculatedUnits, setCalculatedUnits] = useState([]);
+  const [formErrors, setFormErrors] = useState({}); // ADD THIS LINE
 
   // Image state
   const [imageFile, setImageFile] = useState(null);
@@ -107,18 +108,18 @@ const RecipeEdit = () => {
   // Image handlers
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    
     if (file) {
       // Validate file type
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
       if (!validTypes.includes(file.type)) {
         alert('Please upload a valid image file (JPG, JPEG, PNG, GIF, or WebP)');
-        // Reset file input
         e.target.value = '';
         return;
       }
 
       // Validate file size (5MB limit)
-      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
         alert('Image file size must be less than 5MB');
         e.target.value = '';
@@ -128,7 +129,7 @@ const RecipeEdit = () => {
       setImageFile(file);
       setRemoveExistingImage(false);
       setHasExistingImage(false);
-      // Create preview URL
+      
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
     }
@@ -400,7 +401,29 @@ const RecipeEdit = () => {
       navigate(`/recipes/${id}`);
     } catch (error) {
       console.error("Error updating recipe:", error);
-      alert("Failed to update recipe");
+      
+      // Handle different types of errors
+      if (error.status === 400) {
+        const details = error.details;
+        let errorMessage = "Please check your recipe data:\n";
+        
+        if (details && typeof details === 'object') {
+          Object.entries(details).forEach(([field, messages]) => {
+            if (Array.isArray(messages)) {
+              errorMessage += `\n${field}: ${messages.join(', ')}`;
+            }
+          });
+        } else {
+          errorMessage = "Invalid recipe data. Please check all fields.";
+        }
+        
+        alert(errorMessage);
+      } else if (error.status === 401) {
+        alert("Your session has expired. Please log in again.");
+        navigate("/sign-in");
+      } else {
+        alert(`Failed to update recipe: ${error.message}`);
+      }
     }
   };
 

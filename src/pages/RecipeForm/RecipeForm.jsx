@@ -147,8 +147,6 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("submitted");
-
     try {
       // Create FormData for image upload
       const formData = new FormData();

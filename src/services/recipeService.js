@@ -12,7 +12,6 @@ const isTokenExpired = (token) => {
     // Check if token expires in less than 1 minute
     return expirationTime - currentTime < 60000;
   } catch (error) {
-    console.error("Error decoding token:", error);
     return true;
   }
 };
@@ -60,7 +59,6 @@ const fetchWithAuth = async (url, options = {}) => {
 
   // Check if token is expired or about to expire
   if (isTokenExpired(access)) {
-    console.log("Token expired or about to expire, refreshing...");
     try {
       access = await refreshAccessToken();
     } catch (error) {
@@ -69,6 +67,7 @@ const fetchWithAuth = async (url, options = {}) => {
     }
   }
 
+  // Build headers without mutating original options
   const authHeaders = {
     ...options.headers,
   };
@@ -77,6 +76,7 @@ const fetchWithAuth = async (url, options = {}) => {
     authHeaders["Authorization"] = `Bearer ${access}`;
   }
 
+  // Make the request with auth headers
   let response = await fetch(url, {
     ...options,
     headers: authHeaders,
@@ -87,14 +87,16 @@ const fetchWithAuth = async (url, options = {}) => {
     const refresh = localStorage.getItem("refresh");
     if (refresh) {
       try {
-        console.log("Received 401, attempting token refresh...");
         access = await refreshAccessToken();
 
         // Retry original request with new token
-        authHeaders["Authorization"] = `Bearer ${access}`;
+        // Important: Pass the original options again (body is still intact)
         response = await fetch(url, {
           ...options,
-          headers: authHeaders,
+          headers: {
+            ...options.headers,
+            Authorization: `Bearer ${access}`,
+          },
         });
       } catch (error) {
         console.error("Token refresh failed:", error);
