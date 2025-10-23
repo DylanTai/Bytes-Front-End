@@ -91,6 +91,7 @@ const RecipeWheel = () => {
               type="checkbox"
               checked={showFavoritesOnly}
               onChange={(e) => setShowFavoritesOnly(e.target.checked)}
+              className="wheel-favorite-checkbox"
             />
             <span>Favorites Only 🍪</span>
           </label>

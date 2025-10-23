@@ -130,6 +130,7 @@
   font-family: "Hubot Sans", sans-serif;
 }
 
+/* view recipe button */
 .view-recipe-button {
   border: #82200c solid 3px;
   border-radius: 8px;
@@ -176,11 +177,12 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #82200c;
+  /* margin-right: -115px; */
 }
 
 .favorites-filter span {
   font-weight: 600;
+  /* margin-left: -125px; */
 }
 
 /* Responsive */
