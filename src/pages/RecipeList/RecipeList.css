@@ -19,6 +19,7 @@
   padding-top: 60px;
 }
 
+<<<<<<< HEAD
 .search-bar {
   display: flex;
   align-items: center;
@@ -26,6 +27,9 @@
   width: 100%;
 }
 
+=======
+/* search and filters */
+>>>>>>> dev
 .search-input {
   flex: 1 1 auto;
   width: 100%;
@@ -58,6 +62,21 @@
   color: black;
 }
 
+.sort-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.list-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
+/* recipe list */
 .recipe-list {
   display: flex;
   justify-content: space-evenly;
@@ -88,6 +107,7 @@
   justify-content: space-between;
   text-align: center;
   transition: background-color 0.3s ease;
+   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .recipe-card:hover {
@@ -140,6 +160,7 @@
   font-size: 1.1rem;
 }
 
+/* add ingredients button */
 .add-ingredients-btn {
   width: 170px;
   font-size: 15px;
@@ -162,13 +183,7 @@
   gap: 20px;
 }
 
-.sort-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-}
-
+/* pagination  */
 .pagination {
   display: flex;
   align-items: center;
@@ -176,6 +191,7 @@
   gap: 15px;
 }
 
+<<<<<<< HEAD
 .list-filters {
   display: flex;
   flex-direction: column;
@@ -322,7 +338,10 @@
 .clear-tags-btn:hover {
   color: #f9ae2c;
 }
+=======
+>>>>>>> dev
 
+/* mobile display */
 @media (max-width: 430px) {
   .recipe-list {
     display: grid;

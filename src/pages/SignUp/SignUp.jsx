@@ -113,7 +113,7 @@ const SignUpForm = () => {
       <h1 className="sign-up-title">Sign Up</h1>
       <form onSubmit={handleSubmit} noValidate>
         <div className="signup-section">
-          <label htmlFor="username">Username:</label>
+          <label htmlFor="username" className="sign-label">Username:</label>
           <input
             type="text"
             id="username"
@@ -127,7 +127,7 @@ const SignUpForm = () => {
           )}
         </div>
         <div className="signup-section">
-          <label htmlFor="email">Email:</label>
+          <label htmlFor="email" className="sign-label">Email:</label>
           <input
             type="text"
             id="email"
@@ -141,7 +141,7 @@ const SignUpForm = () => {
           )}
         </div>
         <div className="signup-section">
-          <label htmlFor="password">Password:</label>
+          <label htmlFor="password" className="sign-label">Password:</label>
           <input
             type="password"
             id="password"
@@ -155,7 +155,7 @@ const SignUpForm = () => {
           )}
         </div>
         <div className="signup-section">
-          <label htmlFor="password2">Confirm Password:</label>
+          <label htmlFor="password2" className="sign-label">Confirm Password:</label>
           <input
             type="password"
             id="password2"

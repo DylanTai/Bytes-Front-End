@@ -28,15 +28,16 @@
   width: 100%;
 }
 
-label {
+.form-element label {
   padding-right: 15px;
   padding-left: 15px;
   font-size: 18px;
 }
 
-select {
+.form-element select {
   padding: 3px;
   background-color: white;
+  border-radius: 8px;
 }
 
 /* recipe title, notes, favorite */
@@ -50,7 +51,7 @@ select {
 .recipe-notes-input {
   width: clamp(250px, 35vw, 400px);
   font-size: 1rem;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .recipe-favorite-input {
@@ -100,6 +101,7 @@ select {
 .weight-input,
 .volume-input {
   width: 100px;
+  border-radius: 8px;
 }
 
 .ingredient-container {
