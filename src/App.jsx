@@ -78,7 +78,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/recipes/:recipeId/edit",
+    path: "/recipes/:id/edit",  // ← Change to :id
     element: (
       <Protected>
         <NavBar />

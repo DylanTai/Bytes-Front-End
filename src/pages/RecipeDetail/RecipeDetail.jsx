@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router";
 import * as recipeService from "../../services/recipeService.js";
+import * as groceryListService from "../../services/groceryListService.js";
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -12,6 +13,7 @@ const RecipeDetail = () => {
   const [steps, setSteps] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [addingIngredientId, setAddingIngredientId] = useState(null);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -47,6 +49,28 @@ const RecipeDetail = () => {
         console.error("Failed to delete recipe:", error);
         alert("Failed to delete recipe.");
       }
+    }
+  };
+
+  const handleAddIngredientToGrocery = async (ingredient) => {
+    if (addingIngredientId === ingredient.id) return;
+    setAddingIngredientId(ingredient.id);
+    try {
+      const response = await groceryListService.addGroceryItem({
+        name: ingredient.name,
+        quantity: ingredient.quantity,
+        volume_unit: ingredient.volume_unit || "",
+        weight_unit: ingredient.weight_unit || "",
+      });
+      const message =
+        response?.message ||
+        `Added ${ingredient.name} to your grocery list.`;
+      alert(message);
+    } catch (err) {
+      console.error("Failed to add ingredient to grocery list:", err);
+      alert("Failed to add ingredient to grocery list.");
+    } finally {
+      setAddingIngredientId(null);
     }
   };
 
@@ -94,6 +118,17 @@ const RecipeDetail = () => {
         </div>
       </div>
 
+      {/* Recipe Image - S3 returns full URL */}
+      {recipe.image && (
+        <div className="recipe-image-container">
+          <img 
+            src={recipe.image}
+            alt={recipe.title}
+            className="recipe-image"
+          />
+        </div>
+      )}
+
       {/* Tags Section */}
       {recipe.tags && recipe.tags.length > 0 && (
         <div className="recipe-tags">
@@ -126,17 +161,29 @@ const RecipeDetail = () => {
       <div className="recipe-ingredients">
         <h2>Ingredients: </h2>
         {ingredients && ingredients.length > 0 ? (
-          <ul>
+          <ul className="recipe-ingredient-list">
             {ingredients.map((ingredient) => {
               const unit = ingredient.volume_unit || ingredient.weight_unit;
 
               return (
-                <li key={ingredient.id} className="edit-ingredient-item">
-                  <span className="ingredient-quantity">
-                    {ingredient.quantity}
-                  </span>{" "}
-                  {unit && <span className="ingredient-unit">{unit}</span>}{" "}
-                  <span className="ingredient-name">{ingredient.name}</span>
+                <li key={ingredient.id} className="ingredient-item">
+                  <div className="ingredient-details">
+                    <span className="ingredient-quantity">
+                      {ingredient.quantity}
+                    </span>{" "}
+                    {unit && <span className="ingredient-unit">{unit}</span>}{" "}
+                    <span className="ingredient-name">{ingredient.name}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="ingredient-add-btn"
+                    onClick={() => handleAddIngredientToGrocery(ingredient)}
+                    disabled={addingIngredientId === ingredient.id}
+                  >
+                    {addingIngredientId === ingredient.id
+                      ? "Adding..."
+                      : "Add to Grocery List"}
+                  </button>
                 </li>
               );
             })}

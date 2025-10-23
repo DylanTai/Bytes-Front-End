@@ -25,105 +25,11 @@ const RecipeList = () => {
     e.stopPropagation();
 
     try {
-      // Import conversion utilities
-      const { areUnitsCompatible, convertQuantity, findOptimalUnit } = 
-        await import("../../config/recipeConfig.js");
-      
-      // Fetch current grocery list and recipe details
-      const [currentItems, recipe] = await Promise.all([
-        groceryListService.getGroceryList(),
-        recipeService.getRecipe(recipeId)
-      ]);
-      
-      let addedCount = 0;
-      let updatedCount = 0;
-      
-      // Process each ingredient
-      for (const ingredient of recipe.ingredients) {
-        // Find existing item with same name (case-insensitive)
-        const existingItem = currentItems.find(
-          item => item.name.toLowerCase() === ingredient.name.toLowerCase()
-        );
-        
-        if (existingItem) {
-          const ingredientUnit = ingredient.volume_unit || ingredient.weight_unit;
-          const existingUnit = existingItem.volume_unit || existingItem.weight_unit;
-          
-          // Check if both have units and if they're compatible (both volume or both weight)
-          if (ingredientUnit && existingUnit && areUnitsCompatible(ingredientUnit, existingUnit)) {
-            const isVolume = !!ingredient.volume_unit;
-            
-            // Convert ingredient quantity to existing item's unit
-            const convertedQuantity = convertQuantity(
-              ingredient.quantity,
-              ingredientUnit,
-              existingUnit,
-              isVolume
-            );
-            
-            // Add quantities together
-            const totalQuantity = existingItem.quantity + convertedQuantity;
-            
-            // Find optimal unit for display (closest to 1 but >= 1)
-            const optimal = findOptimalUnit(totalQuantity, existingUnit, isVolume);
-            
-            // Update the existing item with new quantity and optimal unit
-            await groceryListService.updateGroceryItem(
-              existingItem.id, 
-              false, // Uncheck when adding more
-              {
-                quantity: optimal.quantity,
-                volume_unit: isVolume ? optimal.unit : '',
-                weight_unit: isVolume ? '' : optimal.unit
-              }
-            );
-            
-            updatedCount++;
-            continue; // Skip adding as new item
-          }
-
-          // Neither matching item has any unit (simple count)
-          if (!ingredientUnit && !existingUnit) {
-            const totalQuantity = existingItem.quantity + ingredient.quantity;
-
-            await groceryListService.updateGroceryItem(
-              existingItem.id,
-              false,
-              {
-                quantity: totalQuantity,
-                volume_unit: "",
-                weight_unit: "",
-              }
-            );
-
-            updatedCount++;
-            continue; // Skip adding as new item
-          }
-        }
-        
-        // If no match found or units are incompatible, add as new item
-        await groceryListService.addGroceryItem({
-          name: ingredient.name,
-          quantity: ingredient.quantity,
-          volume_unit: ingredient.volume_unit || '',
-          weight_unit: ingredient.weight_unit || '',
-          checked: false
-        });
-        
-        addedCount++;
-      }
-      
-      // Build success message
-      const messages = [];
-      if (addedCount > 0) {
-        messages.push(`Added ${addedCount} new ingredient${addedCount !== 1 ? 's' : ''}`);
-      }
-      if (updatedCount > 0) {
-        messages.push(`Updated ${updatedCount} existing ingredient${updatedCount !== 1 ? 's' : ''}`);
-      }
-      
-      alert(messages.join(' and ') + ` from "${recipeTitle}"`);
-      
+      const response = await groceryListService.addRecipeToGroceryList(recipeId);
+      const message =
+        response?.message ||
+        `Added ingredients from "${recipeTitle}" to your grocery list.`;
+      alert(message);
     } catch (err) {
       console.error("Error adding to grocery list:", err);
       alert("Failed to add ingredients to grocery list.");
@@ -256,8 +162,29 @@ const RecipeList = () => {
             <li key={recipe.id} className="recipe-card-wrapper">
               <Link to={`/recipes/${recipe.id}`} className="recipe-link">
                 <div className="recipe-card">
-                  <strong>{recipe.title}</strong>
-                  {recipe.favorite && <span> 🍪 </span>}
+                  {/* Optional: Show thumbnail - S3 returns full URL */}
+                  {recipe.image ? (
+                    <>
+                      <div className="recipe-thumbnail-wrapper">
+                        <img 
+                          src={recipe.image}
+                          alt={recipe.title}
+                          className="recipe-thumbnail"
+                        />
+                      </div>
+                      <div className="recipe-card-content">
+                        <strong>{recipe.title}</strong>
+                        {recipe.favorite && <span className="recipe-favorite-icon">🍪</span>}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="recipe-thumbnail-wrapper placeholder">
+                      <div className="recipe-card-content placeholder-content">
+                        <strong>{recipe.title}</strong>
+                        {recipe.favorite && <span className="recipe-favorite-icon">🍪</span>}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Link>
               <button
