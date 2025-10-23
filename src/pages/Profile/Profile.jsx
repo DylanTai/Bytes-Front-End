@@ -111,6 +111,7 @@ const Profile = () => {
     <div className="profile-page">
       <h1 className="profile-title">My Profile</h1>
 
+    <div className="profile-section-container">
       {/* Update Username Section */}
       <section className="profile-section">
         <h2>Update Username</h2>
@@ -237,6 +238,7 @@ const Profile = () => {
           </div>
         )}
       </section>
+      </div>
     </div>
   );
 };

@@ -57,6 +57,50 @@ nav img {
   margin-right: 8px;
 }
 
+/*  */
+
+.navbar {
+  position: sticky; /* stays at top, like Monday.com */
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff; /* or your theme color */
+  padding: 0.5rem 2rem;
+  z-index: 1000;
+  transition: box-shadow 0.25s ease-in-out, background-color 0.25s ease;
+  box-shadow: none; /* default – flat */
+}
+
+/* ✅ Adds the soft shadow only when scrolled */
+.navbar.scrolled {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Optional: smooth blur effect like Monday.com’s subtle depth */
+.navbar.scrolled {
+  backdrop-filter: blur(8px);
+}
+
+/* Responsive nav items */
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #3b2f2f;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: #fc8f42;
+}
+
+
+
+
 /* === Hamburger Menu === */
 @media (max-width: 768px) {
   .nav-hamburger {

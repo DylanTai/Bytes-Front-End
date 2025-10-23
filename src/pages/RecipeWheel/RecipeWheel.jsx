@@ -112,8 +112,8 @@ const RecipeWheel = () => {
       <h1 className="wheel-title">Recipe Wheel</h1>
 
       {/* Favorites Filter */}
-      <div className="favorites-filter">
-        <label>
+      <div className="favorites-filter-wheel">
+        <label className="favorites-filter-label">
           <input
             type="checkbox"
             checked={showFavoritesOnly}

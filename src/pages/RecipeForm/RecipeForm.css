@@ -15,37 +15,17 @@
   margin-top: 50px;
   margin-bottom: 20px;
   font-family: "Handjet", sans-serif;
-  font-size: 50px;
+  font-size: 55px;
   padding-top: 60px;
 }
 
-.recipe-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.error-messages {
-  background-color: #fdecea;
-  border: 1px solid #f5c2c7;
-  border-radius: 6px;
-  color: #611a15;
-  margin-bottom: 20px;
-  max-width: 600px;
-  padding: 12px 16px;
-  width: 100%;
-}
-
-.error-messages ul {
-  margin: 0;
-  padding-left: 20px;
-}
-
+/* general form styling */
 .form-element {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
   flex-direction: column;
+  width: 100%;
 }
 
 label {
@@ -59,6 +39,61 @@ select {
   background-color: white;
 }
 
+/* recipe title, notes, favorite */
+.recipe-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.recipe-title-input,
+.recipe-notes-input {
+  width: clamp(250px, 35vw, 400px);
+  font-size: 1rem;
+  border-radius: 6px;
+}
+
+.recipe-favorite-input {
+  margin-left: -85px;
+}
+
+/* tag styling */
+.tags-container {
+  margin: 20px 0;
+  padding: 15px;
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 25px;
+  justify-content: space-evenly;
+}
+
+.tags-container h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  width: 75%;
+}
+
+.tag-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.tag-checkbox input[type="checkbox"] {
+  cursor: pointer;
+}
+
+/* ingredient styling */
 .quantity-input,
 .weight-input,
 .volume-input {
@@ -78,21 +113,12 @@ select {
   align-items: center;
 }
 
+/* step styling */
 .steps-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 30px;
-}
-
-.recipe-notes {
-  width: 442px;
-  height: 47px;
-  background-color: white;
-}
-
-.recipe-notes-input {
-  width: 500px;
 }
 
 .step-number-input {
@@ -103,6 +129,18 @@ select {
   width: 550px;
 }
 
+.step-description-input {
+  width: 500px;
+}
+
+/* notes styling */
+.recipe-notes {
+  width: 442px;
+  height: 47px;
+  background-color: white;
+}
+
+/* buttons */
 .form-btn {
   color: #82200c;
   text-decoration: none;
@@ -124,33 +162,25 @@ select {
   margin-top: 35px;
 }
 
-.tags-container {
-  margin: 20px 0;
-  padding: 15px;
-  width: 90%;
+.recipe-form-btns {
+  margin-top: 30px;
 }
 
-.tags-container h3 {
-  margin-top: 0;
-  margin-bottom: 15px;
+/* error handling */
+.error-messages {
+  background-color: #fdecea;
+  border: 1px solid #f5c2c7;
+  border-radius: 6px;
+  color: #611a15;
+  margin-bottom: 20px;
+  max-width: 600px;
+  padding: 12px 16px;
+  width: 100%;
 }
 
-.tags-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px;
-}
-
-.tag-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.tag-checkbox input[type="checkbox"] {
-  cursor: pointer;
+.error-messages ul {
+  margin: 0;
+  padding-left: 20px;
 }
 
 /* for cell phones */

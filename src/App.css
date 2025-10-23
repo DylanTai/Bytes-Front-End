@@ -14,8 +14,10 @@ main {
   align-items: center;
   justify-content: center;
   height: 90vh;
+  font-family: "Hubot Sans", sans-serif;
 }
 
 body {
   margin-top: 80px;
+  font-family: "Hubot Sans", sans-serif;
 }

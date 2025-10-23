@@ -93,6 +93,7 @@ const GroceryList = () => {
         </p>
       ) : (
         <>
+          <div className="grocery-list-container">
           <ul className="grocery-list">
             {items.map((item) => (
               <li key={item.id} className={`grocery-item ${item.checked ? 'checked' : ''}`}>
@@ -103,7 +104,7 @@ const GroceryList = () => {
                   className="grocery-checkbox"
                 />
                 <span className="grocery-item-text">
-                  {item.name} - {formatQuantity(item)}
+                  {formatQuantity(item)} - {item.name} 
                 </span>
               </li>
             ))}
@@ -116,6 +117,7 @@ const GroceryList = () => {
             <button onClick={handleClearChecked} className="update-button">
               Update (Remove Checked Items)
             </button>
+          </div>
           </div>
         </>
       )}

@@ -60,7 +60,9 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   const formatValidationErrors = (details) => {
     if (!details || typeof details !== "object") {
-      return ["Unable to create recipe. Please review your entries and try again."];
+      return [
+        "Unable to create recipe. Please review your entries and try again.",
+      ];
     }
 
     const messages = [];
@@ -106,7 +108,9 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     collectMessages(details);
 
     if (!messages.length) {
-      messages.push("Unable to create recipe. Please review your entries and try again.");
+      messages.push(
+        "Unable to create recipe. Please review your entries and try again."
+      );
     }
 
     return messages;
@@ -120,7 +124,8 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   };
 
   const getStepLabel = (index, stepNumber) => {
-    const number = stepNumber ?? (Number.isInteger(index) ? index + 1 : undefined);
+    const number =
+      stepNumber ?? (Number.isInteger(index) ? index + 1 : undefined);
     return `Step${number ? ` ${number}` : ""}`;
   };
 
@@ -158,11 +163,15 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       const normalized = Array.isArray(details) ? details : [String(details)];
 
       if (context.type === "ingredient") {
-        return { [getIngredientLabel(context.index, context.name)]: normalized };
+        return {
+          [getIngredientLabel(context.index, context.name)]: normalized,
+        };
       }
 
       if (context.type === "step") {
-        return { [getStepLabel(context.index, context.stepNumber)]: normalized };
+        return {
+          [getStepLabel(context.index, context.stepNumber)]: normalized,
+        };
       }
 
       return { General: normalized };
@@ -246,7 +255,9 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         }))
     );
     // Remove calculated units for removed ingredient
-    setCalculatedUnits((prev) => prev.filter((_, index) => index !== indexToRmove));
+    setCalculatedUnits((prev) =>
+      prev.filter((_, index) => index !== indexToRmove)
+    );
   };
 
   const addExtraStep = (e) => {
@@ -339,11 +350,14 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       if (collectedErrors.length) {
         const authError = collectedErrors.find(
           (currentError) =>
-            currentError?.status === 401 || currentError?.message === "Authentication failed"
+            currentError?.status === 401 ||
+            currentError?.message === "Authentication failed"
         );
 
         if (authError) {
-          alert("Authentication error. Your session may have expired. Please log in again.");
+          alert(
+            "Authentication error. Your session may have expired. Please log in again."
+          );
           navigate("/sign-in");
           return;
         }
@@ -387,13 +401,18 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       console.error("Error in handleSubmit:", error);
 
       if (error.status === 400) {
-        const contextualized = applyContextToDetails(error.details, error.context);
+        const contextualized = applyContextToDetails(
+          error.details,
+          error.context
+        );
         setFormErrors(formatValidationErrors(contextualized));
         return;
       }
 
       if (error.status === 401 || error.message === "Authentication failed") {
-        alert("Authentication error. Your session may have expired. Please log in again.");
+        alert(
+          "Authentication error. Your session may have expired. Please log in again."
+        );
         navigate("/sign-in");
         return;
       }
@@ -405,9 +424,9 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   // onChange handlers
   const handleRecipeChange = (event) => {
     const { name, value, type, checked } = event.target;
-    setRecipeData((prev) => ({ 
-      ...prev, 
-      [name]: type === "checkbox" ? checked : value 
+    setRecipeData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -416,22 +435,30 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     setIngredientsData((prev) => {
       const updated = [...prev];
       const currentIngredient = updated[index];
-      
+
       // Handle quantity change
       if (name === "quantity") {
         updated[index].quantity = value;
-        
+
         // If a unit is already selected, recalculate all possible values
         if (currentIngredient.volume_unit) {
           setCalculatedUnits((prevCalc) => {
             const updatedCalc = [...prevCalc];
-            updatedCalc[index] = calculateAllUnits(value, currentIngredient.volume_unit, true);
+            updatedCalc[index] = calculateAllUnits(
+              value,
+              currentIngredient.volume_unit,
+              true
+            );
             return updatedCalc;
           });
         } else if (currentIngredient.weight_unit) {
           setCalculatedUnits((prevCalc) => {
             const updatedCalc = [...prevCalc];
-            updatedCalc[index] = calculateAllUnits(value, currentIngredient.weight_unit, false);
+            updatedCalc[index] = calculateAllUnits(
+              value,
+              currentIngredient.weight_unit,
+              false
+            );
             return updatedCalc;
           });
         }
@@ -440,7 +467,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       else if (name === "volume_unit") {
         const oldUnit = currentIngredient.volume_unit;
         const newUnit = value;
-        
+
         // If clearing the unit (setting to ""), clear quantity and calculated values
         if (!newUnit) {
           updated[index].quantity = 0;
@@ -454,7 +481,11 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         else if (!oldUnit && newUnit) {
           setCalculatedUnits((prevCalc) => {
             const updatedCalc = [...prevCalc];
-            updatedCalc[index] = calculateAllUnits(currentIngredient.quantity, newUnit, true);
+            updatedCalc[index] = calculateAllUnits(
+              currentIngredient.quantity,
+              newUnit,
+              true
+            );
             return updatedCalc;
           });
         }
@@ -465,7 +496,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             updated[index].quantity = calculatedValue;
           }
         }
-        
+
         updated[index].volume_unit = newUnit;
         // Clear weight unit when volume is selected
         if (newUnit) {
@@ -476,7 +507,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       else if (name === "weight_unit") {
         const oldUnit = currentIngredient.weight_unit;
         const newUnit = value;
-        
+
         // If clearing the unit (setting to ""), clear quantity and calculated values
         if (!newUnit) {
           updated[index].quantity = 0;
@@ -490,7 +521,11 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         else if (!oldUnit && newUnit) {
           setCalculatedUnits((prevCalc) => {
             const updatedCalc = [...prevCalc];
-            updatedCalc[index] = calculateAllUnits(currentIngredient.quantity, newUnit, false);
+            updatedCalc[index] = calculateAllUnits(
+              currentIngredient.quantity,
+              newUnit,
+              false
+            );
             return updatedCalc;
           });
         }
@@ -501,7 +536,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             updated[index].quantity = calculatedValue;
           }
         }
-        
+
         updated[index].weight_unit = newUnit;
         // Clear volume unit when weight is selected
         if (newUnit) {
@@ -545,190 +580,213 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   return (
     <>
       <div className="recipe-form-page">
-      <h1 className="recipeform-title">Log New Recipe</h1>
+        <h1 className="recipeform-title">Add New Recipe</h1>
 
-      <form onSubmit={handleSubmit} className="recipe-form">
-        {formErrors.length > 0 && (
-          <div className="error-messages" role="alert">
-            <ul>
-              {formErrors.map((message, index) => (
-                <li key={index}>{message}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        <div className="form-element">
-          <div className="recipe-form">
-            <label htmlFor="recipe-title">Title: </label>
-            <input
-              type="text"
-              id="recipe-title"
-              value={recipeData.title}
-              onChange={handleRecipeChange}
-              name="title"
-            />
-            <label htmlFor="recipe-notes">Notes:</label>
-            <input
-              type="text"
-              id="recipe-notes"
-              value={recipeData.notes}
-              onChange={handleRecipeChange}
-              name="notes"
-            />
-            <label htmlFor="recipe-favorite">Favorite</label>
-            <input
-              id="recipe-favorite"
-              type="checkbox"
-              checked={recipeData.favorite}
-              onChange={handleRecipeChange}
-              name="favorite"
-            />
-          </div>
-          
-          <div className="tags-container">
-            <h3>Tags</h3>
-            <div className="tags-grid">
-              {AVAILABLE_TAGS.map((tag) => (
-                <label key={tag.value} className="tag-checkbox">
+        <form onSubmit={handleSubmit} className="recipe-form">
+          {formErrors.length > 0 && (
+            <div className="error-messages" role="alert">
+              <ul>
+                {formErrors.map((message, index) => (
+                  <li key={index}>{message}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <div className="form-element">
+            <div className="recipe-form">
+              <div className="recipe-title-container">
+                <label htmlFor="recipe-title">Title: </label>
+                <input
+                  type="text"
+                  id="recipe-title"
+                  value={recipeData.title}
+                  onChange={handleRecipeChange}
+                  name="title"
+                  className="recipe-title-input"
+                />
+              </div>
+              <div className="recipe-notes-container">
+                <label htmlFor="recipe-notes">Notes:</label>
+                <input
+                  type="text"
+                  id="recipe-notes"
+                  value={recipeData.notes}
+                  onChange={handleRecipeChange}
+                  name="notes"
+                  className="recipe-notes-input"
+                />
+              </div>
+              <div className="recipe-favorite-container">
+                <label htmlFor="recipe-favorite">Favorite</label>
+                <input
+                  id="recipe-favorite"
+                  type="checkbox"
+                  checked={recipeData.favorite}
+                  onChange={handleRecipeChange}
+                  name="favorite"
+                  className="recipe-favorite-input"
+                />
+              </div>
+            </div>
+
+            <div className="tags-container">
+              <h3>Tags</h3>
+              <div className="tags-grid">
+                {AVAILABLE_TAGS.map((tag) => (
+                  <label key={tag.value} className="tag-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={tags.includes(tag.value)}
+                      onChange={() => handleTagChange(tag.value)}
+                    />
+                    {tag.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="ingredient-container">
+              {ingredientsData.map((ingredient, index) => (
+                <div className="ingredient-form" key={index}>
+                  <label htmlFor={`ingredient-name-${index}`}>
+                    Ingredient:{" "}
+                  </label>
                   <input
-                    type="checkbox"
-                    checked={tags.includes(tag.value)}
-                    onChange={() => handleTagChange(tag.value)}
+                    type="text"
+                    id={`ingredient-name-${index}`}
+                    value={ingredient.name}
+                    onChange={(e) => {
+                      handleIngredientChange(index, e);
+                    }}
+                    name="name"
+                    autoComplete="false"
                   />
-                  {tag.label}
-                </label>
+                  <label htmlFor={`ingredient-quantity-${index}`}>
+                    Quantity
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    id={`ingredient-quantity-${index}`}
+                    value={ingredient.quantity}
+                    onChange={(e) => handleIngredientChange(index, e)}
+                    name="quantity"
+                    className="quantity-input"
+                  />
+
+                  <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
+                  <select
+                    id={`ingredient-volume-${index}`}
+                    name="volume_unit"
+                    value={ingredient.volume_unit || ""}
+                    onChange={(e) => {
+                      handleIngredientChange(index, e);
+                    }}
+                    disabled={ingredient.weight_unit !== ""}
+                    className="volume-input"
+                  >
+                    <option value="">---</option>
+                    {VOLUME_UNITS.map((unit) => (
+                      <option key={unit.value} value={unit.value}>
+                        {unit.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
+                  <select
+                    id={`ingredient-weight-${index}`}
+                    name="weight_unit"
+                    value={ingredient.weight_unit || ""}
+                    onChange={(e) => {
+                      handleIngredientChange(index, e);
+                    }}
+                    disabled={ingredient.volume_unit !== ""}
+                    className="weight-input"
+                  >
+                    <option value="">---</option>
+                    {WEIGHT_UNITS.map((unit) => (
+                      <option key={unit.value} value={unit.value}>
+                        {unit.label}
+                      </option>
+                    ))}
+                  </select>
+                  {ingredientsData.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        removeIngredient(index);
+                      }}
+                      className="form-btn"
+                    >
+                      Remove Ingredient
+                    </button>
+                  )}
+                </div>
               ))}
+              <button
+                type="button"
+                onClick={addExtraIngredient}
+                className="form-btn"
+              >
+                Add Ingredient
+              </button>
+            </div>
+            <div className="steps-container">
+              {stepsData.map((step, index) => (
+                <div className="step-form" key={index}>
+                  <label htmlFor={`step-number-${index}`}>Step</label>
+                  <input
+                    type="number"
+                    id={`step-number-${index}`}
+                    value={step.step}
+                    name="step"
+                    readOnly
+                    onChange={(e) => {
+                      handleStepChange(index, e);
+                    }}
+                    className="step-number-input"
+                  />
+                  <label htmlFor={`step-description-${index}`}>
+                    Description
+                  </label>
+                  <input
+                    type="text"
+                    id={`step-description-${index}`}
+                    value={step.description}
+                    name="description"
+                    onChange={(e) => {
+                      handleStepChange(index, e);
+                    }}
+                    className="step-description-input"
+                  />
+                  {stepsData.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        removeStep(index);
+                      }}
+                      className="form-btn"
+                    >
+                      Remove Step
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button type="button" onClick={addExtraStep} className="form-btn">
+                Add Step
+              </button>
+            </div>
+            <div className="recipe-form-btns">
+              <button type="submit" className="form-btn">
+                Add Recipe
+              </button>
+              <button type="button" onClick={handleCancel} className="form-btn">
+                Cancel
+              </button>
             </div>
           </div>
-
-          <div className="ingredient-container">
-            {ingredientsData.map((ingredient, index) => (
-              <div className="ingredient-form" key={index}>
-                <label htmlFor={`ingredient-name-${index}`}>Ingredient: </label>
-                <input
-                  type="text"
-                  id={`ingredient-name-${index}`}
-                  value={ingredient.name}
-                  onChange={(e) => {
-                    handleIngredientChange(index, e);
-                  }}
-                  name="name"
-                  autoComplete="false"
-                />
-                <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  id={`ingredient-quantity-${index}`}
-                  value={ingredient.quantity}
-                  onChange={(e) => handleIngredientChange(index, e)}
-                  name="quantity"
-                  className="quantity-input"
-                />
-
-                <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
-                <select
-                  id={`ingredient-volume-${index}`}
-                  name="volume_unit"
-                  value={ingredient.volume_unit || ""}
-                  onChange={(e) => {
-                    handleIngredientChange(index, e);
-                  }}
-                  disabled={ingredient.weight_unit !== ""}
-                  className="volume-input"
-                >
-                  <option value="">---</option>
-                  {VOLUME_UNITS.map((unit) => (
-                    <option key={unit.value} value={unit.value}>
-                      {unit.label}
-                    </option>
-                  ))}
-                </select>
-
-                <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
-                <select
-                  id={`ingredient-weight-${index}`}
-                  name="weight_unit"
-                  value={ingredient.weight_unit || ""}
-                  onChange={(e) => {
-                    handleIngredientChange(index, e);
-                  }}
-                  disabled={ingredient.volume_unit !== ""}
-                  className="weight-input"
-                >
-                  <option value="">---</option>
-                  {WEIGHT_UNITS.map((unit) => (
-                    <option key={unit.value} value={unit.value}>
-                      {unit.label}
-                    </option>
-                  ))}
-                </select>
-                {ingredientsData.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      removeIngredient(index);
-                    }}
-                    className="form-btn"
-                  >
-                    Remove Ingredient
-                  </button>
-                )}
-              </div>
-            ))}
-            <button type="button" onClick={addExtraIngredient} className="form-btn">
-              Add Ingredient
-            </button>
-          </div>
-          <div className="steps-container">
-            {stepsData.map((step, index) => (
-              <div className="step-form" key={index}>
-                <label htmlFor={`step-number-${index}`}>Step</label>
-                <input
-                  type="number"
-                  id={`step-number-${index}`}
-                  value={step.step}
-                  name="step"
-                  readOnly
-                  onChange={(e) => {
-                    handleStepChange(index, e);
-                  }}
-                  className="step-number-input"
-                />
-                <label htmlFor={`step-description-${index}`}>Description</label>
-                <input
-                  type="text"
-                  id={`step-description-${index}`}
-                  value={step.description}
-                  name="description"
-                  onChange={(e) => {
-                    handleStepChange(index, e);
-                  }}
-                />
-                {stepsData.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      removeStep(index);
-                    }}
-                    className="form-btn"
-                  >
-                    Remove Step
-                  </button>
-                )}
-              </div>
-            ))}
-            <button type="button" onClick={addExtraStep} className="form-btn">
-              Add Step
-            </button>
-          </div>
-          <button type="submit" className="form-btn">Add Recipe</button>
-          <button type="button" onClick={handleCancel} className="form-btn">
-            Cancel
-          </button>
-        </div>
-
-      </form>
+        </form>
       </div>
     </>
   );

@@ -7,7 +7,72 @@
   margin-right: 10px;
 }
 
+/* check off list items */
 .grocery-item.checked .grocery-item-text {
   text-decoration: line-through;
   color: #999;
+}
+
+.grocery-list-title {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 45px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  font-family: "Handjet", sans-serif;
+  font-size: 55px;
+  padding-top: 60px;
+}
+
+.check-all-button,
+.update-button {
+  color: #82200c;
+  text-decoration: none;
+  padding: 20px;
+  font-weight: 400;
+  width: auto;
+  text-align: center;
+  background: none;
+  border: none;
+  font-size: 20px;
+}
+
+.check-all-button:hover,
+.update-button:hover {
+  color: #f9ae2c;
+  cursor: pointer;
+}
+
+.grocery-list-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.grocery-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+}
+
+.grocery-item {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+}
+
+.grocery-checkbox {
+  margin-right: -90px;
+  margin-left: -90px;
+}
+
+.grocery-list-actions {
+  margin-top: 30px;
 }
