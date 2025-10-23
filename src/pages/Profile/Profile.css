@@ -19,6 +19,7 @@
   padding-top: 60px;
 }
 
+/* buttons */
 .submit-button,
 .danger-button {
   color: #82200c;
@@ -38,8 +39,7 @@
   cursor: pointer;
 }
 
-/*  */
-
+/* profile section */
 .profile-section-container {
   display: flex;
   flex-direction: column;

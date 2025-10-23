@@ -131,7 +131,7 @@ const RecipeDetail = () => {
               const unit = ingredient.volume_unit || ingredient.weight_unit;
 
               return (
-                <li key={ingredient.id} className="ingredient-item">
+                <li key={ingredient.id} className="edit-ingredient-item">
                   <span className="ingredient-quantity">
                     {ingredient.quantity}
                   </span>{" "}
