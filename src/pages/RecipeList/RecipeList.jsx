@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import * as recipeService from "../../services/recipeService.js";
 import * as groceryListService from "../../services/groceryListService.js";
+import { AVAILABLE_TAGS } from "../../config/recipeConfig.js";
 import "./RecipeList.css";
 
 const RecipeList = () => {
@@ -10,7 +11,13 @@ const RecipeList = () => {
   const [sortBy, setSortBy] = useState("Newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFavoritesFirst, setShowFavoritesFirst] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [showFilters, setShowFilters] = useState(false);
   const recipesPerPage = 5;
+
+  const sortedAvailableTags = useMemo(() => {
+    return [...AVAILABLE_TAGS].sort((a, b) => a.label.localeCompare(b.label));
+  }, []);
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -40,7 +47,7 @@ const RecipeList = () => {
   const searchFilteredRecipes = recipes.filter((recipe) => {
     if (!searchQuery.trim()) return true;
 
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.trim().toLowerCase();
 
     // Search in title
     if (recipe.title.toLowerCase().includes(query)) return true;
@@ -58,8 +65,15 @@ const RecipeList = () => {
     return false;
   });
 
+  // Tag filter
+  const tagFilteredRecipes = searchFilteredRecipes.filter((recipe) => {
+    if (selectedTags.length === 0) return true;
+    if (!Array.isArray(recipe.tags) || recipe.tags.length === 0) return false;
+    return selectedTags.every((tag) => recipe.tags.includes(tag));
+  });
+
   // Sort recipes
-  const sortedRecipes = [...searchFilteredRecipes].sort((a, b) => {
+  const sortedRecipes = [...tagFilteredRecipes].sort((a, b) => {
     // Apply favorites filter first if enabled
     if (showFavoritesFirst) {
       if (a.favorite && !b.favorite) return -1;
@@ -92,7 +106,7 @@ const RecipeList = () => {
   // Reset to page 1 when search or filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, sortBy, showFavoritesFirst]);
+  }, [searchQuery, sortBy, showFavoritesFirst, selectedTags]);
 
   return (
     <div className="recipe-list-page">
@@ -119,28 +133,76 @@ const RecipeList = () => {
           )}
         </div>
 
-        {/* Controls */}
-        <div className="favorites-filter">
-          <label className="fav-label">
-            <input
-              type="checkbox"
-              checked={showFavoritesFirst}
-              onChange={(e) => setShowFavoritesFirst(e.target.checked)}
-              className="show-favorite-btn"
-            />
-            Show 🍪 favorites first
-          </label>
-        </div>
-        <div className="controls">
-          <div className="sort-controls">
-            <label>Sort by: </label>
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-              <option value="Newest">Posted (Newest)</option>
-              <option value="Oldest">Posted (Oldest)</option>
-              <option value="Title (A-Z)">Title (A → Z)</option>
-              <option value="Title (Z-A)">Title (Z → A)</option>
-            </select>
-          </div>
+        <div className={`filter-panel ${showFilters ? "open" : ""}`}>
+          <button
+            type="button"
+            className="filter-toggle-btn"
+            onClick={() => setShowFilters((prev) => !prev)}
+          >
+            Filters {showFilters ? "▲" : "▼"}
+          </button>
+          {showFilters && (
+            <div className="filter-content">
+              <div className="filter-header">
+                <div className="controls sort-controls">
+                  <label>Sort by</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                  >
+                    <option value="Newest">Posted (Newest)</option>
+                    <option value="Oldest">Posted (Oldest)</option>
+                    <option value="Title (A-Z)">Title (A → Z)</option>
+                    <option value="Title (Z-A)">Title (Z → A)</option>
+                  </select>
+                </div>
+                <button
+                  type="button"
+                  className="reset-filters-btn"
+                  onClick={() => {
+                    setSortBy("Newest");
+                    setShowFavoritesFirst(false);
+                    setSelectedTags([]);
+                  }}
+                >
+                  Reset All Filters
+                </button>
+              </div>
+
+              <div className="filters-check-panel">
+                <div className="filters-check-grid">
+                  <label className="filters-check-item">
+                    <input
+                      className="filters-check-checkbox"
+                      type="checkbox"
+                      checked={showFavoritesFirst}
+                      onChange={(e) => setShowFavoritesFirst(e.target.checked)}
+                    />
+                    <span className="filters-check-label">Show favorites first 🍪</span>
+                  </label>
+                  {sortedAvailableTags.map((tag) => (
+                    <label key={tag.value} className="filters-check-item">
+                      <input
+                        className="filters-check-checkbox"
+                        type="checkbox"
+                        value={tag.value}
+                        checked={selectedTags.includes(tag.value)}
+                        onChange={(e) => {
+                          const { checked, value } = e.target;
+                          setSelectedTags((prev) =>
+                            checked
+                              ? [...prev, value]
+                              : prev.filter((tagValue) => tagValue !== value)
+                          );
+                        }}
+                      />
+                      <span className="filters-check-label">{tag.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Results count */}
@@ -154,7 +216,7 @@ const RecipeList = () => {
       {/* Recipe List */}
       {currRecipes.length === 0 ? (
         <p className="no-recipes-message">
-          {searchQuery ? "No recipes match your search." : "You have no recipes yet."}
+          No recipes here!
         </p>
       ) : (
         <ul className="recipe-list">
