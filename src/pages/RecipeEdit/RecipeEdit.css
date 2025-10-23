@@ -6,6 +6,10 @@
   width: 100%;
 }
 
+.edit-recipe-favorite-input {
+  margin: 0;
+}
+
 /* edit ingredients */
 .edit-ingredient-container {
   display: flex;
