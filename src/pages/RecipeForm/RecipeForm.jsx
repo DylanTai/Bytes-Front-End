@@ -5,7 +5,6 @@ import {
   addRecipe,
   addIngredient,
   addStep,
-  deleteRecipe,
 } from "../../services/recipeService.js";
 import {
   VOLUME_UNITS,
@@ -52,181 +51,46 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   ]);
 
   const [tags, setTags] = useState([]);
-
-  const [formErrors, setFormErrors] = useState([]);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   // Track pre-calculated unit values for each ingredient to prevent rounding errors
   const [calculatedUnits, setCalculatedUnits] = useState([{}]);
 
-  const formatValidationErrors = (details) => {
-    if (!details || typeof details !== "object") {
-      return [
-        "Unable to create recipe. Please review your entries and try again.",
-      ];
-    }
-
-    const messages = [];
-
-    const formatFieldLabel = (field) => {
-      if (!field || field === "non_field_errors") {
-        return "General";
+  // Image handlers
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        alert('Please upload a valid image file (JPG, JPEG, PNG, GIF, or WebP)');
+        // Reset file input
+        e.target.value = '';
+        return;
       }
 
-      return field
-        .replace(/\.\d+/g, "")
-        .replace(/\./g, " ")
-        .replace(/_/g, " ")
-        .trim()
-        .split(" ")
-        .filter(Boolean)
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-    };
-
-    const collectMessages = (value, keyPath = "") => {
-      if (Array.isArray(value)) {
-        value.forEach((item, index) => {
-          if (typeof item === "string") {
-            const label = formatFieldLabel(keyPath);
-            messages.push(`${label}: ${item}`);
-          } else if (item && typeof item === "object") {
-            const nextKey = keyPath ? `${keyPath}.${index}` : `${index}`;
-            collectMessages(item, nextKey);
-          }
-        });
-      } else if (value && typeof value === "object") {
-        Object.entries(value).forEach(([childKey, childValue]) => {
-          const nextKey = keyPath ? `${keyPath}.${childKey}` : childKey;
-          collectMessages(childValue, nextKey);
-        });
-      } else if (typeof value === "string") {
-        const label = formatFieldLabel(keyPath);
-        messages.push(`${label}: ${value}`);
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        alert('Image file size must be less than 5MB');
+        e.target.value = '';
+        return;
       }
-    };
 
-    collectMessages(details);
-
-    if (!messages.length) {
-      messages.push(
-        "Unable to create recipe. Please review your entries and try again."
-      );
+      setImageFile(file);
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
     }
-
-    return messages;
   };
 
-  const getIngredientLabel = (index, name) => {
-    const position = Number.isInteger(index) ? index + 1 : undefined;
-    const base = `Ingredient${position ? ` ${position}` : ""}`;
-    const trimmedName = name?.trim();
-    return trimmedName ? `${base} (${trimmedName})` : base;
-  };
-
-  const getStepLabel = (index, stepNumber) => {
-    const number =
-      stepNumber ?? (Number.isInteger(index) ? index + 1 : undefined);
-    return `Step${number ? ` ${number}` : ""}`;
-  };
-
-  const mergeErrorDetails = (target = {}, source = {}) => {
-    const result = { ...(target || {}) };
-    if (!source || typeof source !== "object") {
-      return result;
-    }
-
-    Object.entries(source).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        result[key] = Array.isArray(result[key])
-          ? [...result[key], ...value]
-          : [...value];
-      } else if (value && typeof value === "object") {
-        result[key] = mergeErrorDetails(result[key] || {}, value);
-      } else if (value !== undefined && value !== null) {
-        result[key] = value;
-      }
-    });
-
-    return result;
-  };
-
-  const applyContextToDetails = (details, context) => {
-    if (!context) {
-      return details;
-    }
-
-    if (!details) {
-      return details;
-    }
-
-    if (Array.isArray(details) || typeof details !== "object") {
-      const normalized = Array.isArray(details) ? details : [String(details)];
-
-      if (context.type === "ingredient") {
-        return {
-          [getIngredientLabel(context.index, context.name)]: normalized,
-        };
-      }
-
-      if (context.type === "step") {
-        return {
-          [getStepLabel(context.index, context.stepNumber)]: normalized,
-        };
-      }
-
-      return { General: normalized };
-    }
-
-    if (context.type === "ingredient") {
-      return { [getIngredientLabel(context.index, context.name)]: details };
-    }
-
-    if (context.type === "step") {
-      return { [getStepLabel(context.index, context.stepNumber)]: details };
-    }
-
-    return details;
-  };
-
-  const buildClientValidationErrors = () => {
-    const details = {};
-
-    const title = recipeData.title?.trim();
-    if (!title) {
-      details.title = ["Title is required."];
-    }
-
-    if (recipeData.notes && recipeData.notes.length > 250) {
-      details.notes = ["Notes must be 250 characters or fewer."];
-    }
-
-    ingredientsData.forEach((ingredient, index) => {
-      const messages = [];
-      const trimmedName = ingredient.name?.trim();
-
-      if (!trimmedName) {
-        messages.push("Ingredient name is required.");
-      }
-
-      if (messages.length) {
-        details[getIngredientLabel(index, ingredient.name)] = messages;
-      }
-    });
-
-    stepsData.forEach((step, index) => {
-      const messages = [];
-      const trimmedDescription = step.description?.trim();
-
-      if (!trimmedDescription) {
-        messages.push("Step description is required.");
-      }
-
-      if (messages.length) {
-        details[getStepLabel(index, step.step)] = messages;
-      }
-    });
-
-    return details;
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    // Reset file input
+    const fileInput = document.getElementById("recipe-image");
+    if (fileInput) fileInput.value = "";
   };
 
   // button handlers
@@ -255,9 +119,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         }))
     );
     // Remove calculated units for removed ingredient
-    setCalculatedUnits((prev) =>
-      prev.filter((_, index) => index !== indexToRmove)
-    );
+    setCalculatedUnits((prev) => prev.filter((_, index) => index !== indexToRmove));
   };
 
   const addExtraStep = (e) => {
@@ -285,148 +147,78 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setFormErrors([]);
-
-    const clientDetails = buildClientValidationErrors();
-    if (Object.keys(clientDetails).length > 0) {
-      setFormErrors(formatValidationErrors(clientDetails));
-      return;
-    }
-
     try {
-      const payload = {
-        ...recipeData,
-        title: recipeData.title.trim(),
-        notes: recipeData.notes?.trim() || "",
-        tags,
-      };
-
-      const newRecipe = await addRecipe(payload);
-
-      const ingredientErrors = [];
-      const ingredientsPromises = ingredientsData.map((ingredient, index) =>
-        addIngredient(newRecipe.id, {
-          ...ingredient,
-          name: ingredient.name?.trim(),
-          recipe: newRecipe.id,
-        }).catch((error) => {
-          ingredientErrors.push({
-            status: error?.status,
-            details: error?.details,
-            message: error?.message,
-            context: {
-              type: "ingredient",
-              index,
-              name: ingredient.name,
-            },
-          });
-        })
-      );
-
-      const stepErrors = [];
-      const stepsPromises = stepsData.map((step, index) =>
-        addStep(newRecipe.id, {
-          ...step,
-          description: step.description?.trim(),
-          recipe: newRecipe.id,
-        }).catch((error) => {
-          stepErrors.push({
-            status: error?.status,
-            details: error?.details,
-            message: error?.message,
-            context: {
-              type: "step",
-              index,
-              stepNumber: step.step,
-            },
-          });
-        })
-      );
-
-      await Promise.all([...ingredientsPromises, ...stepsPromises]);
-
-      const collectedErrors = [...ingredientErrors, ...stepErrors];
-
-      if (collectedErrors.length) {
-        const authError = collectedErrors.find(
-          (currentError) =>
-            currentError?.status === 401 ||
-            currentError?.message === "Authentication failed"
-        );
-
-        if (authError) {
-          alert(
-            "Authentication error. Your session may have expired. Please log in again."
-          );
-          navigate("/sign-in");
-          return;
-        }
-
-        const combinedDetails = collectedErrors.reduce((acc, currentError) => {
-          if (!currentError?.details) return acc;
-
-          const contextualized = applyContextToDetails(
-            currentError.details,
-            currentError.context
-          );
-
-          return mergeErrorDetails(acc, contextualized);
-        }, {});
-
-        if (Object.keys(combinedDetails).length > 0) {
-          await deleteRecipe(newRecipe.id).catch(() => {});
-          setFormErrors(formatValidationErrors(combinedDetails));
-          return;
-        }
-
-        const fallbackMessages = collectedErrors
-          .map((error) => error?.message)
-          .filter(Boolean);
-
-        if (fallbackMessages.length > 0) {
-          await deleteRecipe(newRecipe.id).catch(() => {});
-          setFormErrors(fallbackMessages);
-          return;
-        }
-
-        await deleteRecipe(newRecipe.id).catch(() => {});
-        setFormErrors([
-          "Unable to create recipe due to an unexpected error. Please try again.",
-        ]);
-        return;
+      // Create FormData for image upload
+      const formData = new FormData();
+      formData.append("title", recipeData.title);
+      formData.append("notes", recipeData.notes);
+      formData.append("favorite", recipeData.favorite);
+      formData.append("tags", JSON.stringify(tags));
+      
+      // Add image if one was selected
+      if (imageFile) {
+        formData.append("image", imageFile);
       }
 
+      // Create new Recipe with image
+      const newRecipe = await addRecipe(formData);
+
+      // Create Ingredients for the newly created Recipe
+      const ingredientsPromises = ingredientsData.map((ingredient) =>
+        addIngredient(newRecipe.id, {
+          ...ingredient,
+          recipe: newRecipe.id,
+        })
+      );
+      await Promise.all(ingredientsPromises);
+
+      // Create Steps for the newly created Recipe
+      const stepsPromises = stepsData.map((step) =>
+        addStep(newRecipe.id, {
+          ...step,
+          recipe: newRecipe.id,
+        })
+      );
+      await Promise.all(stepsPromises);
       navigate(`/recipes/${newRecipe.id}`);
     } catch (error) {
       console.error("Error in handleSubmit:", error);
-
+      
+      // Handle different types of errors
       if (error.status === 400) {
-        const contextualized = applyContextToDetails(
-          error.details,
-          error.context
-        );
-        setFormErrors(formatValidationErrors(contextualized));
-        return;
-      }
-
-      if (error.status === 401 || error.message === "Authentication failed") {
-        alert(
-          "Authentication error. Your session may have expired. Please log in again."
-        );
+        // Validation error - don't redirect to sign-in
+        const details = error.details;
+        let errorMessage = "Please check your recipe data:\n";
+        
+        if (details && typeof details === 'object') {
+          // Format validation errors
+          Object.entries(details).forEach(([field, messages]) => {
+            if (Array.isArray(messages)) {
+              errorMessage += `\n${field}: ${messages.join(', ')}`;
+            }
+          });
+        } else {
+          errorMessage = "Invalid recipe data. Please check all fields.";
+        }
+        
+        alert(errorMessage);
+      } else if (error.status === 401) {
+        // Authentication error - redirect to sign-in
+        alert("Your session has expired. Please log in again.");
         navigate("/sign-in");
-        return;
+      } else {
+        // Other errors
+        alert(`An error occurred: ${error.message}`);
       }
-
-      alert(`An error occurred: ${error.message}`);
     }
   };
 
   // onChange handlers
   const handleRecipeChange = (event) => {
     const { name, value, type, checked } = event.target;
-    setRecipeData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
+    setRecipeData((prev) => ({ 
+      ...prev, 
+      [name]: type === "checkbox" ? checked : value 
     }));
   };
 
@@ -435,30 +227,22 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     setIngredientsData((prev) => {
       const updated = [...prev];
       const currentIngredient = updated[index];
-
+      
       // Handle quantity change
       if (name === "quantity") {
         updated[index].quantity = value;
-
+        
         // If a unit is already selected, recalculate all possible values
         if (currentIngredient.volume_unit) {
           setCalculatedUnits((prevCalc) => {
             const updatedCalc = [...prevCalc];
-            updatedCalc[index] = calculateAllUnits(
-              value,
-              currentIngredient.volume_unit,
-              true
-            );
+            updatedCalc[index] = calculateAllUnits(value, currentIngredient.volume_unit, true);
             return updatedCalc;
           });
         } else if (currentIngredient.weight_unit) {
           setCalculatedUnits((prevCalc) => {
             const updatedCalc = [...prevCalc];
-            updatedCalc[index] = calculateAllUnits(
-              value,
-              currentIngredient.weight_unit,
-              false
-            );
+            updatedCalc[index] = calculateAllUnits(value, currentIngredient.weight_unit, false);
             return updatedCalc;
           });
         }
@@ -467,7 +251,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       else if (name === "volume_unit") {
         const oldUnit = currentIngredient.volume_unit;
         const newUnit = value;
-
+        
         // If clearing the unit (setting to ""), clear quantity and calculated values
         if (!newUnit) {
           updated[index].quantity = 0;
@@ -481,11 +265,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         else if (!oldUnit && newUnit) {
           setCalculatedUnits((prevCalc) => {
             const updatedCalc = [...prevCalc];
-            updatedCalc[index] = calculateAllUnits(
-              currentIngredient.quantity,
-              newUnit,
-              true
-            );
+            updatedCalc[index] = calculateAllUnits(currentIngredient.quantity, newUnit, true);
             return updatedCalc;
           });
         }
@@ -496,7 +276,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             updated[index].quantity = calculatedValue;
           }
         }
-
+        
         updated[index].volume_unit = newUnit;
         // Clear weight unit when volume is selected
         if (newUnit) {
@@ -507,7 +287,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       else if (name === "weight_unit") {
         const oldUnit = currentIngredient.weight_unit;
         const newUnit = value;
-
+        
         // If clearing the unit (setting to ""), clear quantity and calculated values
         if (!newUnit) {
           updated[index].quantity = 0;
@@ -521,11 +301,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         else if (!oldUnit && newUnit) {
           setCalculatedUnits((prevCalc) => {
             const updatedCalc = [...prevCalc];
-            updatedCalc[index] = calculateAllUnits(
-              currentIngredient.quantity,
-              newUnit,
-              false
-            );
+            updatedCalc[index] = calculateAllUnits(currentIngredient.quantity, newUnit, false);
             return updatedCalc;
           });
         }
@@ -536,7 +312,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             updated[index].quantity = calculatedValue;
           }
         }
-
+        
         updated[index].weight_unit = newUnit;
         // Clear volume unit when weight is selected
         if (newUnit) {
@@ -574,124 +350,123 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   };
 
   const handleCancel = () => {
-    navigate(`/recipes/`);
+    navigate(`/`);
   };
 
   return (
     <>
       <div className="recipe-form-page">
-        <h1 className="recipeform-title">Add New Recipe</h1>
+      <h1 className="recipeform-title">Log New Recipe</h1>
 
-        <form onSubmit={handleSubmit} className="recipe-form">
-          {formErrors.length > 0 && (
-            <div className="error-messages" role="alert">
-              <ul>
-                {formErrors.map((message, index) => (
-                  <li key={index}>{message}</li>
-                ))}
-              </ul>
+      <form onSubmit={handleSubmit} className="recipe-form">
+        <div className="form-element">
+          <div className="recipe-form">
+            <label htmlFor="recipe-title">Title: </label>
+            <input
+              type="text"
+              id="recipe-title"
+              value={recipeData.title}
+              onChange={handleRecipeChange}
+              name="title"
+            />
+            <label htmlFor="recipe-notes">Notes:</label>
+            <input
+              type="text"
+              id="recipe-notes"
+              value={recipeData.notes}
+              onChange={handleRecipeChange}
+              name="notes"
+            />
+            <label htmlFor="recipe-favorite">Favorite</label>
+            <input
+              id="recipe-favorite"
+              type="checkbox"
+              checked={recipeData.favorite}
+              onChange={handleRecipeChange}
+              name="favorite"
+            />
+
+            {/* Image Upload Section */}
+            <div className="image-upload-section">
+              <label htmlFor="recipe-image">Recipe Image:</label>
+              <p className="image-upload-hint">Supported formats: JPG, JPEG, PNG, GIF, WebP (Max 5MB)</p>
+              <input
+                type="file"
+                id="recipe-image"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                onChange={handleImageChange}
+              />
+              
+              {imagePreview && (
+                <div className="image-preview-container">
+                  <img src={imagePreview} alt="Recipe preview" className="image-preview" />
+                  <button type="button" onClick={handleRemoveImage} className="remove-image-btn">
+                    Remove Image
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-          <div className="form-element">
-            <div className="recipe-form">
-              <div className="recipe-title-container">
-                <label htmlFor="recipe-title">Title: </label>
+          </div>
+          
+          <div className="tags-container">
+            <h3>Tags</h3>
+            <div className="tags-grid">
+              {AVAILABLE_TAGS.map((tag) => (
+                <label key={tag.value} className="tag-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={tags.includes(tag.value)}
+                    onChange={() => handleTagChange(tag.value)}
+                  />
+                  {tag.label}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="ingredient-container">
+            {ingredientsData.map((ingredient, index) => (
+              <div className="ingredient-form" key={index}>
+                <label htmlFor={`ingredient-name-${index}`}>Ingredient: </label>
                 <input
                   type="text"
-                  id="recipe-title"
-                  value={recipeData.title}
-                  onChange={handleRecipeChange}
-                  name="title"
-                  className="recipe-title-input"
+                  id={`ingredient-name-${index}`}
+                  value={ingredient.name}
+                  onChange={(e) => {
+                    handleIngredientChange(index, e);
+                  }}
+                  name="name"
+                  autoComplete="false"
                 />
-              </div>
-              <div className="recipe-notes-container">
-                <label htmlFor="recipe-notes">Notes:</label>
+                <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
                 <input
-                  type="text"
-                  id="recipe-notes"
-                  value={recipeData.notes}
-                  onChange={handleRecipeChange}
-                  name="notes"
-                  className="recipe-notes-input"
+                  type="number"
+                  step="0.01"
+                  id={`ingredient-quantity-${index}`}
+                  value={ingredient.quantity}
+                  onChange={(e) => handleIngredientChange(index, e)}
+                  name="quantity"
+                  className="quantity-input"
                 />
-              </div>
-              <div className="recipe-favorite-container">
-                <label htmlFor="recipe-favorite">Favorite</label>
-                <input
-                  id="recipe-favorite"
-                  type="checkbox"
-                  checked={recipeData.favorite}
-                  onChange={handleRecipeChange}
-                  name="favorite"
-                  className="recipe-favorite-input"
-                />
-              </div>
-            </div>
 
-            <div className="tags-container">
-              <h3>Tags</h3>
-              <div className="tags-grid">
-                {AVAILABLE_TAGS.map((tag) => (
-                  <label key={tag.value} className="tag-checkbox">
-                    <input
-                      type="checkbox"
-                      checked={tags.includes(tag.value)}
-                      onChange={() => handleTagChange(tag.value)}
-                    />
-                    {tag.label}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="ingredient-container">
-              {ingredientsData.map((ingredient, index) => (
-                <div className="ingredient-form" key={index}>
-                  <label htmlFor={`ingredient-name-${index}`}>
-                    Ingredient:{" "}
-                  </label>
-                  <input
-                    type="text"
-                    id={`ingredient-name-${index}`}
-                    value={ingredient.name}
-                    onChange={(e) => {
-                      handleIngredientChange(index, e);
-                    }}
-                    name="name"
-                    autoComplete="false"
-                  />
-                  <label htmlFor={`ingredient-quantity-${index}`}>
-                    Quantity
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    id={`ingredient-quantity-${index}`}
-                    value={ingredient.quantity}
-                    onChange={(e) => handleIngredientChange(index, e)}
-                    name="quantity"
-                    className="quantity-input"
-                  />
-
-                  <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
-                  <select
-                    id={`ingredient-volume-${index}`}
-                    name="volume_unit"
-                    value={ingredient.volume_unit || ""}
-                    onChange={(e) => {
-                      handleIngredientChange(index, e);
-                    }}
-                    disabled={ingredient.weight_unit !== ""}
-                    className="volume-input"
-                  >
-                    <option value="">---</option>
-                    {VOLUME_UNITS.map((unit) => (
-                      <option key={unit.value} value={unit.value}>
-                        {unit.label}
-                      </option>
-                    ))}
-                  </select>
+                <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
+                <select
+                  id={`ingredient-volume-${index}`}
+                  name="volume_unit"
+                  value={ingredient.volume_unit || ""}
+                  onChange={(e) => {
+                    handleIngredientChange(index, e);
+                  }}
+                  disabled={ingredient.weight_unit !== ""}
+                  className="volume-input"
+                >
+                  <option value="">---</option>
+                  {VOLUME_UNITS.map((unit) => (
+                    <option key={unit.value} value={unit.value}>
+                      {unit.label}
+                    </option>
+                  ))}
+                </select>
 
                   <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
                   <select
