@@ -86,6 +86,21 @@ textarea {
 .ingredient-form label,
 .step-form label {
   padding: 0;
+  min-width: 110px;
+  text-align: right;
+}
+
+.ingredient-form .input-wrapper input,
+.step-form .input-wrapper input {
+  margin: 0;
+}
+
+.ingredient-input {
+  width: 240px;
+}
+
+.quantity-wrapper {
+  width: 120px;
 }
 
 .ingredient-container .form-btn,

@@ -109,36 +109,64 @@ const SignInForm = () => {
       <form autoComplete="off" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-            className={`username-input ${
-              errors.fields?.username?.length ? "input-error" : ""
+          <div
+            className={`input-error-row ${
+              errors.fields?.username?.length ? "has-error" : ""
             }`}
-            placeholder={errors.fields?.username?.[0] || ""}
-            aria-invalid={errors.fields?.username?.length ? "true" : "false"}
-          />
+          >
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              className={`username-input ${
+                errors.fields?.username?.length ? "input-error" : ""
+              }`}
+              aria-invalid={errors.fields?.username?.length ? "true" : "false"}
+            />
+            <span
+              className={`field-error-inline side-error ${
+                errors.fields?.username?.length ? "" : "field-error-hidden"
+              }`}
+              aria-live="polite"
+              aria-hidden={errors.fields?.username?.length ? "false" : "true"}
+            >
+              {errors.fields?.username?.[0] || ""}
+            </span>
+          </div>
         </div>
 
         <div className="form-group">
           <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            className={`password-input ${
-              errors.fields?.password?.length ? "input-error" : ""
+          <div
+            className={`input-error-row ${
+              errors.fields?.password?.length ? "has-error" : ""
             }`}
-            placeholder={errors.fields?.password?.[0] || ""}
-            aria-invalid={errors.fields?.password?.length ? "true" : "false"}
-          />
+          >
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className={`password-input ${
+                errors.fields?.password?.length ? "input-error" : ""
+              }`}
+              aria-invalid={errors.fields?.password?.length ? "true" : "false"}
+            />
+            <span
+              className={`field-error-inline side-error ${
+                errors.fields?.password?.length ? "" : "field-error-hidden"
+              }`}
+              aria-live="polite"
+              aria-hidden={errors.fields?.password?.length ? "false" : "true"}
+            >
+              {errors.fields?.password?.[0] || ""}
+            </span>
+          </div>
         </div>
 
         <div className="sign-in-buttons-container">

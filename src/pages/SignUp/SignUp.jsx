@@ -115,55 +115,95 @@ const SignUpForm = () => {
       <form onSubmit={handleSubmit} noValidate>
         <div className="signup-section">
           <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            name="username"
-            onChange={handleChange}
-            className={`username-input ${errors.username ? "input-error" : ""}`}
-            placeholder={errors.username ? errors.username[0] : ""}
-            aria-invalid={errors.username ? "true" : "false"}
-          />
+          <div className="input-error-row">
+            <input
+              type="text"
+              id="username"
+              value={username}
+              name="username"
+              onChange={handleChange}
+              className={`username-input ${errors.username ? "input-error" : ""}`}
+              aria-invalid={errors.username ? "true" : "false"}
+            />
+            <span
+              className={`field-error-inline side-error ${
+                errors.username ? "" : "field-error-hidden"
+              }`}
+              aria-live="polite"
+              aria-hidden={errors.username ? "false" : "true"}
+            >
+              {errors.username ? errors.username[0] : ""}
+            </span>
+          </div>
         </div>
         <div className="signup-section">
           <label htmlFor="email">Email:</label>
-          <input
-            type="text"
-            id="email"
-            value={email}
-            name="email"
-            onChange={handleChange}
-            className={`email-input ${errors.email ? "input-error" : ""}`}
-            placeholder={errors.email ? errors.email[0] : ""}
-            aria-invalid={errors.email ? "true" : "false"}
-          />
+          <div className="input-error-row">
+            <input
+              type="text"
+              id="email"
+              value={email}
+              name="email"
+              onChange={handleChange}
+              className={`email-input ${errors.email ? "input-error" : ""}`}
+              aria-invalid={errors.email ? "true" : "false"}
+            />
+            <span
+              className={`field-error-inline side-error ${
+                errors.email ? "" : "field-error-hidden"
+              }`}
+              aria-live="polite"
+              aria-hidden={errors.email ? "false" : "true"}
+            >
+              {errors.email ? errors.email[0] : ""}
+            </span>
+          </div>
         </div>
         <div className="signup-section">
           <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            name="password"
-            onChange={handleChange}
-            className={`password-input ${errors.password ? "input-error" : ""}`}
-            placeholder={errors.password ? errors.password[0] : ""}
-            aria-invalid={errors.password ? "true" : "false"}
-          />
+          <div className="input-error-row">
+            <input
+              type="password"
+              id="password"
+              value={password}
+              name="password"
+              onChange={handleChange}
+              className={`password-input ${errors.password ? "input-error" : ""}`}
+              aria-invalid={errors.password ? "true" : "false"}
+            />
+            <span
+              className={`field-error-inline side-error ${
+                errors.password ? "" : "field-error-hidden"
+              }`}
+              aria-live="polite"
+              aria-hidden={errors.password ? "false" : "true"}
+            >
+              {errors.password ? errors.password[0] : ""}
+            </span>
+          </div>
         </div>
         <div className="signup-section">
           <label htmlFor="password2">Confirm Password:</label>
-          <input
-            type="password"
-            id="password2"
-            value={password2}
-            name="password2"
-            onChange={handleChange}
-            className={`confirm-input ${errors.password2 ? "input-error" : ""}`}
-            placeholder={errors.password2 ? errors.password2[0] : ""}
-            aria-invalid={errors.password2 ? "true" : "false"}
-          />
+          <div className="input-error-row">
+            <input
+              type="password"
+              id="password2"
+              value={password2}
+              name="password2"
+              onChange={handleChange}
+              className={`confirm-input ${errors.password2 ? "input-error" : ""}`}
+              aria-invalid={errors.password2 ? "true" : "false"}
+            />
+            <span
+              className={`field-error-inline side-error ${
+                errors.password2 ? "" : "field-error-hidden"
+              }`}
+              aria-live="polite"
+              aria-hidden={errors.password2 ? "false" : "true"}
+            >
+              {errors.password2 ? errors.password2[0] : ""}
+            </span>
+          </div>
         </div>
         <div className="sign-up-buttons-container">
           <button type="submit" className="sign-up-btns">

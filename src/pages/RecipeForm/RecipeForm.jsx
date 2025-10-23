@@ -544,29 +544,57 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         <div className="form-element">
           <div className="recipe-field-row">
             <label htmlFor="recipe-title">Title: </label>
-            <input
-              type="text"
-              id="recipe-title"
-              value={recipeData.title}
-              onChange={handleRecipeChange}
-              name="title"
-              className={errors.fields?.title?.length ? "input-error" : ""}
-              placeholder={errors.fields?.title?.[0] || ""}
-              aria-invalid={errors.fields?.title?.length ? "true" : "false"}
-            />
+            <div
+              className={`input-wrapper ${
+                errors.fields?.title?.length ? "has-error" : ""
+              }`}
+            >
+              <input
+                type="text"
+                id="recipe-title"
+                value={recipeData.title}
+                onChange={handleRecipeChange}
+                name="title"
+                className={errors.fields?.title?.length ? "input-error" : ""}
+                aria-invalid={errors.fields?.title?.length ? "true" : "false"}
+              />
+              <span
+                className={`field-error-inline ${
+                  errors.fields?.title?.length ? "" : "field-error-hidden"
+                }`}
+                aria-live="polite"
+                aria-hidden={errors.fields?.title?.length ? "false" : "true"}
+              >
+                {errors.fields?.title?.[0] || ""}
+              </span>
+            </div>
           </div>
           <div className="recipe-field-row">
             <label htmlFor="recipe-notes">Notes:</label>
-            <input
-              type="text"
-              id="recipe-notes"
-              value={recipeData.notes}
-              onChange={handleRecipeChange}
-              name="notes"
-              className={errors.fields?.notes?.length ? "input-error" : ""}
-              placeholder={errors.fields?.notes?.[0] || ""}
-              aria-invalid={errors.fields?.notes?.length ? "true" : "false"}
-            />
+            <div
+              className={`input-wrapper ${
+                errors.fields?.notes?.length ? "has-error" : ""
+              }`}
+            >
+              <input
+                type="text"
+                id="recipe-notes"
+                value={recipeData.notes}
+                onChange={handleRecipeChange}
+                name="notes"
+                className={errors.fields?.notes?.length ? "input-error" : ""}
+                aria-invalid={errors.fields?.notes?.length ? "true" : "false"}
+              />
+              <span
+                className={`field-error-inline ${
+                  errors.fields?.notes?.length ? "" : "field-error-hidden"
+                }`}
+                aria-live="polite"
+                aria-hidden={errors.fields?.notes?.length ? "false" : "true"}
+              >
+                {errors.fields?.notes?.[0] || ""}
+              </span>
+            </div>
           </div>
           <div className="recipe-field-row">
             <label htmlFor="recipe-favorite">Favorite</label>
@@ -599,35 +627,71 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             {ingredientsData.map((ingredient, index) => (
               <div className="ingredient-form" key={index}>
                 <label htmlFor={`ingredient-name-${index}`}>Ingredient: </label>
-                <input
-                  type="text"
-                  id={`ingredient-name-${index}`}
-                  value={ingredient.name}
-                  onChange={(e) => {
-                    handleIngredientChange(index, e);
-                  }}
-                  name="name"
-                  autoComplete="false"
-                  className={
-                    errors.ingredients?.[index]?.name?.length ? "input-error" : ""
-                  }
-                  placeholder={errors.ingredients?.[index]?.name?.[0] || ""}
-                  aria-invalid={errors.ingredients?.[index]?.name?.length ? "true" : "false"}
-                />
-                <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  id={`ingredient-quantity-${index}`}
-                  value={ingredient.quantity}
-                  onChange={(e) => handleIngredientChange(index, e)}
-                  name="quantity"
-                  className={`quantity-input ${
-                    errors.ingredients?.[index]?.quantity?.length ? "input-error" : ""
+                <div
+                  className={`input-wrapper ingredient-input ${
+                    errors.ingredients?.[index]?.name?.length ? "has-error" : ""
                   }`}
-                  placeholder={errors.ingredients?.[index]?.quantity?.[0] || ""}
-                  aria-invalid={errors.ingredients?.[index]?.quantity?.length ? "true" : "false"}
-                />
+                >
+                  <input
+                    type="text"
+                    id={`ingredient-name-${index}`}
+                    value={ingredient.name}
+                    onChange={(e) => {
+                      handleIngredientChange(index, e);
+                    }}
+                    name="name"
+                    autoComplete="false"
+                    className={
+                      errors.ingredients?.[index]?.name?.length ? "input-error" : ""
+                    }
+                    aria-invalid={errors.ingredients?.[index]?.name?.length ? "true" : "false"}
+                  />
+                  <span
+                    className={`field-error-inline ${
+                      errors.ingredients?.[index]?.name?.length
+                        ? ""
+                        : "field-error-hidden"
+                    }`}
+                    aria-live="polite"
+                    aria-hidden={
+                      errors.ingredients?.[index]?.name?.length ? "false" : "true"
+                    }
+                  >
+                    {errors.ingredients?.[index]?.name?.[0] || ""}
+                  </span>
+                </div>
+                <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
+                <div
+                  className={`input-wrapper quantity-wrapper ${
+                    errors.ingredients?.[index]?.quantity?.length ? "has-error" : ""
+                  }`}
+                >
+                  <input
+                    type="number"
+                    step="0.01"
+                    id={`ingredient-quantity-${index}`}
+                    value={ingredient.quantity}
+                    onChange={(e) => handleIngredientChange(index, e)}
+                    name="quantity"
+                    className={`quantity-input ${
+                      errors.ingredients?.[index]?.quantity?.length ? "input-error" : ""
+                    }`}
+                    aria-invalid={errors.ingredients?.[index]?.quantity?.length ? "true" : "false"}
+                  />
+                  <span
+                    className={`field-error-inline ${
+                      errors.ingredients?.[index]?.quantity?.length
+                        ? ""
+                        : "field-error-hidden"
+                    }`}
+                    aria-live="polite"
+                    aria-hidden={
+                      errors.ingredients?.[index]?.quantity?.length ? "false" : "true"
+                    }
+                  >
+                    {errors.ingredients?.[index]?.quantity?.[0] || ""}
+                  </span>
+                </div>
 
                 <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
                 <select
@@ -712,20 +776,36 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   className="step-number-input"
                 />
                 <label htmlFor={`step-description-${index}`}>Description</label>
-                <input
-                  type="text"
-                  id={`step-description-${index}`}
-                  value={step.description}
-                  name="description"
-                  onChange={(e) => {
-                    handleStepChange(index, e);
-                  }}
-                  className={
-                    errors.steps?.[index]?.description?.length ? "input-error" : ""
-                  }
-                  placeholder={errors.steps?.[index]?.description?.[0] || ""}
-                  aria-invalid={errors.steps?.[index]?.description?.length ? "true" : "false"}
-                />
+                <div
+                  className={`input-wrapper ${
+                    errors.steps?.[index]?.description?.length ? "has-error" : ""
+                  }`}
+                >
+                  <input
+                    type="text"
+                    id={`step-description-${index}`}
+                    value={step.description}
+                    name="description"
+                    onChange={(e) => {
+                      handleStepChange(index, e);
+                    }}
+                    className={
+                      errors.steps?.[index]?.description?.length ? "input-error" : ""
+                    }
+                    aria-invalid={errors.steps?.[index]?.description?.length ? "true" : "false"}
+                  />
+                  <span
+                    className={`field-error-inline ${
+                      errors.steps?.[index]?.description?.length ? "" : "field-error-hidden"
+                    }`}
+                    aria-live="polite"
+                    aria-hidden={
+                      errors.steps?.[index]?.description?.length ? "false" : "true"
+                    }
+                  >
+                    {errors.steps?.[index]?.description?.[0] || ""}
+                  </span>
+                </div>
                 {errors.steps?.[index]?.general?.length && (
                   <p className="field-error">
                     {errors.steps[index].general.join(", ")}

@@ -1,11 +1,22 @@
+.input-wrapper {
+  position: relative;
+  display: inline-flex;
+  width: 100%;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+}
+
+.input-wrapper.has-error input,
+.input-wrapper.has-error select {
+  padding-right: 2.5rem;
+}
+
 .input-error {
   border: 1px solid #d32f2f;
   background-color: rgba(211, 47, 47, 0.08);
-}
-
-.input-error::placeholder {
-  color: #d32f2f;
-  opacity: 1;
 }
 
 .field-error {
@@ -13,4 +24,37 @@
   font-size: 0.875rem;
   margin-top: 4px;
   margin-bottom: 4px;
+}
+
+.field-error-inline {
+  position: absolute;
+  right: 0.65rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #d32f2f;
+  font-size: 0.8rem;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 70%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.field-error-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.field-error-inline.side-error {
+  position: static;
+  transform: none;
+  max-width: none;
+  white-space: normal;
+  overflow: visible;
+  opacity: 1;
+  visibility: visible;
+}
+
+.field-error-inline.side-error.field-error-hidden {
+  display: none;
 }

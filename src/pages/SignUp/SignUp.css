@@ -21,6 +21,17 @@ input {
   width: 250px;
 }
 
+.signup-section .input-error-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.signup-section .input-error-row input {
+  margin: 10px;
+  width: 250px;
+}
+
 .sign-up-buttons-container {
   display: flex;
   justify-content: space-around;

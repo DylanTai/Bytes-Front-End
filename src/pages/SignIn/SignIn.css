@@ -52,3 +52,14 @@ label {
   min-width: 140px;
   text-align: right;
 }
+
+.form-group .input-error-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.form-group .input-error-row input {
+  margin: 10px;
+  width: 260px;
+}
