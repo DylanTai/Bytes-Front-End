@@ -1,12 +1,13 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router";
 import { UserContext } from "../../contexts/UserContext";
 import "./NavBar.css";
 import { Squash as Hamburger } from "hamburger-react";
-import logo from "../../../assets/BytesLogo.png"
+import logo from "../../../assets/Bytes AI.png"
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user, setUser } = useContext(UserContext);
 
   const handleSignOut = () => {
@@ -17,6 +18,12 @@ const NavBar = () => {
   };
 
   const toggleMobileMenu = () => setIsOpen((prev) => !prev);
+
+   useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 0);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const authenticatedOptions = (
     <>
@@ -38,7 +45,7 @@ const NavBar = () => {
   );
 
   return (
-    <nav>
+    <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
       <div className="nav-img">
         <Link to="/">
           <img src={logo} alt="logo" />
