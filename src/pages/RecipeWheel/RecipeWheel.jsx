@@ -124,7 +124,7 @@ const RecipeWheel = () => {
         </label>
       </div>
       
-      <div className="wheel-container">
+      <div className={`wheel-container ${selectedRecipe ? "blurred" : ""}`}>
         {/* Indicator Pointer */}
         <div className="wheel-pointer">▼</div>
 
