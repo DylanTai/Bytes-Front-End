@@ -90,7 +90,3 @@
 .recipe-ingredients ul:has(li:nth-child(9)) {
   grid-template-columns: 1fr 1fr;
 }
-/* 
-.detail-recipe-notes {
-    width: 100%;
-} */
