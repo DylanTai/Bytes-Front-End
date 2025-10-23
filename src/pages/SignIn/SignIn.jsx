@@ -37,7 +37,7 @@ const SignInForm = () => {
       {message && <p className="error-message">{message}</p>}
 
       <form autoComplete="off" onSubmit={handleSubmit}>
-        <div className="form-group">
+        <div className="sign-form-group">
           <label htmlFor="username" className="sign-label">Username:</label>
           <input
             type="text"
@@ -50,7 +50,7 @@ const SignInForm = () => {
           />
         </div>
 
-        <div className="form-group">
+        <div className="sign-form-group">
           <label htmlFor="password" className="sign-label">Password:</label>
           <input
             type="password"
