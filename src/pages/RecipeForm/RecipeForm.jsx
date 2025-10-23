@@ -750,7 +750,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   <label htmlFor={`step-description-${index}`}>
                     Description
                   </label>
-                  <input
+                  <textarea
                     type="text"
                     id={`step-description-${index}`}
                     value={step.description}
@@ -773,7 +773,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   )}
                 </div>
               ))}
-              <button type="button" onClick={addExtraStep} className="form-btn">
+              <button type="button" onClick={addExtraStep} className="form-btn edit-add-step-btn">
                 Add Step
               </button>
             </div>
