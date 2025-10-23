@@ -407,6 +407,14 @@ export const addStep = async (recipeId, stepData) => {
   }
 };
 
+export const deleteStep = async (recipeId, stepId) => {
+  const res = await fetchWithAuth(`${BASE_URL}${recipeId}/steps/${stepId}/`, {
+    method: "DELETE",
+  });
+  if (res.status === 204) return { success: true };
+  if (!res.ok) throw new Error("Failed to delete step");
+};
+
 export async function generateRecipe(prompt, token) {
   const res = await fetch("/api/recipes/generate/", {
     method: "POST",

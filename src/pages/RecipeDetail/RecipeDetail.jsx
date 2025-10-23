@@ -94,6 +94,17 @@ const RecipeDetail = () => {
         </div>
       </div>
 
+      {/* Recipe Image - S3 returns full URL */}
+      {recipe.image && (
+        <div className="recipe-image-container">
+          <img 
+            src={recipe.image}
+            alt={recipe.title}
+            className="recipe-image"
+          />
+        </div>
+      )}
+
       {/* Tags Section */}
       {recipe.tags && recipe.tags.length > 0 && (
         <div className="recipe-tags">

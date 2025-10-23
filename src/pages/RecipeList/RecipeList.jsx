@@ -256,8 +256,18 @@ const RecipeList = () => {
             <li key={recipe.id} className="recipe-card-wrapper">
               <Link to={`/recipes/${recipe.id}`} className="recipe-link">
                 <div className="recipe-card">
-                  <strong>{recipe.title}</strong>
-                  {recipe.favorite && <span> 🍪 </span>}
+                  {/* Optional: Show thumbnail - S3 returns full URL */}
+                  {recipe.image && (
+                    <img 
+                      src={recipe.image}
+                      alt={recipe.title}
+                      className="recipe-thumbnail"
+                    />
+                  )}
+                  <div className="recipe-card-content">
+                    <strong>{recipe.title}</strong>
+                    {recipe.favorite && <span> 🍪 </span>}
+                  </div>
                 </div>
               </Link>
               <button
