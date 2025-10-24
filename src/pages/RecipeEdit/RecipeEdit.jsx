@@ -52,16 +52,16 @@ const RecipeEdit = () => {
 
   // helpers for loading animation
   const startLoading = () => {
-    startLoading(true);
+    setLoading(true);
     const timer = setTimeout(() => setShowAnimation(true), 400);
     return timer;
-  }
+  };
 
   const stopLoading = (timer) => {
     clearTimeout(timer);
     setLoading(false);
     setShowAnimation(false);
-  }
+  };
 
   useEffect(() => {
     const fetchRecipeData = async () => {
