@@ -7,6 +7,7 @@ import logo from "../../../assets/Bytes AI.png";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { user, setUser } = useContext(UserContext);
 
@@ -17,7 +18,25 @@ const NavBar = () => {
     }
   };
 
-  const toggleMobileMenu = () => setIsOpen((prev) => !prev);
+  const toggleMobileMenu = () => {
+    if (isOpen) {
+      setIsClosing(true);
+      setTimeout(() => {
+        setIsOpen(false);
+        setIsClosing(false);
+      }, 400); // match CSS animation duration
+    } else {
+      setIsOpen(true);
+    }
+  };
+
+  const handleCloseMenu = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+    }, 300);
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 0);
@@ -25,11 +44,8 @@ const NavBar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const authenticatedOptions = (
+  const authenticatedLeft = (
     <>
-      <Link to="/" className="nav-link">
-        Home
-      </Link>
       <Link to="/recipes/add" className="nav-link">
         Add Recipe
       </Link>
@@ -42,6 +58,11 @@ const NavBar = () => {
       <Link to="/recipe-wheel" className="nav-link">
         Recipe Wheel
       </Link>
+    </>
+  );
+
+  const authenticatedRight = (
+    <>
       <Link to="/profile" className="nav-link">
         Profile
       </Link>
@@ -51,11 +72,8 @@ const NavBar = () => {
     </>
   );
 
-  const unauthenticatedOptions = (
+  const unauthenticatedRight = (
     <>
-      <Link to="/" className="nav-link">
-        Home
-      </Link>
       <Link to="/sign-up" className="nav-link">
         Sign Up
       </Link>
@@ -67,11 +85,6 @@ const NavBar = () => {
 
   return (
     <nav className={`navbar ${scrolled ? "scrolled" : ""}`}>
-      <div className="nav-img">
-        <Link to="/">
-          <img src={logo} alt="logo" />
-        </Link>
-      </div>
       <button
         className="nav-hamburger"
         aria-label="Toggle navigation"
@@ -84,9 +97,89 @@ const NavBar = () => {
           size={22}
         />
       </button>
-      <div className={`nav-links ${isOpen ? "open" : ""}`}>
-        {user ? authenticatedOptions : unauthenticatedOptions}
+
+      <div className="nav-left">{user ? authenticatedLeft : null}</div>
+
+      <div className="nav-center">
+        <Link to="/">
+          <img src={logo} alt="logo" />
+        </Link>
       </div>
+
+      <div className={`nav-right ${isOpen ? "open" : ""}`}>
+        {user ? authenticatedRight : unauthenticatedRight}
+      </div>
+
+      {(isOpen || isClosing) && (
+        <div className={`mobile-menu ${isClosing ? "closing" : "opening"}`}>
+          {user ? (
+            <>
+              <Link
+                to="/recipes/add"
+                className="nav-link"
+                onClick={handleCloseMenu}
+              >
+                Add A Recipe
+              </Link>
+              <Link
+                to="/recipes/AI"
+                className="nav-link"
+                onClick={handleCloseMenu}
+              >
+                Generate A Recipe
+              </Link>
+              <Link
+                to="/grocery-list"
+                className="nav-link"
+                onClick={handleCloseMenu}
+              >
+                Grocery List
+              </Link>
+              <Link
+                to="/recipe-wheel"
+                className="nav-link"
+                onClick={handleCloseMenu}
+              >
+                Recipe Wheel!!!
+              </Link>
+              <Link
+                to="/profile"
+                className="nav-link"
+                onClick={handleCloseMenu}
+              >
+                Profile
+              </Link>
+              <Link
+                to="/"
+                onClick={() => {
+                  handleSignOut();
+                  handleCloseMenu();
+                }}
+                className="nav-link"
+              >
+                Sign Out
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/sign-up"
+                className="nav-link"
+                onClick={handleCloseMenu}
+              >
+                Sign Up
+              </Link>
+              <Link
+                to="/sign-in"
+                className="nav-link"
+                onClick={handleCloseMenu}
+              >
+                Sign In
+              </Link>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   );
 };
