@@ -2,14 +2,20 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import * as userService from "../../services/userService.js";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 import "./Profile.css";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
 
+  const [loading, setLoading] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
+
   // Username form state
-  const [usernameForm, setUsernameForm] = useState({ username: user?.username || "" });
+  const [usernameForm, setUsernameForm] = useState({
+    username: user?.username || "",
+  });
   const [usernameErrors, setUsernameErrors] = useState({});
   const [usernameSuccess, setUsernameSuccess] = useState("");
 
@@ -27,6 +33,19 @@ const Profile = () => {
   const [deleteErrors, setDeleteErrors] = useState({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // loading animation functions
+  const startLoading = () => {
+    setLoading(true);
+    const timer = setTimeout(() => setShowAnimation(true), 400);
+    return timer;
+  };
+
+  const stopLoading = (timer) => {
+    clearTimeout(timer);
+    setLoading(false);
+    setShowAnimation(false);
+  };
+
   // Handle username change
   const handleUsernameChange = (e) => {
     setUsernameForm({ username: e.target.value });
@@ -38,6 +57,7 @@ const Profile = () => {
     e.preventDefault();
     setUsernameErrors({});
     setUsernameSuccess("");
+    const timer = startLoading();
 
     try {
       const result = await userService.updateUsername(usernameForm.username);
@@ -47,8 +67,12 @@ const Profile = () => {
       if (error.response && error.response.data) {
         setUsernameErrors(error.response.data);
       } else {
-        setUsernameErrors({ username: [error.message || "Failed to update username."] });
+        setUsernameErrors({
+          username: [error.message || "Failed to update username."],
+        });
       }
+    } finally {
+      stopLoading(timer);
     }
   };
 
@@ -63,6 +87,7 @@ const Profile = () => {
     e.preventDefault();
     setPasswordErrors({});
     setPasswordSuccess("");
+    const timer = startLoading();
 
     try {
       await userService.updatePassword(passwordForm);
@@ -76,8 +101,12 @@ const Profile = () => {
       if (error.response && error.response.data) {
         setPasswordErrors(error.response.data);
       } else {
-        setPasswordErrors({ current_password: [error.message || "Failed to update password."] });
+        setPasswordErrors({
+          current_password: [error.message || "Failed to update password."],
+        });
       }
+    } finally {
+      stopLoading(timer);
     }
   };
 
@@ -86,13 +115,16 @@ const Profile = () => {
     setDeleteErrors({});
 
     if (!deletePassword) {
-      setDeleteErrors({ password: ["Password is required to delete account."] });
+      setDeleteErrors({
+        password: ["Password is required to delete account."],
+      });
       return;
     }
 
+    const timer = startLoading();
+
     try {
       await userService.deleteAccount(deletePassword);
-      // Clear user data and redirect
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
       setUser(null);
@@ -102,142 +134,167 @@ const Profile = () => {
       if (error.response && error.response.data) {
         setDeleteErrors(error.response.data);
       } else {
-        setDeleteErrors({ password: [error.message || "Failed to delete account."] });
+        setDeleteErrors({
+          password: [error.message || "Failed to delete account."],
+        });
       }
+    } finally {
+      stopLoading(timer);
     }
   };
+
+  if (showAnimation) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <div className="profile-page">
       <h1 className="profile-title">My Profile</h1>
 
-    <div className="profile-section-container">
-      {/* Update Username Section */}
-      <section className="profile-section">
-        <h2>Update Username</h2>
-        {usernameSuccess && <p className="success-message">{usernameSuccess}</p>}
-        <form onSubmit={handleUsernameSubmit} noValidate>
-          <div className="form-group">
-            <label htmlFor="username">New Username:</label>
-            <input
-              type="text"
-              id="username"
-              value={usernameForm.username}
-              onChange={handleUsernameChange}
-              className={usernameErrors.username ? "input-error" : ""}
-            />
-            {usernameErrors.username && (
-              <p className="field-error">{usernameErrors.username.join(", ")}</p>
-            )}
-          </div>
-          <button type="submit" className="submit-button">
-            Update Username
-          </button>
-        </form>
-      </section>
-
-      {/* Update Password Section */}
-      <section className="profile-section">
-        <h2>Update Password</h2>
-        {passwordSuccess && <p className="success-message">{passwordSuccess}</p>}
-        <form onSubmit={handlePasswordSubmit} noValidate>
-          <div className="form-group">
-            <label htmlFor="current_password">Current Password:</label>
-            <input
-              type="password"
-              id="current_password"
-              name="current_password"
-              value={passwordForm.current_password}
-              onChange={handlePasswordChange}
-              className={passwordErrors.current_password ? "input-error" : ""}
-            />
-            {passwordErrors.current_password && (
-              <p className="field-error">{passwordErrors.current_password.join(", ")}</p>
-            )}
-          </div>
-          <div className="form-group">
-            <label htmlFor="new_password">New Password:</label>
-            <input
-              type="password"
-              id="new_password"
-              name="new_password"
-              value={passwordForm.new_password}
-              onChange={handlePasswordChange}
-              className={passwordErrors.new_password ? "input-error" : ""}
-            />
-            {passwordErrors.new_password && (
-              <p className="field-error">{passwordErrors.new_password.join(", ")}</p>
-            )}
-          </div>
-          <div className="form-group">
-            <label htmlFor="confirm_password">Confirm New Password:</label>
-            <input
-              type="password"
-              id="confirm_password"
-              name="confirm_password"
-              value={passwordForm.confirm_password}
-              onChange={handlePasswordChange}
-              className={passwordErrors.confirm_password ? "input-error" : ""}
-            />
-            {passwordErrors.confirm_password && (
-              <p className="field-error">{passwordErrors.confirm_password.join(", ")}</p>
-            )}
-          </div>
-          <button type="submit" className="submit-button">
-            Update Password
-          </button>
-        </form>
-      </section>
-
-      {/* Delete Account Section */}
-      <section className="profile-section danger-section">
-        <h2>Delete Account</h2>
-        <p className="warning-text">
-          This action cannot be undone. All your recipes and data will be permanently deleted.
-        </p>
-        {!showDeleteConfirm ? (
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            className="danger-button"
-          >
-            Delete My Account
-          </button>
-        ) : (
-          <div className="delete-confirm">
-            <p><strong>Are you sure? Enter your password to confirm:</strong></p>
+      <div className="profile-section-container">
+        {/* Update Username Section */}
+        <section className="profile-section">
+          <h2>Update Username</h2>
+          {usernameSuccess && (
+            <p className="success-message">{usernameSuccess}</p>
+          )}
+          <form onSubmit={handleUsernameSubmit} noValidate>
             <div className="form-group">
+              <label htmlFor="username">New Username:</label>
               <input
-                type="password"
-                placeholder="Enter your password"
-                value={deletePassword}
-                onChange={(e) => {
-                  setDeletePassword(e.target.value);
-                  setDeleteErrors({});
-                }}
-                className={deleteErrors.password ? "input-error" : ""}
+                type="text"
+                id="username"
+                value={usernameForm.username}
+                onChange={handleUsernameChange}
+                className={usernameErrors.username ? "input-error" : ""}
               />
-              {deleteErrors.password && (
-                <p className="field-error">{deleteErrors.password.join(", ")}</p>
+              {usernameErrors.username && (
+                <p className="field-error">
+                  {usernameErrors.username.join(", ")}
+                </p>
               )}
             </div>
-            <div className="delete-buttons">
-              <button onClick={handleDeleteAccount} className="danger-button">
-                Confirm Delete
-              </button>
-              <button
-                onClick={() => {
-                  setShowDeleteConfirm(false);
-                  setDeletePassword("");
-                  setDeleteErrors({});
-                }}
-                className="cancel-button"
-              >
-                Cancel
-              </button>
+            <button type="submit" className="submit-button">
+              Update Username
+            </button>
+          </form>
+        </section>
+
+        {/* Update Password Section */}
+        <section className="profile-section">
+          <h2>Update Password</h2>
+          {passwordSuccess && (
+            <p className="success-message">{passwordSuccess}</p>
+          )}
+          <form onSubmit={handlePasswordSubmit} noValidate>
+            <div className="form-group">
+              <label htmlFor="current_password">Current Password:</label>
+              <input
+                type="password"
+                id="current_password"
+                name="current_password"
+                value={passwordForm.current_password}
+                onChange={handlePasswordChange}
+                className={passwordErrors.current_password ? "input-error" : ""}
+              />
+              {passwordErrors.current_password && (
+                <p className="field-error">
+                  {passwordErrors.current_password.join(", ")}
+                </p>
+              )}
             </div>
-          </div>
-        )}
-      </section>
+            <div className="form-group">
+              <label htmlFor="new_password">New Password:</label>
+              <input
+                type="password"
+                id="new_password"
+                name="new_password"
+                value={passwordForm.new_password}
+                onChange={handlePasswordChange}
+                className={passwordErrors.new_password ? "input-error" : ""}
+              />
+              {passwordErrors.new_password && (
+                <p className="field-error">
+                  {passwordErrors.new_password.join(", ")}
+                </p>
+              )}
+            </div>
+            <div className="form-group">
+              <label htmlFor="confirm_password">Confirm New Password:</label>
+              <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                value={passwordForm.confirm_password}
+                onChange={handlePasswordChange}
+                className={passwordErrors.confirm_password ? "input-error" : ""}
+              />
+              {passwordErrors.confirm_password && (
+                <p className="field-error">
+                  {passwordErrors.confirm_password.join(", ")}
+                </p>
+              )}
+            </div>
+            <button type="submit" className="submit-button">
+              Update Password
+            </button>
+          </form>
+        </section>
+
+        {/* Delete Account Section */}
+        <section className="profile-section danger-section">
+          <h2>Delete Account</h2>
+          <p className="warning-text">
+            This action cannot be undone. All your recipes and data will be
+            permanently deleted.
+          </p>
+          {!showDeleteConfirm ? (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="danger-button"
+            >
+              Delete My Account
+            </button>
+          ) : (
+            <div className="delete-confirm">
+              <p>
+                <strong>Are you sure? Enter your password to confirm:</strong>
+              </p>
+              <div className="form-group">
+                <input
+                  type="password"
+                  placeholder="Enter your password"
+                  value={deletePassword}
+                  onChange={(e) => {
+                    setDeletePassword(e.target.value);
+                    setDeleteErrors({});
+                  }}
+                  className={deleteErrors.password ? "input-error" : ""}
+                />
+                {deleteErrors.password && (
+                  <p className="field-error">
+                    {deleteErrors.password.join(", ")}
+                  </p>
+                )}
+              </div>
+              <div className="delete-buttons">
+                <button onClick={handleDeleteAccount} className="danger-button">
+                  Confirm Delete
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeletePassword("");
+                    setDeleteErrors({});
+                  }}
+                  className="cancel-button"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );

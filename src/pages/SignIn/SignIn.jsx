@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { signIn } from "../../services/authService.js";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import "./SignIn.css";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 const SignInForm = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const SignInForm = () => {
     username: "",
     password: "",
   });
+   const [loading, setLoading] = useState(false);
 
   const handleChange = (evt) => {
     setMessage("");
@@ -20,6 +22,7 @@ const SignInForm = () => {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
+    setLoading(true);
 
     try {
       const user = await signIn(formData);
@@ -28,8 +31,14 @@ const SignInForm = () => {
     } catch (err) {
       console.error("Sign-in failed:", err);
       setMessage(err.message || "Invalid username or password.");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <main className="sign-in-page">
