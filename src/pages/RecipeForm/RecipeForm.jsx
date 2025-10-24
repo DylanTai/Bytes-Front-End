@@ -13,21 +13,13 @@ import {
   calculateAllUnits,
 } from "../../config/recipeConfig.js";
 import "./RecipeForm.css";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 const RecipeForm = ({ recipes, setRecipes }) => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
-  // Check if user is authenticated on component mount
-  useEffect(() => {
-    const token = localStorage.getItem("access");
-    if (!token) {
-      // Redirect to login if no token
-      alert("Please log in to create a recipe.");
-      navigate("/sign-in");
-    }
-  }, [navigate]);
-
-  // useState's
+    // useState's
   const [recipeData, setRecipeData] = useState({
     title: "",
     notes: "",
@@ -54,8 +46,24 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
-  // Track pre-calculated unit values for each ingredient to prevent rounding errors
+   // Track pre-calculated unit values for each ingredient to prevent rounding errors
   const [calculatedUnits, setCalculatedUnits] = useState([{}]);
+
+  // Check if user is authenticated on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      // Redirect to login if no token
+      alert("Please log in to create a recipe.");
+      navigate("/sign-in");
+    } else {
+      setLoading(false);
+    }
+  }, [navigate]);
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   // Image handlers
   const handleImageChange = (e) => {
@@ -383,7 +391,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             />
             </div>
             <div>
-            <label htmlFor="recipe-favorite">Favorite</label>
+            <label htmlFor="recipe-favorite">Favorite 🍪</label>
             <input
               id="recipe-favorite"
               type="checkbox"
@@ -444,6 +452,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   }}
                   name="name"
                   autoComplete="false"
+                  className="add-ingredient-input"
                 />
                 <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
                 <input

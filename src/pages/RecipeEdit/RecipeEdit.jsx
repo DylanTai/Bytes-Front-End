@@ -19,6 +19,7 @@ import {
   calculateAllUnits,
 } from "../../config/recipeConfig.js";
 import "./RecipeEdit.css";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 const RecipeEdit = () => {
   const { id } = useParams();
@@ -35,6 +36,7 @@ const RecipeEdit = () => {
   const [stepsData, setStepsData] = useState([]);
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAnimation, setShowAnimation] = useState(false);
   const [calculatedUnits, setCalculatedUnits] = useState([]);
   const [formErrors, setFormErrors] = useState({}); // ADD THIS LINE
 
@@ -44,8 +46,22 @@ const RecipeEdit = () => {
   const [removeExistingImage, setRemoveExistingImage] = useState(false);
   const [hasExistingImage, setHasExistingImage] = useState(false);
 
+  // helpers for loading animation
+  const startLoading = () => {
+    startLoading(true);
+    const timer = setTimeout(() => setShowAnimation(true), 400);
+    return timer;
+  }
+
+  const stopLoading = (timer) => {
+    clearTimeout(timer);
+    setLoading(false);
+    setShowAnimation(false);
+  }
+
   useEffect(() => {
     const fetchRecipeData = async () => {
+      const timer = startLoading();
       try {
         const recipe = await getRecipe(id);
         const ingredients = await getIngredients(id);
@@ -99,6 +115,8 @@ const RecipeEdit = () => {
         console.error("Error fetching recipe:", error);
         alert("Failed to load recipe. You may not have permission to view it.");
         navigate("/");
+      } finally {
+        stopLoading(timer);
       }
     };
 
@@ -551,6 +569,7 @@ const RecipeEdit = () => {
                   onChange={(e) => handleIngredientChange(index, e)}
                   name="name"
                   autoComplete="off"
+                  className="add-ingredient-input"
                 />
 
                 <label htmlFor={`ingredient-quantity-${index}`}>Quantity:</label>

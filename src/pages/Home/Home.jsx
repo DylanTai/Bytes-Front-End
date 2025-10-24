@@ -1,9 +1,23 @@
 import RecipeList from "../RecipeList/RecipeList";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/UserContext.jsx";
-import "./Home.css"
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import "./Home.css";
 
 const Home = () => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   const { user } = useContext(UserContext);
   if (user) {
@@ -19,4 +33,3 @@ const Home = () => {
 };
 
 export default Home;
-

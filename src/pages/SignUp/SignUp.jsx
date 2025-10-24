@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { signUp } from "../../services/authService.js";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import "./SignUp.css";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const SignUpForm = () => {
     password: "",
     password2: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const { username, email, password, password2 } = formData;
 
@@ -65,6 +67,7 @@ const SignUpForm = () => {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
+    setLoading(true);
     
     // Get frontend validation errors
     const frontendErrors = validateForm();
@@ -105,8 +108,14 @@ const SignUpForm = () => {
       }
       
       setErrors(allErrors);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <main className="sign-up-page">
