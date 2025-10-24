@@ -18,6 +18,7 @@ import {
   AVAILABLE_TAGS,
   calculateAllUnits,
 } from "../../config/recipeConfig.js";
+import "../RecipeForm/RecipeForm.css";
 import "./RecipeEdit.css";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
