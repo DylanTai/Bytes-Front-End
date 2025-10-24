@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import * as groceryListService from "../../services/groceryListService.js";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 import "./GroceryList.css";
 
 const GroceryList = () => {
@@ -80,7 +81,7 @@ const GroceryList = () => {
   };
 
   if (loading) {
-    return <div className="grocery-list-page"><p>Loading...</p></div>;
+    return <LoadingAnimation />;
   }
 
   return (
