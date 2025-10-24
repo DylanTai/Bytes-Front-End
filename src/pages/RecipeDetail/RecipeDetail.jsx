@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router";
 import * as recipeService from "../../services/recipeService.js";
+import { formatTagLabel } from "../../config/recipeConfig.js";
 import * as groceryListService from "../../services/groceryListService.js";
 
 const RecipeDetail = () => {
@@ -134,17 +135,14 @@ const RecipeDetail = () => {
         <div className="recipe-tags">
           <h2 className="detail-tag-label">Tags: </h2>
           <div className="tags-list">
-            {recipe.tags.map((tag, index) => {
-              const tagLabel = tag.replace(/_/g, " ");
-              const formattedLabel =
-                tagLabel.charAt(0).toUpperCase() + tagLabel.slice(1);
-
-              return (
-                <div key={index} className="tag-item">
-                  {formattedLabel}
+            {[...recipe.tags]
+              .map((value) => ({ value, label: formatTagLabel(value) }))
+              .sort((a, b) => a.label.localeCompare(b.label))
+              .map((tag, index) => (
+                <div key={`${tag.value}-${index}`} className="tag-item">
+                  {tag.label}
                 </div>
-              );
-            })}
+              ))}
           </div>
         </div>
       )}

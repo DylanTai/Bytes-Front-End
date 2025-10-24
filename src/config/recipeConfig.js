@@ -21,28 +21,49 @@ export const WEIGHT_UNITS = [
   { value: "lb", label: "Pound" },
 ];
 
-// Available dietary/allergen tags
-export const AVAILABLE_TAGS = [
-  { value: "contains_nuts", label: "Contains Nuts" },
-  { value: "contains_dairy", label: "Contains Dairy" },
-  { value: "contains_gluten", label: "Contains Gluten" },
-  { value: "vegetarian", label: "Vegetarian" },
-  { value: "vegan", label: "Vegan" },
-  { value: "contains_shellfish", label: "Contains Shellfish" },
-  { value: "contains_eggs", label: "Contains Eggs" },
-  { value: "spicy", label: "Spicy" },
-];
+const RAW_TAG_MAP = {
+  contains_dairy: "No Dairy",
+  contains_eggs: "No Eggs",
+  contains_gluten: "Gluten Free",
+  contains_nuts: "No Nuts",
+  contains_shellfish: "No Shellfish",
+  spicy: "Spicy",
+  vegan: "Vegan",
+  vegetarian: "Vegetarian",
+};
 
-export const AVAILABLE_TAGS_AI = [
-  { value: "doesn't_contains_nuts", label: "Doesnt Contain Nuts" },
-  { value: "dairy_free", label: "Dairy Free" },
-  { value: "gluten_free", label: "Gluten Free" },
-  { value: "vegetarian", label: "Vegetarian" },
-  { value: "vegan", label: "Vegan" },
-  { value: "doesnt_contains_shellfish", label: "Doesn't Contain Shellfish" },
-  { value: "no_eggs", label: "No Eggs" },
-  { value: "spicy", label: "Spicy" },
-];
+const ADDITIONAL_TAG_MAP = {
+  dairy_free: "No Dairy",
+  gluten_free: "Gluten Free",
+  no_eggs: "No Eggs",
+  doesnt_contains_nuts: "No Nuts",
+  "doesn't_contains_nuts": "No Nuts",
+  doesnt_contains_shellfish: "No Shellfish",
+  "doesn't_contains_shellfish": "No Shellfish",
+};
+
+export const AVAILABLE_TAGS = Object.entries(RAW_TAG_MAP)
+  .sort((a, b) => a[1].localeCompare(b[1]))
+  .map(([value, label]) => ({ value, label }));
+
+export const AVAILABLE_TAGS_AI = [...AVAILABLE_TAGS];
+
+export const formatTagLabel = (rawValue = "") => {
+  if (!rawValue) return "";
+  if (RAW_TAG_MAP[rawValue]) return RAW_TAG_MAP[rawValue];
+  if (ADDITIONAL_TAG_MAP[rawValue]) return ADDITIONAL_TAG_MAP[rawValue];
+
+  if (rawValue.startsWith("contains_")) {
+    const descriptor = rawValue.replace("contains_", "").replace(/_/g, " ");
+    if (descriptor.toLowerCase() === "gluten") return "Gluten Free";
+    return `No ${descriptor.replace(/\b\w/g, (c) => c.toUpperCase())}`;
+  }
+
+  return rawValue
+    .split(/[_\s]+/)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+};
 // Conversion factors to base units (cup for volume, gram for weight)
 const VOLUME_TO_CUP = {
   tsp: 1 / 48,

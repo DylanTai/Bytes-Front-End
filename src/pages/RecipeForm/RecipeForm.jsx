@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 
 import {
@@ -51,6 +51,10 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   ]);
 
   const [tags, setTags] = useState([]);
+  const tagOptions = useMemo(
+    () => [...AVAILABLE_TAGS].sort((a, b) => a.label.localeCompare(b.label)),
+    []
+  );
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -361,26 +365,26 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       <form onSubmit={handleSubmit}>
         <div className="form-element">
           <div className="recipe-form">
-            <div >
-            <label htmlFor="recipe-title">Title: </label>
-            <input
-              type="text"
-              id="recipe-title"
-              value={recipeData.title}
-              onChange={handleRecipeChange}
-              name="title"
-              className="recipe-title-input"
-            />
+            <div className="recipe-field-group">
+              <label htmlFor="recipe-title">Title:</label>
+              <input
+                type="text"
+                id="recipe-title"
+                value={recipeData.title}
+                onChange={handleRecipeChange}
+                name="title"
+                className="recipe-title-input"
+              />
             </div>
-            <div>
-            <label htmlFor="recipe-notes">Notes:</label>
-            <textarea
-              type="text"
-              id="recipe-notes"
-              value={recipeData.notes}
-              onChange={handleRecipeChange}
-              name="notes"
-            />
+            <div className="recipe-field-group">
+              <label htmlFor="recipe-notes">Notes:</label>
+              <textarea
+                id="recipe-notes"
+                value={recipeData.notes}
+                onChange={handleRecipeChange}
+                name="notes"
+                className="recipe-notes-input"
+              />
             </div>
             <div>
             <label htmlFor="recipe-favorite">Favorite</label>
@@ -418,7 +422,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
           <div className="tags-container">
             <h3>Tags</h3>
             <div className="tags-grid">
-              {AVAILABLE_TAGS.map((tag) => (
+              {tagOptions.map((tag) => (
                 <label key={tag.value} className="tag-checkbox">
                   <input
                     type="checkbox"
@@ -443,7 +447,8 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                     handleIngredientChange(index, e);
                   }}
                   name="name"
-                  autoComplete="false"
+                  autoComplete="off"
+                  className="ingredient-name-input"
                 />
                 <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
                 <input
@@ -475,24 +480,24 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   ))}
                 </select>
 
-                  <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
-                  <select
-                    id={`ingredient-weight-${index}`}
-                    name="weight_unit"
-                    value={ingredient.weight_unit || ""}
-                    onChange={(e) => {
-                      handleIngredientChange(index, e);
-                    }}
-                    disabled={ingredient.volume_unit !== ""}
-                    className="weight-input"
-                  >
-                    <option value="">---</option>
-                    {WEIGHT_UNITS.map((unit) => (
-                      <option key={unit.value} value={unit.value}>
-                        {unit.label}
-                      </option>
-                    ))}
-                  </select>
+                <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
+                <select
+                  id={`ingredient-weight-${index}`}
+                  name="weight_unit"
+                  value={ingredient.weight_unit || ""}
+                  onChange={(e) => {
+                    handleIngredientChange(index, e);
+                  }}
+                  disabled={ingredient.volume_unit !== ""}
+                  className="weight-input"
+                >
+                  <option value="">---</option>
+                  {WEIGHT_UNITS.map((unit) => (
+                    <option key={unit.value} value={unit.value}>
+                      {unit.label}
+                    </option>
+                  ))}
+                </select>
                   {ingredientsData.length > 1 && (
                     <button
                       type="button"

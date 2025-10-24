@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
 import {
   getRecipe,
@@ -37,6 +37,10 @@ const RecipeEdit = () => {
   const [loading, setLoading] = useState(true);
   const [calculatedUnits, setCalculatedUnits] = useState([]);
   const [formErrors, setFormErrors] = useState({}); // ADD THIS LINE
+  const tagOptions = useMemo(
+    () => [...AVAILABLE_TAGS].sort((a, b) => a.label.localeCompare(b.label)),
+    []
+  );
 
   // Image state
   const [imageFile, setImageFile] = useState(null);
@@ -453,7 +457,7 @@ const RecipeEdit = () => {
         )}
         <div className="form-element">
           <div className="recipe-form">
-            <div>
+            <div className="recipe-field-group">
             <label htmlFor="recipe-title">Title: </label>
             <input
               type="text"
@@ -465,7 +469,7 @@ const RecipeEdit = () => {
               className="recipe-title-input"
             />
             </div>
-            <div>
+            <div className="recipe-field-group">
             <label htmlFor="recipe-notes">Notes:</label>
             <textarea
               type="text"
@@ -527,7 +531,7 @@ const RecipeEdit = () => {
           <div className="tags-container">
             <h3>Tags</h3>
             <div className="tags-grid">
-              {AVAILABLE_TAGS.map((tag) => (
+              {tagOptions.map((tag) => (
                 <label key={tag.value} className="tag-checkbox">
                   <input
                     type="checkbox"
@@ -551,6 +555,7 @@ const RecipeEdit = () => {
                   onChange={(e) => handleIngredientChange(index, e)}
                   name="name"
                   autoComplete="off"
+                  className="ingredient-name-input"
                 />
 
                 <label htmlFor={`ingredient-quantity-${index}`}>Quantity:</label>
@@ -635,6 +640,7 @@ const RecipeEdit = () => {
                   id={`step-description-${index}`}
                   value={step.description}
                   name="description"
+                  className="step-description-input"
                   onChange={(e) => {
                     handleStepChange(index, e);
                   }}

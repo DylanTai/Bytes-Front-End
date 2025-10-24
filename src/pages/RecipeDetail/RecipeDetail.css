@@ -19,7 +19,8 @@
 }
 
 .edit-button,
-.delete-button, .back-button {
+.delete-button,
+.back-button {
   color: #82200c;
   text-decoration: none;
   padding: 20px;
@@ -32,7 +33,8 @@
 }
 
 .edit-button:hover,
-.delete-button:hover, .back-button:hover {
+.delete-button:hover,
+.back-button:hover {
   color: #f9ae2c;
   cursor: pointer;
 }
@@ -60,7 +62,9 @@
   margin-right: 50px;
 }
 
-.detail-tag-label, .detail-notes-label, .detail-steps-label {
+.detail-tag-label,
+.detail-notes-label,
+.detail-steps-label {
   margin-right: 40px;
 }
 
@@ -130,4 +134,17 @@
   color: #b5653d;
   cursor: default;
   text-decoration: none;
+}
+
+.recipe-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.recipe-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
 }
