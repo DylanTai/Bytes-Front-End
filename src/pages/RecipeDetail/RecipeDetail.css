@@ -5,14 +5,16 @@
   padding-bottom: 40px;
   margin-left: 10px;
   margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .recipe-title {
   display: flex;
   justify-content: center;
-  margin-bottom: 45px;
+  margin-bottom: 10px;
   margin-top: 50px;
-  margin-bottom: 20px;
   font-family: "Handjet", sans-serif;
   font-size: 55px;
   padding-top: 60px;
@@ -39,23 +41,43 @@
   cursor: pointer;
 }
 
-.recipe-actions,
+.recipe-actions {
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  margin-top: 10px;
+}
+
 .recipe-tags,
 .detail-recipe-notes,
 .recipe-steps {
   align-items: center;
   justify-content: center;
-  display: flex;
+  display: inline-flex;
   margin-top: 30px;
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: fit-content;
+  max-width: 90vw;
 }
 
 .recipe-ingredients {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: baseline;
   flex-wrap: wrap;
   flex-direction: row;
   margin-top: 30px;
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: fit-content;
+  max-width: 90vw;
 }
 
 .recipe-ingredients h2 {
@@ -152,15 +174,23 @@
 }
 
 .recipe-image-container {
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
+  margin-top: 10px;
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: fit-content;
+  max-width: 90vw;
 }
 
 .recipe-image {
-  max-width: 100%;
-  height: auto;
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
   border-radius: 10px;
 }
 

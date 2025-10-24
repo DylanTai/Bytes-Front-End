@@ -12,6 +12,11 @@
   align-items: center;
   width: clamp(240px, 60vw, 720px);
   gap: 15px;
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .recipe-field-group label {
@@ -54,14 +59,56 @@
 }
 
 .favorite-container {
-  background-color: #fff3e0;
-  border: 2px solid #d08c45;
-  border-radius: 12px;
-  padding: 15px 20px;
-  box-shadow: 0 2px 4px rgba(130, 32, 12, 0.1);
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+/* tags styling */
+.tags-container {
+  margin: 20px 0;
+  padding: 30px;
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 25px;
+  justify-content: space-evenly;
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tags-container h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px;
+  width: 60%;
+}
+
+.tag-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.tag-checkbox input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
 }
 
 /* edit ingredients */
@@ -74,6 +121,10 @@
   overflow-x: hidden;
 }
 
+.edit-ingredient-container > .form-btn {
+  align-self: center;
+}
+
 .image-upload-section {
   width: 100%;
   display: flex;
@@ -81,11 +132,11 @@
   align-items: center;
   gap: 12px;
   margin-top: 10px;
-  background-color: #fff3e0;
-  border: 2px solid #d08c45;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(130, 32, 12, 0.1);
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .image-upload-section label {
@@ -166,6 +217,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   margin-bottom: 20px;
   width: 100%;
@@ -173,33 +225,42 @@
 }
 
 .ingredient-form {
-  width: clamp(260px, 70vw, 640px);
+  width: clamp(260px, 90vw, 1200px);
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background-color: #fff3e0;
-  border: 2px solid #d08c45;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(130, 32, 12, 0.1);
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .ingredient-row {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 15px;
   align-items: center;
   justify-content: center;
+}
+
+@media (min-width: 1200px) {
+  .ingredient-row {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
 }
 
 .ingredient-field-group {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 6px;
-  flex: 1 1 clamp(180px, 22vw, 240px);
-  min-width: 180px;
+  flex: 1 1 auto;
+  min-width: 150px;
 }
 
 /* Ensure Volume and Weight stay together */
@@ -266,7 +327,7 @@
   opacity: 0.6;
 }
 
-.ingredient-actions {
+.ingredient-remove-container {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -278,52 +339,19 @@
 }
 
 .ingredient-name-input {
-  width: clamp(200px, 20vw, 320px);
+  width: 100%;
+  max-width: 300px;
 }
 
 .quantity-input {
-  width: clamp(120px, 18vw, 200px);
+  width: 100%;
+  max-width: 120px;
 }
 
 .volume-input,
 .weight-input {
-  width: clamp(140px, 18vw, 220px);
-}
-
-.remove-ingredient-btn {
-  position: absolute;
-  left: calc(50% + 380px);
-  top: 0;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-
-@media (max-width: 1200px) {
-  .remove-ingredient-btn {
-    left: calc(50% + 280px);
-  }
-}
-
-@media (max-width: 900px) {
-  .remove-ingredient-btn {
-    left: calc(50% + 240px);
-  }
-}
-
-@media (max-width: 700px) {
-  .remove-ingredient-btn {
-    left: calc(50% + 200px);
-  }
-}
-
-@media (max-width: 600px) {
-  .remove-ingredient-btn {
-    position: static;
-    transform: none;
-    margin-top: 8px;
-  }
+  width: 100%;
+  max-width: 180px;
 }
 
 
@@ -357,25 +385,58 @@
 
 .step-form {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin: 15px 0;
-  flex-wrap: wrap;
-  gap: 8px;
-  background-color: #fff3e0;
-  border: 2px solid #d08c45;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(130, 32, 12, 0.1);
+  flex-wrap: nowrap;
+  gap: 20px;
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: clamp(260px, 90vw, 1200px);
+}
+
+.step-info-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+.step-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.step-content-right {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  min-width: 0;
+  align-items: flex-start;
 }
 
 .step-number-label {
   font-weight: 600;
   white-space: nowrap;
   font-size: 16px;
+  display: block;
+  text-align: left;
 }
 
-.step-form label {
+.step-labels label {
   font-size: 16px;
+  display: block;
+  text-align: left;
+  margin: 0;
+  padding: 0;
 }
 
 .step-form textarea {
@@ -384,22 +445,25 @@
 }
 
 .step-form textarea {
-  width: clamp(260px, 60vw, 520px);
+  width: 100%;
   min-height: clamp(52px, 8vh, 140px);
   padding: 0.2rem;
   border-radius: 8px;
   font-size: 1rem;
+  box-sizing: border-box;
+  flex: 1;
 }
 
 .step-remove-container {
-  width: 100%;
   display: flex;
-  justify-content: center;
-  margin-top: 12px;
+  align-items: center;
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .step-remove-btn {
   margin-top: 0;
+  white-space: nowrap;
 }
 
 .step-controls {

@@ -532,10 +532,10 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                     </div>
                   </div>
                   {ingredientsData.length > 1 && (
-                    <div className="ingredient-actions">
+                    <div className="ingredient-remove-container">
                       <button
                         type="button"
-                        onClick={(e) => {
+                        onClick={() => {
                           removeIngredient(index);
                         }}
                         className="form-btn remove-ingredient-btn"
@@ -558,53 +558,56 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             <div className="steps-container">
               {stepsData.map((step, index) => (
                 <div className="step-form" key={index}>
-                  <div className="step-controls">
-                    <button
-                      type="button"
-                      onClick={() => moveStep(index, 'up')}
-                      disabled={index === 0}
-                      className="step-arrow-btn"
-                      aria-label="Move step up"
-                    >
-                      ▲
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveStep(index, 'down')}
-                      disabled={index === stepsData.length - 1}
-                      className="step-arrow-btn"
-                      aria-label="Move step down"
-                    >
-                      ▼
-                    </button>
-                  </div>
-                  <span className="step-number-label">Step {step.step}:</span>
-                  <label htmlFor={`step-description-${index}`}>
-                    Description
-                  </label>
-                  <textarea
-                    type="text"
-                    id={`step-description-${index}`}
-                    value={step.description}
-                    name="description"
-                    onChange={(e) => {
-                      handleStepChange(index, e);
-                    }}
-                    className="step-description-input"
-                  />
-                  {stepsData.length > 1 && (
-                    <div className="step-remove-container">
+                  <div className="step-info-left">
+                    <div className="step-controls">
                       <button
                         type="button"
-                        onClick={(e) => {
-                          removeStep(index);
-                        }}
-                        className="form-btn step-remove-btn"
+                        onClick={() => moveStep(index, 'up')}
+                        disabled={index === 0}
+                        className="step-arrow-btn"
+                        aria-label="Move step up"
                       >
-                        Remove
+                        ▲
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveStep(index, 'down')}
+                        disabled={index === stepsData.length - 1}
+                        className="step-arrow-btn"
+                        aria-label="Move step down"
+                      >
+                        ▼
                       </button>
                     </div>
-                  )}
+                    <div className="step-labels">
+                      <span className="step-number-label">Step {step.step}:</span>
+                    </div>
+                  </div>
+                  <div className="step-content-right">
+                    <textarea
+                      type="text"
+                      id={`step-description-${index}`}
+                      value={step.description}
+                      name="description"
+                      onChange={(e) => {
+                        handleStepChange(index, e);
+                      }}
+                      className="step-description-input"
+                    />
+                    {stepsData.length > 1 && (
+                      <div className="step-remove-container">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            removeStep(index);
+                          }}
+                          className="form-btn step-remove-btn"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
               <button type="button" onClick={addExtraStep} className="form-btn edit-add-step-btn">

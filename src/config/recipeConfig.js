@@ -21,18 +21,18 @@ export const WEIGHT_UNITS = [
   { value: "lb", label: "Pound" },
 ];
 
-const RAW_TAG_MAP = {
-  contains_dairy: "No Dairy",
-  contains_eggs: "No Eggs",
-  contains_gluten: "Gluten Free",
-  contains_nuts: "No Nuts",
-  contains_shellfish: "No Shellfish",
-  spicy: "Spicy",
-  vegan: "Vegan",
-  vegetarian: "Vegetarian",
-};
+export const TAG_DEFINITIONS = [
+  { value: "contains_dairy", label: "No Dairy" },
+  { value: "contains_eggs", label: "No Eggs" },
+  { value: "contains_gluten", label: "Gluten Free" },
+  { value: "contains_nuts", label: "No Nuts" },
+  { value: "contains_shellfish", label: "No Shellfish" },
+  { value: "spicy", label: "Spicy" },
+  { value: "vegan", label: "Vegan" },
+  { value: "vegetarian", label: "Vegetarian" },
+];
 
-const ADDITIONAL_TAG_MAP = {
+const LEGACY_TAG_MAP = {
   dairy_free: "No Dairy",
   gluten_free: "Gluten Free",
   no_eggs: "No Eggs",
@@ -42,16 +42,20 @@ const ADDITIONAL_TAG_MAP = {
   "doesn't_contains_shellfish": "No Shellfish",
 };
 
-export const AVAILABLE_TAGS = Object.entries(RAW_TAG_MAP)
-  .sort((a, b) => a[1].localeCompare(b[1]))
-  .map(([value, label]) => ({ value, label }));
+const TAG_LABEL_LOOKUP = new Map(TAG_DEFINITIONS.map(({ value, label }) => [value, label]));
 
-export const AVAILABLE_TAGS_AI = [...AVAILABLE_TAGS];
+export const AVAILABLE_TAGS = TAG_DEFINITIONS.slice().sort((a, b) => a.label.localeCompare(b.label));
+
+export const AVAILABLE_TAGS_AI = AVAILABLE_TAGS.slice();
 
 export const formatTagLabel = (rawValue = "") => {
   if (!rawValue) return "";
-  if (RAW_TAG_MAP[rawValue]) return RAW_TAG_MAP[rawValue];
-  if (ADDITIONAL_TAG_MAP[rawValue]) return ADDITIONAL_TAG_MAP[rawValue];
+
+  const directMatch = TAG_LABEL_LOOKUP.get(rawValue);
+  if (directMatch) return directMatch;
+
+  const legacyMatch = LEGACY_TAG_MAP[rawValue];
+  if (legacyMatch) return legacyMatch;
 
   if (rawValue.startsWith("contains_")) {
     const descriptor = rawValue.replace("contains_", "").replace(/_/g, " ");
