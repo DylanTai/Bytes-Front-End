@@ -226,7 +226,13 @@ const RecipeAI = () => {
         )}
       </div>
       {generatedRecipe && !loading && (
-        <button onClick={handleSubmitSave}>Save recipe!</button>
+        <button
+          className="generate-buttons"
+          id="save-button"
+          onClick={handleSubmitSave}
+        >
+          Save recipe!
+        </button>
       )}
     </div>
   );
