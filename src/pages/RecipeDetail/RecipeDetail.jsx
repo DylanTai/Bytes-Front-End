@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router";
 import * as recipeService from "../../services/recipeService.js";
+import { formatTagLabel } from "../../config/recipeConfig.js";
 import * as groceryListService from "../../services/groceryListService.js";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
@@ -75,6 +76,7 @@ const RecipeDetail = () => {
     }
   };
 
+
   if (loading) {
     return <LoadingAnimation />
   }
@@ -131,17 +133,14 @@ const RecipeDetail = () => {
         <div className="recipe-tags">
           <h2 className="detail-tag-label">Tags: </h2>
           <div className="tags-list">
-            {recipe.tags.map((tag, index) => {
-              const tagLabel = tag.replace(/_/g, " ");
-              const formattedLabel =
-                tagLabel.charAt(0).toUpperCase() + tagLabel.slice(1);
-
-              return (
-                <div key={index} className="tag-item">
-                  {formattedLabel}
+            {[...recipe.tags]
+              .map((value) => ({ value, label: formatTagLabel(value) }))
+              .sort((a, b) => a.label.localeCompare(b.label))
+              .map((tag, index) => (
+                <div key={`${tag.value}-${index}`} className="tag-item">
+                  {tag.label}
                 </div>
-              );
-            })}
+              ))}
           </div>
         </div>
       )}
@@ -194,15 +193,16 @@ const RecipeDetail = () => {
       <div className="recipe-steps">
         <h2 className="detail-steps-label">Steps: </h2>
         {steps && steps.length > 0 ? (
-          <ol>
+          <div className="steps-list">
             {steps
               .sort((a, b) => a.step - b.step)
               .map((step) => (
-                <li key={step.id} className="step-item">
+                <div key={step.id} className="step-item">
+                  <span className="step-number">Step {step.step}:</span>
                   <span className="step-description">{step.description}</span>
-                </li>
+                </div>
               ))}
-          </ol>
+          </div>
         ) : (
           <p className="empty-message">No steps added yet.</p>
         )}
