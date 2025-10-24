@@ -417,17 +417,22 @@ export const deleteStep = async (recipeId, stepId) => {
   if (!res.ok) throw new Error("Failed to delete step");
 };
 
-export async function generateRecipe(prompt, token) {
-  const res = await fetch("/api/recipes/generate/", {
+export const generateRecipe = async (prompt, tags) => {
+  const res = await fetchWithAuth(`${BASE_URL}generate/`, {
     method: "POST",
     headers: {
       "Content-type": "application/json",
     },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify({
+      prompt,
+      tags,
+    }),
   });
 
   if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Recipe generation failed:", errorText);
     throw new Error("Failed to generate recipe");
   }
   return await res.json();
-}
+};
