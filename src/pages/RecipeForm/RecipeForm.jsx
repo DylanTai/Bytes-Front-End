@@ -383,7 +383,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             />
             </div>
             <div>
-            <label htmlFor="recipe-favorite">Favorite</label>
+            <label htmlFor="recipe-favorite">Favorite 🍪</label>
             <input
               id="recipe-favorite"
               type="checkbox"
@@ -444,6 +444,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   }}
                   name="name"
                   autoComplete="false"
+                  className="add-ingredient-input"
                 />
                 <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
                 <input
