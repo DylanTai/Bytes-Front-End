@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { generateRecipe } from "../../services/recipeService.js";
 import { AVAILABLE_TAGS_AI } from "../../config/recipeConfig.js";
@@ -18,6 +18,10 @@ const RecipeAI = () => {
   const [generatedRecipe, setGeneratedRecipe] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const tagOptions = useMemo(
+    () => [...AVAILABLE_TAGS_AI].sort((a, b) => a.label.localeCompare(b.label)),
+    []
+  );
 
   const handlePromptChange = (e) => setPrompt(e.target.value);
 
@@ -149,7 +153,7 @@ const RecipeAI = () => {
           <div className="tags-container">
             <h3>Choose tags:</h3>
             <div className="tags-grid">
-              {AVAILABLE_TAGS_AI.map((tag) => (
+              {tagOptions.map((tag) => (
                 <label key={tag.value} className="tag-checkbox">
                   <input
                     type="checkbox"

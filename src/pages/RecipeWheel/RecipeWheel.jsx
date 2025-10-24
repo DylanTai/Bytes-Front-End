@@ -149,18 +149,33 @@ const RecipeWheel = () => {
         >
           {displayedRecipes.length === 1 ? (
             // Draw a full circle when there's only one recipe
-            <circle
-              cx="200"
-              cy="200"
-              r="180"
-              fill="#FF6B6B"
-              stroke="white"
-              strokeWidth="2"
-              className="wheel-segment"
-              onMouseEnter={() => setHoveredIndex(0)}
-              onMouseLeave={() => setHoveredIndex(null)}
-              style={{ cursor: "pointer" }}
-            />
+            <>
+              <circle
+                cx="200"
+                cy="200"
+                r="180"
+                fill="#FF6B6B"
+                stroke="white"
+                strokeWidth="2"
+                className="wheel-segment"
+                onMouseEnter={() => setHoveredIndex(0)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                onClick={() => navigate(`/recipes/${displayedRecipes[0].id}`)}
+                style={{ cursor: "pointer" }}
+              />
+              <text
+                x="200"
+                y="200"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill="white"
+                fontSize="16"
+                fontWeight="bold"
+                style={{ pointerEvents: "none" }}
+              >
+                {displayedRecipes[0].title}
+              </text>
+            </>
           ) : (
             displayedRecipes.map((recipe, index) => {
               const startAngle = index * segmentAngle;
@@ -188,6 +203,29 @@ const RecipeWheel = () => {
                 "#F8B739", "#52B788", "#E07A5F", "#81B29A"
               ];
 
+              // Calculate text position (midpoint of the segment)
+              const midAngle = ((startAngle + endAngle) / 2 - 90) * (Math.PI / 180);
+              const textRadius = 120; // Distance from center for text
+              const textX = 200 + textRadius * Math.cos(midAngle);
+              const textY = 200 + textRadius * Math.sin(midAngle);
+
+              // Calculate rotation for text to be readable
+              const textRotation = (startAngle + endAngle) / 2;
+
+              // Adjust max characters based on number of segments
+              const maxChars = displayedRecipes.length <= 4 ? 12 :
+                               displayedRecipes.length <= 6 ? 10 :
+                               displayedRecipes.length <= 8 ? 8 : 6;
+
+              // Adjust font size based on number of segments
+              const fontSize = displayedRecipes.length <= 4 ? 12 :
+                               displayedRecipes.length <= 6 ? 11 :
+                               displayedRecipes.length <= 8 ? 10 : 9;
+
+              const truncatedTitle = recipe.title.length > maxChars
+                ? recipe.title.substring(0, maxChars) + '...'
+                : recipe.title;
+
               return (
                 <g key={recipe.id}>
                   <path
@@ -198,11 +236,25 @@ const RecipeWheel = () => {
                     className="wheel-segment"
                     onMouseEnter={() => setHoveredIndex(index)}
                     onMouseLeave={() => setHoveredIndex(null)}
+                    onClick={() => navigate(`/recipes/${recipe.id}`)}
                     style={{
                       opacity: hoveredIndex === index ? 0.8 : 1,
                       cursor: "pointer",
                     }}
                   />
+                  <text
+                    x={textX}
+                    y={textY}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="white"
+                    fontSize={fontSize}
+                    fontWeight="bold"
+                    transform={`rotate(${textRotation}, ${textX}, ${textY})`}
+                    style={{ pointerEvents: "none" }}
+                  >
+                    {truncatedTitle}
+                  </text>
                 </g>
               );
             })
