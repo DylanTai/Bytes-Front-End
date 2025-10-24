@@ -37,10 +37,31 @@ const RecipeAI = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
+    setGeneratedRecipe(null);
 
+    /// animation
     try {
       const response = await generateRecipe(prompt, tags);
-      setGeneratedRecipe(response);
+      const tempRecipe = {};
+
+      setGeneratedRecipe({ title: response.title });
+      await new Promise((res) => setTimeout(res, 1000));
+
+      if (response.notes) {
+        tempRecipe.notes = response.notes;
+        setGeneratedRecipe((prev) => ({ ...prev, notes: response.notes }));
+        await new Promise((res) => setTimeout(res, 1000));
+      }
+      if (response.ingredients) {
+        setGeneratedRecipe((prev) => ({
+          ...prev,
+          ingredients: response.ingredients,
+        }));
+        await new Promise((res) => setTimeout(res, 1000));
+      }
+      if (response.steps) {
+        setGeneratedRecipe((prev) => ({ ...prev, steps: response.steps }));
+      }
     } catch (err) {
       setError("Failed to generate recipe. Please try again.");
       console.error(err);
@@ -146,7 +167,12 @@ const RecipeAI = () => {
           </div>
         </div>
 
-        <button type="submit" disabled={loading}>
+        <button
+          className="generate-buttons"
+          id="generate-button"
+          type="submit"
+          disabled={loading}
+        >
           {loading ? "Generating..." : "Generate Recipe"}
         </button>
       </form>
@@ -197,7 +223,15 @@ const RecipeAI = () => {
           </div>
         )}
       </div>
-      <button onClick={handleSubmitSave}>Save recipe!</button>
+      {generatedRecipe && !loading && (
+        <button
+          className="generate-buttons"
+          id="save-button"
+          onClick={handleSubmitSave}
+        >
+          Save recipe!
+        </button>
+      )}
     </div>
   );
 };
