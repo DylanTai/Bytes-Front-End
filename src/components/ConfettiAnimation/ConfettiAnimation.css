@@ -1,0 +1,36 @@
+.confetti-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+.confetti-wrapper.fade-out {
+  opacity: 0;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -50px;
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
+  opacity: 0.9;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100%) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(30px) translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+
