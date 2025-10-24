@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { UserContext } from "../../contexts/UserContext";
 import "./NavBar.css";
 import { Squash as Hamburger } from "hamburger-react";
-import logo from "../../../assets/Bytes AI.png"
+import logo from "../../../assets/Bytes AI.png";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +19,7 @@ const NavBar = () => {
 
   const toggleMobileMenu = () => setIsOpen((prev) => !prev);
 
-   useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -27,20 +27,41 @@ const NavBar = () => {
 
   const authenticatedOptions = (
     <>
-      <Link to="/" className="nav-link">Home</Link>
-      <Link to="/recipes/add" className="nav-link">Add Recipe</Link>
-      <Link to="/grocery-list" className="nav-link">Grocery List</Link>
-      <Link to="/recipe-wheel" className="nav-link">Recipe Wheel</Link>
-      <Link to="/profile" className="nav-link">Profile</Link>
-      <Link to="/" onClick={handleSignOut} className="nav-link">Sign Out</Link>
+      <Link to="/" className="nav-link">
+        Home
+      </Link>
+      <Link to="/recipes/add" className="nav-link">
+        Add Recipe
+      </Link>
+      <Link to="/recipes/AI" className="nav-link">
+        Generate A Recipe!
+      </Link>
+      <Link to="/grocery-list" className="nav-link">
+        Grocery List
+      </Link>
+      <Link to="/recipe-wheel" className="nav-link">
+        Recipe Wheel
+      </Link>
+      <Link to="/profile" className="nav-link">
+        Profile
+      </Link>
+      <Link to="/" onClick={handleSignOut} className="nav-link">
+        Sign Out
+      </Link>
     </>
   );
 
   const unauthenticatedOptions = (
     <>
-      <Link to="/" className="nav-link">Home</Link>
-      <Link to="/sign-up" className="nav-link">Sign Up</Link>
-      <Link to="/sign-in" className="nav-link">Sign In</Link>
+      <Link to="/" className="nav-link">
+        Home
+      </Link>
+      <Link to="/sign-up" className="nav-link">
+        Sign Up
+      </Link>
+      <Link to="/sign-in" className="nav-link">
+        Sign In
+      </Link>
     </>
   );
 
