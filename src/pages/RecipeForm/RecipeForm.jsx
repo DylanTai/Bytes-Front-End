@@ -358,9 +358,10 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       <div className="recipe-form-page">
       <h1 className="recipeform-title">Log New Recipe</h1>
 
-      <form onSubmit={handleSubmit} className="recipe-form">
+      <form onSubmit={handleSubmit}>
         <div className="form-element">
           <div className="recipe-form">
+            <div >
             <label htmlFor="recipe-title">Title: </label>
             <input
               type="text"
@@ -368,15 +369,20 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               value={recipeData.title}
               onChange={handleRecipeChange}
               name="title"
+              className="recipe-title-input"
             />
+            </div>
+            <div>
             <label htmlFor="recipe-notes">Notes:</label>
-            <input
+            <textarea
               type="text"
               id="recipe-notes"
               value={recipeData.notes}
               onChange={handleRecipeChange}
               name="notes"
             />
+            </div>
+            <div>
             <label htmlFor="recipe-favorite">Favorite</label>
             <input
               id="recipe-favorite"
@@ -385,6 +391,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               onChange={handleRecipeChange}
               name="favorite"
             />
+            </div>
 
             {/* Image Upload Section */}
             <div className="image-upload-section">

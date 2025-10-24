@@ -68,9 +68,8 @@ ul {
   width: fit-content;
 }
 
-.grocery-checkbox {
-  margin-right: -90px;
-  margin-left: -90px;
+.grocery-item-text {
+  padding-left: 20px;
 }
 
 .grocery-list-actions {

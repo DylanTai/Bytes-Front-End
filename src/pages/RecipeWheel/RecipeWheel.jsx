@@ -91,6 +91,7 @@ const RecipeWheel = () => {
               type="checkbox"
               checked={showFavoritesOnly}
               onChange={(e) => setShowFavoritesOnly(e.target.checked)}
+              className="wheel-favorite-checkbox"
             />
             <span>Favorites Only 🍪</span>
           </label>
@@ -123,7 +124,7 @@ const RecipeWheel = () => {
         </label>
       </div>
       
-      <div className="wheel-container">
+      <div className={`wheel-container ${selectedRecipe ? "blurred" : ""}`}>
         {/* Indicator Pointer */}
         <div className="wheel-pointer">▼</div>
 

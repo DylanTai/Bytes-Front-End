@@ -36,7 +36,15 @@
   cursor: pointer;
 }
 
-
-label {
+.sign-label {
   font-size: 20px;
+}
+
+.sign-form-group {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 15px;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-end;
 }

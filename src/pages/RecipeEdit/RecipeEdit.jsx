@@ -464,8 +464,10 @@ const RecipeEdit = () => {
               required
               className="recipe-title-input"
             />
+            </div>
+            <div>
             <label htmlFor="recipe-notes">Notes:</label>
-            <input
+            <textarea
               type="text"
               id="recipe-notes"
               value={recipeData.notes}
@@ -481,7 +483,7 @@ const RecipeEdit = () => {
               type="checkbox"
               checked={recipeData.favorite}
               onChange={handleRecipeChange}
-              className="recipe-favorite-input"
+              className="edit-recipe-favorite-input"
               name="favorite"
             />
             </div>
