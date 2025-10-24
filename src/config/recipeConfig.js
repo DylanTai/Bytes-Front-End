@@ -21,18 +21,27 @@ export const WEIGHT_UNITS = [
   { value: "lb", label: "Pound" },
 ];
 
+// New tag definitions - current standard
 export const TAG_DEFINITIONS = [
-  { value: "contains_dairy", label: "No Dairy" },
-  { value: "contains_eggs", label: "No Eggs" },
-  { value: "contains_gluten", label: "Gluten Free" },
-  { value: "contains_nuts", label: "No Nuts" },
-  { value: "contains_shellfish", label: "No Shellfish" },
+  { value: "no_dairy", label: "No Dairy" },
+  { value: "no_eggs", label: "No Eggs" },
+  { value: "no_gluten", label: "Gluten Free" },
+  { value: "no_nuts", label: "No Nuts" },
+  { value: "no_shellfish", label: "No Shellfish" },
   { value: "spicy", label: "Spicy" },
   { value: "vegan", label: "Vegan" },
   { value: "vegetarian", label: "Vegetarian" },
 ];
 
+// Legacy tag mappings for backward compatibility
 const LEGACY_TAG_MAP = {
+  // Old "contains_" format
+  contains_dairy: "No Dairy",
+  contains_eggs: "No Eggs",
+  contains_gluten: "Gluten Free",
+  contains_nuts: "No Nuts",
+  contains_shellfish: "No Shellfish",
+  // Other legacy formats
   dairy_free: "No Dairy",
   gluten_free: "Gluten Free",
   no_eggs: "No Eggs",

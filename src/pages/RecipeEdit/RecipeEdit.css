@@ -6,53 +6,7 @@
   width: 100%;
 }
 
-.recipe-field-group {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: clamp(240px, 60vw, 720px);
-  gap: 15px;
-  background: #fffdfc;
-  border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  padding: 30px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.recipe-field-group label {
-  font-weight: 600;
-  text-align: left;
-  font-size: 16px;
-  white-space: nowrap;
-}
-
-.recipe-field-group input,
-.recipe-field-group textarea {
-  font-size: 16px;
-}
-
-.recipe-field-group input[type="text"],
-.recipe-field-group input[type="checkbox"] {
-  border-radius: 8px;
-}
-
-.recipe-field-group input[type="text"],
-.recipe-field-group textarea {
-  flex: 1;
-}
-
-.recipe-title-input,
-.recipe-notes-input {
-  width: clamp(240px, 60vw, 720px);
-  max-width: 720px;
-  border-radius: 8px;
-}
-
-.recipe-notes-input {
-  min-height: clamp(52px, 8vh, 120px);
-  resize: vertical;
-  font-size: 16px;
-}
+/* Edit only overrides */
 
 .edit-recipe-favorite-input {
   margin: 0;
@@ -75,40 +29,71 @@
   padding: 30px;
   width: 90%;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   margin-top: 25px;
-  justify-content: space-evenly;
   background: #fffdfc;
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  max-width: 1200px;
 }
 
 .tags-container h3 {
   margin-top: 0;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #3a1c08;
 }
 
 .tags-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 6px;
-  width: 60%;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .tags-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tags-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1400px) {
+  .tags-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .tag-checkbox {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: #3a1c08;
+  background-color: #fff7ea;
+  border: 1px solid #d08c45;
+  border-radius: 8px;
+  padding: 12px 18px 12px 12px;
+  box-sizing: border-box;
+  min-height: 48px;
   cursor: pointer;
+  font-weight: 500;
 }
 
 .tag-checkbox input[type="checkbox"] {
   cursor: pointer;
   width: 18px;
   height: 18px;
+  accent-color: #ff904b;
+  flex-shrink: 0;
 }
 
 /* edit ingredients */
@@ -169,7 +154,6 @@
   border-color: #f9ae2c;
   background-color: #ffe0bd;
 }
-
 
 .image-preview-container {
   width: clamp(260px, 54vw, 480px);
@@ -353,7 +337,6 @@
   width: 100%;
   max-width: 180px;
 }
-
 
 .form-field-pair {
   display: flex;
