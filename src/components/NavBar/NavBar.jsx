@@ -71,10 +71,10 @@ const NavBar = () => {
 
   const authenticatedRight = (
     <>
-      <Link to="/profile" className="nav-link">
+      <Link to="/profile" className="nav-link-right">
         Profile
       </Link>
-      <Link to="/" onClick={handleSignOut} className="nav-link">
+      <Link to="/" onClick={handleSignOut} className="nav-link-right">
         Sign Out
       </Link>
     </>
@@ -82,10 +82,10 @@ const NavBar = () => {
 
   const unauthenticatedRight = (
     <>
-      <Link to="/sign-up" className="nav-link">
+      <Link to="/sign-up" className="nav-link-right">
         Sign Up
       </Link>
-      <Link to="/sign-in" className="nav-link">
+      <Link to="/sign-in" className="nav-link-right">
         Sign In
       </Link>
     </>
@@ -98,12 +98,7 @@ const NavBar = () => {
         aria-label="Toggle navigation"
         aria-expanded={isOpen || isClosing}
       >
-        <Hamburger
-          // onClick={toggleMobileMenu}
-          toggled={isOpen}
-          toggle={handleHamburgerToggle}
-          size={22}
-        />
+        <Hamburger toggled={isOpen} toggle={handleHamburgerToggle} size={22} />
       </button>
 
       <div className="nav-left">{user ? authenticatedLeft : null}</div>
