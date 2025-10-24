@@ -4,15 +4,18 @@ import * as recipeService from "../../services/recipeService.js";
 import * as groceryListService from "../../services/groceryListService.js";
 import { AVAILABLE_TAGS } from "../../config/recipeConfig.js";
 import "./RecipeList.css";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 const RecipeList = () => {
   const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState("Newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFavoritesFirst, setShowFavoritesFirst] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
+
   const recipesPerPage = 5;
 
   const sortedAvailableTags = useMemo(() => {
@@ -21,18 +24,31 @@ const RecipeList = () => {
 
   useEffect(() => {
     const fetchRecipes = async () => {
-      const data = await recipeService.getRecipes();
-      setRecipes(Array.isArray(data) ? data : []);
+      try {
+        const data = await recipeService.getRecipes();
+        setRecipes(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error fetching recipes:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchRecipes();
   }, []);
+
+  // Reset to page 1 when search or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, sortBy, showFavoritesFirst, selectedTags]);
 
   const handleAddToGroceryList = async (e, recipeId, recipeTitle) => {
     e.preventDefault();
     e.stopPropagation();
 
     try {
-      const response = await groceryListService.addRecipeToGroceryList(recipeId);
+      const response = await groceryListService.addRecipeToGroceryList(
+        recipeId
+      );
       const message =
         response?.message ||
         `Added ingredients from "${recipeTitle}" to your grocery list.`;
@@ -42,6 +58,10 @@ const RecipeList = () => {
       alert("Failed to add ingredients to grocery list.");
     }
   };
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   // Search filter
   const searchFilteredRecipes = recipes.filter((recipe) => {
@@ -53,14 +73,22 @@ const RecipeList = () => {
     if (recipe.title.toLowerCase().includes(query)) return true;
 
     // Search in ingredients
-    if (recipe.ingredients && recipe.ingredients.some(
-      (ingredient) => ingredient.name.toLowerCase().includes(query)
-    )) return true;
+    if (
+      recipe.ingredients &&
+      recipe.ingredients.some((ingredient) =>
+        ingredient.name.toLowerCase().includes(query)
+      )
+    )
+      return true;
 
     // Search in steps
-    if (recipe.steps && recipe.steps.some(
-      (step) => step.description.toLowerCase().includes(query)
-    )) return true;
+    if (
+      recipe.steps &&
+      recipe.steps.some((step) =>
+        step.description.toLowerCase().includes(query)
+      )
+    )
+      return true;
 
     return false;
   });
@@ -102,11 +130,6 @@ const RecipeList = () => {
   );
 
   const pages = Math.ceil(sortedRecipes.length / recipesPerPage);
-
-  // Reset to page 1 when search or filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, sortBy, showFavoritesFirst, selectedTags]);
 
   return (
     <div className="recipe-list-page">
@@ -178,7 +201,9 @@ const RecipeList = () => {
                       checked={showFavoritesFirst}
                       onChange={(e) => setShowFavoritesFirst(e.target.checked)}
                     />
-                    <span className="filters-check-label">Show favorites first 🍪</span>
+                    <span className="filters-check-label">
+                      Show favorites first 🍪
+                    </span>
                   </label>
                   {sortedAvailableTags.map((tag) => (
                     <label key={tag.value} className="filters-check-item">
@@ -208,16 +233,15 @@ const RecipeList = () => {
         {/* Results count */}
         {searchQuery && (
           <p className="search-results-count">
-            Found {sortedRecipes.length} recipe{sortedRecipes.length !== 1 ? 's' : ''}
+            Found {sortedRecipes.length} recipe
+            {sortedRecipes.length !== 1 ? "s" : ""}
           </p>
         )}
       </div>
 
       {/* Recipe List */}
       {currRecipes.length === 0 ? (
-        <p className="no-recipes-message">
-          No recipes here!
-        </p>
+        <p className="no-recipes-message">No recipes here!</p>
       ) : (
         <ul className="recipe-list">
           {currRecipes.map((recipe) => (
@@ -228,7 +252,7 @@ const RecipeList = () => {
                   {recipe.image ? (
                     <>
                       <div className="recipe-thumbnail-wrapper">
-                        <img 
+                        <img
                           src={recipe.image}
                           alt={recipe.title}
                           className="recipe-thumbnail"
@@ -236,14 +260,18 @@ const RecipeList = () => {
                       </div>
                       <div className="recipe-card-content">
                         <strong>{recipe.title}</strong>
-                        {recipe.favorite && <span className="recipe-favorite-icon">🍪</span>}
+                        {recipe.favorite && (
+                          <span className="recipe-favorite-icon">🍪</span>
+                        )}
                       </div>
                     </>
                   ) : (
                     <div className="recipe-thumbnail-wrapper placeholder">
                       <div className="recipe-card-content placeholder-content">
                         <strong>{recipe.title}</strong>
-                        {recipe.favorite && <span className="recipe-favorite-icon">🍪</span>}
+                        {recipe.favorite && (
+                          <span className="recipe-favorite-icon">🍪</span>
+                        )}
                       </div>
                     </div>
                   )}
@@ -251,7 +279,9 @@ const RecipeList = () => {
               </Link>
               <button
                 className="add-ingredients-btn"
-                onClick={(e) => handleAddToGroceryList(e, recipe.id, recipe.title)}
+                onClick={(e) =>
+                  handleAddToGroceryList(e, recipe.id, recipe.title)
+                }
               >
                 Add to Grocery List
               </button>

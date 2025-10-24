@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import * as recipeService from "../../services/recipeService.js";
 import { formatTagLabel } from "../../config/recipeConfig.js";
 import * as groceryListService from "../../services/groceryListService.js";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -77,11 +78,7 @@ const RecipeDetail = () => {
 
 
   if (loading) {
-    return (
-      <div className="recipe-detail-loading">
-        <p>Loading...</p>
-      </div>
-    );
+    return <LoadingAnimation />
   }
 
   if (error || !recipe) {

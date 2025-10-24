@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import * as recipeService from "../../services/recipeService.js";
 import "./RecipeWheel.css";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 const RecipeWheel = () => {
   const navigate = useNavigate();
@@ -12,13 +13,21 @@ const RecipeWheel = () => {
   const [hasSpun, setHasSpun] = useState(false);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const animationRef = useRef(null);
   const spinVelocityRef = useRef(0);
 
   useEffect(() => {
     const fetchRecipes = async () => {
-      const data = await recipeService.getRecipes();
-      setRecipes(Array.isArray(data) ? data : []);
+      try {
+        const data = await recipeService.getRecipes();
+        setRecipes(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Error fetching recipes:", err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchRecipes();
   }, []);
@@ -79,6 +88,10 @@ const RecipeWheel = () => {
       navigate(`/recipes/${selectedRecipe.id}`);
     }
   };
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   if (displayedRecipes.length === 0) {
     return (

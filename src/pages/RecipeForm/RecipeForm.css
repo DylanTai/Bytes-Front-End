@@ -263,6 +263,10 @@
   border-radius: 8px;
 }
 
+.add-ingredient-input {
+  border-radius: 8px;
+}
+
 .ingredient-container {
   display: flex;
   flex-direction: column;
