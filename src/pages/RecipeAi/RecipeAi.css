@@ -1,0 +1,221 @@
+.prompt-form-page {
+  background-color: #ffe0bd45;
+  border-radius: 80px;
+  min-height: calc(100vh - 75px);
+  padding-bottom: 40px;
+  margin-left: 10px;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.AI-form-title {
+  display: flex;
+  justify-content: center;
+  padding: 25px;
+  margin-bottom: 10px;
+  margin-top: 50px;
+  font-family: "Handjet", sans-serif;
+  font-size: 55px;
+  padding-top: 60px;
+}
+
+.prompt-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.ai-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.prompt-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 15px;
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: clamp(240px, 60vw, 720px);
+}
+
+.prompt-box label {
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 16px;
+}
+
+.prompt-box input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d4b9a3;
+  font-size: 16px;
+  background-color: #fff;
+}
+
+.prompt-box input:focus {
+  border-color: #f9ae2c;
+  outline: none;
+}
+
+.tags-container {
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: clamp(240px, 80vw, 900px);
+}
+
+.tags-container h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .tags-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tags-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.tag-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: #3a1c08;
+  background-color: #fff7ea;
+  border: 1px solid #d08c45;
+  border-radius: 8px;
+  padding: 12px 18px 12px 12px;
+  box-sizing: border-box;
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.tag-checkbox input[type="checkbox"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #ff904b;
+}
+
+.prompt-form button[type="submit"] {
+  background: none;
+  border: none;
+  color: #82200c;
+  text-decoration: none;
+  padding: 20px;
+  font-weight: 600;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.prompt-form button[type="submit"]:hover {
+  color: #f9ae2c;
+}
+
+.prompt-form button[type="submit"]:disabled {
+  color: #b5653d;
+  cursor: not-allowed;
+}
+
+.response {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 30px;
+}
+
+.error-message {
+  color: #d9534f;
+  background-color: #fff5f5;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.response-recipe {
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#recipe-title {
+  font-family: "Handjet", sans-serif;
+  font-size: 40px;
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 0;
+}
+
+.generated-recipe-notes,
+.generated-ingredients,
+.generated-steps {
+  margin-top: 25px;
+}
+
+.generated-recipe-notes h3,
+.generated-ingredients h3,
+.generated-steps h3 {
+  font-size: 22px;
+  margin-bottom: 12px;
+  color: #82200c;
+}
+
+.generated-ingredient-list,
+.generated-step-list {
+  padding-left: 25px;
+  line-height: 1.8;
+}
+
+.generated-ingredient-item {
+  margin-bottom: 8px;
+}
+
+.prompt-form-page > button:last-child {
+  background: none;
+  border: none;
+  color: #82200c;
+  text-decoration: none;
+  padding: 20px;
+  font-weight: 600;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  margin-top: 20px;
+}
+
+.prompt-form-page > button:last-child:hover {
+  color: #f9ae2c;
+}

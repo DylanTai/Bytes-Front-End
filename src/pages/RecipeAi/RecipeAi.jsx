@@ -130,7 +130,7 @@ const RecipeAI = () => {
           </div>
 
           <div className="tags-container">
-            <h3>Choose tags:</h3>
+            <h3>Tags</h3>
             <div className="tags-grid">
               {tagOptions.map((tag) => (
                 <label key={tag.value} className="tag-checkbox">
@@ -197,7 +197,9 @@ const RecipeAI = () => {
           </div>
         )}
       </div>
-      <button onClick={handleSubmitSave}>Save recipe!</button>
+      {generatedRecipe && !loading && (
+        <button onClick={handleSubmitSave}>Save recipe!</button>
+      )}
     </div>
   );
 };
