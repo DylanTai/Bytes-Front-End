@@ -4,7 +4,7 @@
   justify-content: space-between;
   background-color: white;
   width: 100%;
-  padding: 0 1rem;
+  /* padding: 0 1rem; */
   position: fixed;
   top: 0;
   z-index: 1000;
@@ -89,6 +89,10 @@
 
   .nav-center img {
     height: 42px;
+  }
+  .nav-center a {
+    width: 80%;
+    transform: translateX(-40px);
   }
 
   /* --- Mobile dropdown --- */

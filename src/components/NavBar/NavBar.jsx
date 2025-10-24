@@ -18,31 +18,39 @@ const NavBar = () => {
     }
   };
 
-  const toggleMobileMenu = () => {
-    if (isOpen) {
-      setIsClosing(true);
-      setTimeout(() => {
-        setIsOpen(false);
-        setIsClosing(false);
-      }, 400); // match CSS animation duration
-    } else {
-      setIsOpen(true);
-    }
-  };
-
-  const handleCloseMenu = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsOpen(false);
-      setIsClosing(false);
-    }, 300);
-  };
-
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 0);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // 👇 Control the Hamburger toggle so we can run the close animation
+  const handleHamburgerToggle = (nextOpen) => {
+    if (nextOpen) {
+      // opening
+      setIsClosing(false);
+      setIsOpen(true);
+    } else {
+      // closing: keep menu mounted by setting isClosing=true
+      setIsClosing(true);
+      setIsOpen(false); // let the hamburger icon animate to "closed" immediately
+    }
+  };
+
+  // 👇 When the closing animation finishes, unmount the menu
+  const handleMenuAnimationEnd = (e) => {
+    if (e.animationName === "slideUp") {
+      setIsClosing(false);
+    }
+    // (optional) if you need to normalize after opening:
+    // if (e.animationName === "slideDown") { /* no-op */ }
+  };
+
+  // Optional: close menu when clicking a link (SPA may short-circuit the visual)
+  const closeWithAnimation = () => {
+    setIsClosing(true);
+    setIsOpen(false);
+  };
 
   const authenticatedLeft = (
     <>
@@ -88,12 +96,12 @@ const NavBar = () => {
       <button
         className="nav-hamburger"
         aria-label="Toggle navigation"
-        aria-expanded={isOpen}
+        aria-expanded={isOpen || isClosing}
       >
         <Hamburger
-          onClick={toggleMobileMenu}
+          // onClick={toggleMobileMenu}
           toggled={isOpen}
-          toggle={setIsOpen}
+          toggle={handleHamburgerToggle}
           size={22}
         />
       </button>
@@ -117,35 +125,35 @@ const NavBar = () => {
               <Link
                 to="/recipes/add"
                 className="nav-link"
-                onClick={handleCloseMenu}
+                onClick={closeWithAnimation}
               >
                 Add A Recipe
               </Link>
               <Link
                 to="/recipes/AI"
                 className="nav-link"
-                onClick={handleCloseMenu}
+                onClick={closeWithAnimation}
               >
                 Generate A Recipe
               </Link>
               <Link
                 to="/grocery-list"
                 className="nav-link"
-                onClick={handleCloseMenu}
+                onClick={closeWithAnimation}
               >
                 Grocery List
               </Link>
               <Link
                 to="/recipe-wheel"
                 className="nav-link"
-                onClick={handleCloseMenu}
+                onClick={closeWithAnimation}
               >
                 Recipe Wheel!!!
               </Link>
               <Link
                 to="/profile"
                 className="nav-link"
-                onClick={handleCloseMenu}
+                onClick={closeWithAnimation}
               >
                 Profile
               </Link>
@@ -153,7 +161,7 @@ const NavBar = () => {
                 to="/"
                 onClick={() => {
                   handleSignOut();
-                  handleCloseMenu();
+                  closeWithAnimation();
                 }}
                 className="nav-link"
               >
@@ -165,14 +173,14 @@ const NavBar = () => {
               <Link
                 to="/sign-up"
                 className="nav-link"
-                onClick={handleCloseMenu}
+                onClick={closeWithAnimation}
               >
                 Sign Up
               </Link>
               <Link
                 to="/sign-in"
                 className="nav-link"
-                onClick={handleCloseMenu}
+                onClick={closeWithAnimation}
               >
                 Sign In
               </Link>
