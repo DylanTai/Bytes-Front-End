@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { generateRecipe } from "../../services/recipeService.js";
 import { AVAILABLE_TAGS_AI } from "../../config/recipeConfig.js";
 import "./RecipeAI.css";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 import {
   addRecipe,
@@ -12,6 +13,7 @@ import {
 
 const RecipeAI = () => {
   const navigate = useNavigate();
+  const [showLoading, setShowLoading] = useState(false);
 
   const [prompt, setPrompt] = useState("");
   const [tags, setTags] = useState([]);

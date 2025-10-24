@@ -18,7 +18,7 @@ const ConfettiAnimation = ({ numberOfPieces = 50, duration = 4000 }) => {
     const generatedConfetti = Array.from({ length: numberOfPieces }).map((_, i) => ({
       id: i,
       left: Math.random() * 100,
-      size: 20 + Math.random() * 25, //confetti size 10-35px
+      size: 20 + Math.random() * 25,
       delay: Math.random() * 2,
       duration: 3 + Math.random() * 2,
       rotation: Math.random() * 360,
