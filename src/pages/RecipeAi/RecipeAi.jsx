@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { generateRecipe } from "../../services/recipeService.js";
 import { AVAILABLE_TAGS_AI } from "../../config/recipeConfig.js";
 import "./RecipeAI.css";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 import {
   addRecipe,
@@ -12,6 +13,7 @@ import {
 
 const RecipeAI = () => {
   const navigate = useNavigate();
+  const [showLoading, setShowLoading] = useState(false);
 
   const [prompt, setPrompt] = useState("");
   const [tags, setTags] = useState([]);
@@ -22,6 +24,16 @@ const RecipeAI = () => {
     () => [...AVAILABLE_TAGS_AI].sort((a, b) => a.label.localeCompare(b.label)),
     []
   );
+
+  useEffect(() => {
+    let timer;
+    if (loading) {
+      timer = setTimeout(() => setShowLoading(true), 300);
+    } else {
+      setShowLoading(false);
+    }
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const handlePromptChange = (e) => setPrompt(e.target.value);
 
@@ -179,6 +191,12 @@ const RecipeAI = () => {
 
       <div className="response">
         {error && <p className="error-message">{error}</p>}
+
+        {showLoading && (
+          <div className="loading-container">
+            <LoadingAnimation />
+          </div>
+        )}
 
         {generatedRecipe && !loading && (
           <div className="response-recipe">
