@@ -551,6 +551,7 @@ const RecipeEdit = () => {
                   onChange={(e) => handleIngredientChange(index, e)}
                   name="name"
                   autoComplete="off"
+                  className="add-ingredient-input"
                 />
 
                 <label htmlFor={`ingredient-quantity-${index}`}>Quantity:</label>

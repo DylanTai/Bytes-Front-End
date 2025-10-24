@@ -444,6 +444,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
                   }}
                   name="name"
                   autoComplete="false"
+                  className="add-ingredient-input"
                 />
                 <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
                 <input
