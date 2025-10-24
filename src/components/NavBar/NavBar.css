@@ -1,18 +1,51 @@
-.nav-links {
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  width: 100%;
+  /* padding: 0 1rem; */
+  position: fixed;
+  top: 0;
+  z-index: 1000;
+  box-shadow: none;
+  transition: box-shadow 0.25s ease-in-out, background-color 0.25s ease;
+}
+
+.navbar.scrolled {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+/* Layout for left, center, right */
+.nav-left,
+.nav-center,
+.nav-right {
   display: flex;
   align-items: center;
   gap: 1rem;
-  width: 100%;
-  justify-content: flex-end;
-  margin-right: 30px;
+  flex: 1;
 }
 
+.nav-left {
+  justify-content: flex-start;
+}
+
+.nav-center {
+  justify-content: center;
+}
+
+.nav-right {
+  justify-content: flex-end;
+  margin-right: 4rem;
+}
+
+/* Links */
 .nav-link {
   color: #82200c;
   text-decoration: none;
   padding: 10px;
   font-weight: 400;
-  width: 70px;
   text-align: center;
 }
 
@@ -20,34 +53,14 @@
   color: #f9ae2c;
 }
 
-nav {
-  display: flex;
-  width: 100%;
-  background-color: white;
-  justify-content: flex-end;
-  position: fixed;
-  top: 0;
-  position: fixed;
-  z-index: 1000;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
-.nav-img {
-  width: 60%;
-  padding-top: 5px;
-  padding-left: 15px;
-}
-nav img {
+/* Logo */
+.nav-center img {
   height: 50px;
+  display: block;
+  margin: 0 auto; /* keeps centered alignment */
 }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  width: 75%;
-}
-
+/* Hamburger (hidden on desktop) */
 .nav-hamburger {
   display: none;
   border: 0;
@@ -57,30 +70,7 @@ nav img {
   margin-right: 8px;
 }
 
-/* when page is not scrolled */
-.navbar {
-  position: fixed; 
-  top: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: white;
-  z-index: 1000;
-  transition: box-shadow 0.25s ease-in-out, background-color 0.25s ease;
-  box-shadow: none; 
-}
-
-/* when user scrolls */
-.navbar.scrolled {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-}
-
-.navbar.scrolled {
-  backdrop-filter: blur(8px);
-}
-
-
-/* === Hamburger Menu === */
+/*  Mobile Responsive  */
 @media (max-width: 768px) {
   .nav-hamburger {
     display: inline-flex;
@@ -88,56 +78,80 @@ nav img {
     justify-content: center;
   }
 
-  nav button:hover {
-    background-color: white;
-    color: blanchedalmond;
-    cursor: pointer;
-  }
-
-  .nav-links {
-    position: absolute;
-    top: 70px;
-    right: 0;
-    right: 0;
+  .nav-left,
+  .nav-right {
     display: none;
-    flex-direction: column;
-    padding: 0.5rem 0.75rem;
-    background-color: White;
-    z-index: 1000;
-    width: 20%;
-    border-radius: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   }
 
-  .nav-links.open {
+  .nav-center {
+    justify-content: center;
+  }
+
+  .nav-center img {
+    height: 42px;
+  }
+  .nav-center a {
+    width: 80%;
+    transform: translateX(-40px);
+  }
+
+  /* --- Mobile dropdown --- */
+  .mobile-menu {
     display: flex;
-  }
-
-  .nav-links > ul {
-    width: 20%;
     flex-direction: column;
-    align-items: stretch;
-    gap: 0.25rem;
-    background-color: white;
-    margin: 0;
-    padding: 0;
-  }
-
-  .nav-links > ul > li {
-    margin: 6px 8px;
-  }
-
-  nav > ul {
-    width: auto;
-  }
-
-  .nav-img-container {
-    width: 100%;
-    display: flex;
     align-items: center;
+    background-color: white;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    padding: 1rem 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 999;
   }
-}
 
-.nav-img {
-  width: 100%;
+  .mobile-menu.opening {
+    animation: slideDown 0.3s ease forwards;
+  }
+
+  .mobile-menu.closing {
+    animation: slideUp 0.3s ease forwards;
+  }
+
+  .mobile-menu .nav-link {
+    margin: 0.5rem 0;
+    padding: 1rem;
+    text-align: center;
+    color: #82200c;
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  .mobile-menu .nav-link:hover {
+    background-color: #f9f9f9;
+    color: #f9ae2c;
+  }
+
+  /* --- Animations --- */
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-15px);
+    }
+  }
 }

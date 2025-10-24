@@ -1,3 +1,9 @@
+.response-recipe {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
 .prompt-form-page {
   background-color: #ffe0bd45;
   border-radius: 80px;

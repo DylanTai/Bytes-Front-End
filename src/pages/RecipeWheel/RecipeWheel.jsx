@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import * as recipeService from "../../services/recipeService.js";
 import "./RecipeWheel.css";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import ConfettiAnimation from "../../components/ConfettiAnimation/ConfettiAnimation.jsx";
 
 const RecipeWheel = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const RecipeWheel = () => {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const animationRef = useRef(null);
   const spinVelocityRef = useRef(0);
@@ -33,10 +35,10 @@ const RecipeWheel = () => {
   }, []);
 
   // Filter recipes based on favorites checkbox
-  const displayedRecipes = showFavoritesOnly 
-    ? recipes.filter(recipe => recipe.favorite)
+  const displayedRecipes = showFavoritesOnly
+    ? recipes.filter((recipe) => recipe.favorite)
     : recipes;
-
+  
   // Slow idle rotation (only if hasn't spun yet)
   useEffect(() => {
     if (!isSpinning && !hasSpun && displayedRecipes.length > 0) {
@@ -63,6 +65,9 @@ const RecipeWheel = () => {
           const segmentAngle = 360 / displayedRecipes.length;
           const selectedIndex = Math.floor(normalizedRotation / segmentAngle);
           setSelectedRecipe(displayedRecipes[selectedIndex]);
+
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 4000)
         }
       };
       animationRef.current = requestAnimationFrame(animate);
@@ -97,7 +102,7 @@ const RecipeWheel = () => {
     return (
       <div className="recipe-wheel-page">
         <h1 className="wheel-title">Recipe Wheel!</h1>
-        
+
         <div className="favorites-filter">
           <label>
             <input
@@ -109,9 +114,9 @@ const RecipeWheel = () => {
             <span>Favorites Only 🍪</span>
           </label>
         </div>
-        
+
         <p className="no-recipes">
-          {showFavoritesOnly 
+          {showFavoritesOnly
             ? "You have no favorite recipes! Mark some recipes as favorites to use this filter."
             : "You need at least one recipe to spin the wheel!"}
         </p>
@@ -136,7 +141,7 @@ const RecipeWheel = () => {
           <span>Favorites Only 🍪</span>
         </label>
       </div>
-      
+
       <div className={`wheel-container ${selectedRecipe ? "blurred" : ""}`}>
         {/* Indicator Pointer */}
         <div className="wheel-pointer">▼</div>
@@ -198,13 +203,23 @@ const RecipeWheel = () => {
               ].join(" ");
 
               const colors = [
-                "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A",
-                "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E2",
-                "#F8B739", "#52B788", "#E07A5F", "#81B29A"
+                "#FF6B6B",
+                "#4ECDC4",
+                "#45B7D1",
+                "#FFA07A",
+                "#98D8C8",
+                "#F7DC6F",
+                "#BB8FCE",
+                "#85C1E2",
+                "#F8B739",
+                "#52B788",
+                "#E07A5F",
+                "#81B29A",
               ];
 
               // Calculate text position (midpoint of the segment)
-              const midAngle = ((startAngle + endAngle) / 2 - 90) * (Math.PI / 180);
+              const midAngle =
+                ((startAngle + endAngle) / 2 - 90) * (Math.PI / 180);
               const textRadius = 120; // Distance from center for text
               const textX = 200 + textRadius * Math.cos(midAngle);
               const textY = 200 + textRadius * Math.sin(midAngle);
@@ -213,18 +228,29 @@ const RecipeWheel = () => {
               const textRotation = (startAngle + endAngle) / 2;
 
               // Adjust max characters based on number of segments
-              const maxChars = displayedRecipes.length <= 4 ? 12 :
-                               displayedRecipes.length <= 6 ? 10 :
-                               displayedRecipes.length <= 8 ? 8 : 6;
+              const maxChars =
+                displayedRecipes.length <= 4
+                  ? 12
+                  : displayedRecipes.length <= 6
+                  ? 10
+                  : displayedRecipes.length <= 8
+                  ? 8
+                  : 6;
 
               // Adjust font size based on number of segments
-              const fontSize = displayedRecipes.length <= 4 ? 12 :
-                               displayedRecipes.length <= 6 ? 11 :
-                               displayedRecipes.length <= 8 ? 10 : 9;
+              const fontSize =
+                displayedRecipes.length <= 4
+                  ? 12
+                  : displayedRecipes.length <= 6
+                  ? 11
+                  : displayedRecipes.length <= 8
+                  ? 10
+                  : 9;
 
-              const truncatedTitle = recipe.title.length > maxChars
-                ? recipe.title.substring(0, maxChars) + '...'
-                : recipe.title;
+              const truncatedTitle =
+                recipe.title.length > maxChars
+                  ? recipe.title.substring(0, maxChars) + "..."
+                  : recipe.title;
 
               return (
                 <g key={recipe.id}>
@@ -261,7 +287,14 @@ const RecipeWheel = () => {
           )}
 
           {/* Center circle */}
-          <circle cx="200" cy="200" r="30" fill="white" stroke="#333" strokeWidth="3" />
+          <circle
+            cx="200"
+            cy="200"
+            r="30"
+            fill="white"
+            stroke="#333"
+            strokeWidth="3"
+          />
         </svg>
 
         {/* Hover tooltip */}
@@ -284,12 +317,15 @@ const RecipeWheel = () => {
 
       {/* Selected Recipe */}
       {selectedRecipe && !isSpinning && (
-        <div className="selected-recipe">
-          <h2>You got: {selectedRecipe.title}!</h2>
-          <button onClick={handleRecipeClick} className="view-recipe-button">
-            View Recipe
-          </button>
-        </div>
+        <>
+          <ConfettiAnimation numberOfPieces={70} duration={4000} />
+          <div className="selected-recipe">
+            <h2>You got: {selectedRecipe.title}!</h2>
+            <button onClick={handleRecipeClick} className="view-recipe-button">
+              View Recipe
+            </button>
+          </div>
+        </>
       )}
     </div>
   );

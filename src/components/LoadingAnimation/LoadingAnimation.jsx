@@ -1,3 +1,5 @@
+// Code borrowed & modified from https://codepen.io/Cr8tiveJen/pen/povjYOm
+
 import "./LoadingAnimation.css";
 
 const LoadingAnimation = () => {
