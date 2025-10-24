@@ -345,6 +345,25 @@ const RecipeEdit = () => {
     );
   };
 
+  const moveStep = (currentIndex, direction) => {
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+    if (newIndex < 0 || newIndex >= stepsData.length) return;
+
+    setStepsData((prev) => {
+      const newSteps = [...prev];
+      const temp = newSteps[currentIndex];
+      newSteps[currentIndex] = newSteps[newIndex];
+      newSteps[newIndex] = temp;
+
+      // Update step numbers
+      newSteps[currentIndex] = { ...newSteps[currentIndex], step: currentIndex + 1 };
+      newSteps[newIndex] = { ...newSteps[newIndex], step: newIndex + 1 };
+
+      return newSteps;
+    });
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -480,8 +499,8 @@ const RecipeEdit = () => {
               className="recipe-notes-input"
             />
             </div>
-            <div>
-            <label htmlFor="recipe-favorite">Favorite</label>
+            <div className="favorite-container">
+            <label htmlFor="recipe-favorite" style={{fontWeight: 'bold'}}>Favorite</label>
             <input
               id="recipe-favorite"
               type="checkbox"
@@ -502,7 +521,7 @@ const RecipeEdit = () => {
                 accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
                 onChange={handleImageChange}
               />
-              
+
               {imagePreview ? (
                 <div className="image-preview-container">
                   <img src={imagePreview} alt="Recipe preview" className="image-preview" />
@@ -514,10 +533,10 @@ const RecipeEdit = () => {
                 hasExistingImage && !removeExistingImage && (
                   <div className="image-preview-container">
                     <p>Current image (no changes):</p>
-                    <img 
+                    <img
                       src={recipeData.image}
-                      alt="Current recipe" 
-                      className="image-preview" 
+                      alt="Current recipe"
+                      className="image-preview"
                     />
                     <button type="button" onClick={handleRemoveImage} className="remove-image-btn">
                       Remove Image
@@ -546,73 +565,87 @@ const RecipeEdit = () => {
 
           <div className="edit-ingredient-container">
             {ingredientsData.map((ingredient, index) => (
-              <div className="ingredient-form" key={index}>
-                <label htmlFor={`ingredient-name-${index}`}>Ingredient: </label>
-                <input
-                  type="text"
-                  id={`ingredient-name-${index}`}
-                  value={ingredient.name}
-                  onChange={(e) => handleIngredientChange(index, e)}
-                  name="name"
-                  autoComplete="off"
-                  className="ingredient-name-input"
-                />
+              <div className="ingredient-item" key={index}>
+                <div className="ingredient-form">
+                  <div className="ingredient-row">
+                    <div className="ingredient-field-group">
+                      <label htmlFor={`ingredient-name-${index}`} style={{fontWeight: 'bold'}}>Ingredient:</label>
+                      <input
+                        type="text"
+                        id={`ingredient-name-${index}`}
+                        value={ingredient.name}
+                        onChange={(e) => handleIngredientChange(index, e)}
+                        name="name"
+                        autoComplete="off"
+                        className="ingredient-name-input"
+                      />
+                    </div>
 
-                <label htmlFor={`ingredient-quantity-${index}`}>Quantity:</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  id={`ingredient-quantity-${index}`}
-                  value={ingredient.quantity}
-                  onChange={(e) => handleIngredientChange(index, e)}
-                  name="quantity"
-                  className="quantity-input"
-                />
+                    <div className="ingredient-field-group">
+                      <label htmlFor={`ingredient-quantity-${index}`}>Quantity:</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        id={`ingredient-quantity-${index}`}
+                        value={ingredient.quantity}
+                        onChange={(e) => handleIngredientChange(index, e)}
+                        name="quantity"
+                        className="quantity-input"
+                      />
+                    </div>
 
-                <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
-                <select
-                  id={`ingredient-volume-${index}`}
-                  name="volume_unit"
-                  value={ingredient.volume_unit || ""}
-                  onChange={(e) => handleIngredientChange(index, e)}
-                  disabled={ingredient.weight_unit !== ""}
-                  className="volume-input"
-                >
-                  <option value="">---</option>
-                  {VOLUME_UNITS.map((unit) => (
-                    <option key={unit.value} value={unit.value}>
-                      {unit.label}
-                    </option>
-                  ))}
-                </select>
+                    <div className="ingredient-field-group">
+                      <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
+                      <select
+                        id={`ingredient-volume-${index}`}
+                        name="volume_unit"
+                        value={ingredient.volume_unit || ""}
+                        onChange={(e) => handleIngredientChange(index, e)}
+                        disabled={ingredient.weight_unit !== ""}
+                        className="volume-input"
+                      >
+                        <option value="">---</option>
+                        {VOLUME_UNITS.map((unit) => (
+                          <option key={unit.value} value={unit.value}>
+                            {unit.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-                <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
-                <select
-                  id={`ingredient-weight-${index}`}
-                  name="weight_unit"
-                  value={ingredient.weight_unit || ""}
-                  onChange={(e) => handleIngredientChange(index, e)}
-                  disabled={ingredient.volume_unit !== ""}
-                  className="weight-input"
-                >
-                  <option value="">---</option>
-                  {WEIGHT_UNITS.map((unit) => (
-                    <option key={unit.value} value={unit.value}>
-                      {unit.label}
-                    </option>
-                  ))}
-                </select>
-                {ingredientsData.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      removeIngredient(index);
-                    }}
-                    className="form-btn"
-                  >
-                    Remove Ingredient
-                  </button>
-                )}
+                    <div className="ingredient-field-group">
+                      <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
+                      <select
+                        id={`ingredient-weight-${index}`}
+                        name="weight_unit"
+                        value={ingredient.weight_unit || ""}
+                        onChange={(e) => handleIngredientChange(index, e)}
+                        disabled={ingredient.volume_unit !== ""}
+                        className="weight-input"
+                      >
+                        <option value="">---</option>
+                        {WEIGHT_UNITS.map((unit) => (
+                          <option key={unit.value} value={unit.value}>
+                            {unit.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  {ingredientsData.length > 1 && (
+                    <div className="ingredient-actions">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          removeIngredient(index);
+                        }}
+                        className="form-btn remove-ingredient-btn"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
             <button type="button" onClick={addExtraIngredient} className="form-btn">
@@ -622,18 +655,27 @@ const RecipeEdit = () => {
           <div className="edit-steps-component">
             {stepsData.map((step, index) => (
               <div className="step-form" key={index}>
-                <label htmlFor={`step-number-${index}`}>Step:</label>
-                <input
-                  type="number"
-                  id={`step-number-${index}`}
-                  value={step.step}
-                  name="step"
-                  readOnly
-                  onChange={(e) => {
-                    handleStepChange(index, e);
-                  }}
-                  className="step-number-input"
-                />
+                <div className="step-controls">
+                  <button
+                    type="button"
+                    onClick={() => moveStep(index, 'up')}
+                    disabled={index === 0}
+                    className="step-arrow-btn"
+                    aria-label="Move step up"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveStep(index, 'down')}
+                    disabled={index === stepsData.length - 1}
+                    className="step-arrow-btn"
+                    aria-label="Move step down"
+                  >
+                    ▼
+                  </button>
+                </div>
+                <span className="step-number-label">Step {step.step}:</span>
                 <label htmlFor={`step-description-${index}`}>Description</label>
                 <textarea
                   type="text"
@@ -646,15 +688,17 @@ const RecipeEdit = () => {
                   }}
                 />
                 {stepsData.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      removeStep(index);
-                    }}
-                    className="form-btn"
-                  >
-                    Remove step
-                  </button>
+                  <div className="step-remove-container">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        removeStep(index);
+                      }}
+                      className="form-btn step-remove-btn"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 )}
               </div>
             ))}

@@ -75,6 +75,7 @@ const RecipeDetail = () => {
     }
   };
 
+
   if (loading) {
     return (
       <div className="recipe-detail-loading">
@@ -195,15 +196,16 @@ const RecipeDetail = () => {
       <div className="recipe-steps">
         <h2 className="detail-steps-label">Steps: </h2>
         {steps && steps.length > 0 ? (
-          <ol>
+          <div className="steps-list">
             {steps
               .sort((a, b) => a.step - b.step)
               .map((step) => (
-                <li key={step.id} className="step-item">
+                <div key={step.id} className="step-item">
+                  <span className="step-number">Step {step.step}:</span>
                   <span className="step-description">{step.description}</span>
-                </li>
+                </div>
               ))}
-          </ol>
+          </div>
         ) : (
           <p className="empty-message">No steps added yet.</p>
         )}
