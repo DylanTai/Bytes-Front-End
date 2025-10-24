@@ -383,7 +383,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
             />
             </div>
             <div>
-            <label htmlFor="recipe-favorite">Favorite</label>
+            <label htmlFor="recipe-favorite">Favorite 🍪</label>
             <input
               id="recipe-favorite"
               type="checkbox"
