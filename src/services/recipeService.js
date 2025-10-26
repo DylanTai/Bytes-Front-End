@@ -216,6 +216,27 @@ export const updateRecipe = async (id, recipeData) => {
   }
 };
 
+export const updateRecipeFavorite = async (id, favorite) => {
+  try {
+    const res = await fetchWithAuth(`${BASE_URL}${id}/`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ favorite }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to update favorite status");
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Error updating favorite status:", error);
+    throw error;
+  }
+};
+
 export const deleteRecipe = async (id) => {
   try {
     const res = await fetchWithAuth(`${BASE_URL}${id}/`, {
