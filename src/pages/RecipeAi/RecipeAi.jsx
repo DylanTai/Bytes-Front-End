@@ -4,6 +4,7 @@ import { generateRecipe } from "../../services/recipeService.js";
 import { AVAILABLE_TAGS_AI } from "../../config/recipeConfig.js";
 import "./RecipeAI.css";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import { showToast } from "../../components/PopUps/PopUps.jsx";
 
 import {
   addRecipe,
@@ -132,14 +133,14 @@ const RecipeAI = () => {
           errorMessage = "Invalid recipe data. Please check all fields.";
         }
 
-        alert(errorMessage);
+        showToast(errorMessage, "error");
       } else if (error.status === 401) {
         // Authentication error - redirect to sign-in
-        alert("Your session has expired. Please log in again.");
+        showToast("Your session has expired. Please log in again.", "error");
         navigate("/sign-in");
       } else {
         // Other errors
-        alert(`An error occurred: ${error.message}`);
+        showToast(`An error occurred: ${error.message}`, "error");
       }
     }
   };

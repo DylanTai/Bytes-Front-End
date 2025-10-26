@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import * as userService from "../../services/userService.js";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import { showToast } from "../../components/PopUps/PopUps.jsx";
 import "./Profile.css";
 
 const Profile = () => {
@@ -128,7 +129,7 @@ const Profile = () => {
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
       setUser(null);
-      alert("Account deleted successfully.");
+      showToast("Account deleted successfully.", "success");
       navigate("/");
     } catch (error) {
       if (error.response && error.response.data) {

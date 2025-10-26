@@ -30,7 +30,7 @@ const RecipeDetail = () => {
         setSteps(stepsData);
       } catch (error) {
         console.error("Failed to fetch recipe:", error);
-        setError("Recipe not found or you don't have permission to view it.");
+        showToast("Recipe not found or you don't have permission to view it", "error")
       } finally {
         setLoading(false);
       }
@@ -47,18 +47,15 @@ const RecipeDetail = () => {
     ) {
       try {
         await recipeService.deleteRecipe(id);
-        toast.custom((t) => (
-          <PopUps message="Recipe deleted successfully!" type="success" t={t} />
-        ));
+        showToast("Recipe deleted!", "success")
         navigate("/");
       } catch (error) {
         console.error("Failed to delete recipe:", error);
-        toast.custom((t) => (
-          <PopUps message="Failed to delete recipe." type="error" t={t} />
-        ));
+        showToast("Failed to delete recipe.", "error")
       }
     }
   };
+
 
   const handleAddIngredientToGrocery = async (ingredient) => {
     if (addingIngredientId === ingredient.id) return;

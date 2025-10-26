@@ -57,7 +57,7 @@ const RecipeList = () => {
       showToast(message, "success")
     } catch (err) {
       console.error("Error adding to grocery list:", err);
-      showToast("Unable to add ingredients to grocery list.", "error")
+      showToast("Unable to add ingredients to grocery list.", "error");
     }
   };
 
