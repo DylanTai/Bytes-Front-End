@@ -13,7 +13,9 @@ const NavBar = () => {
 
   const handleSignOut = () => {
     if (window.confirm("Are you sure you want to sign out?")) {
-      localStorage.removeItem("token");
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+      localStorage.removeItem("token"); // legacy key cleanup
       setUser(null);
     }
   };
