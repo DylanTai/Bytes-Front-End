@@ -77,6 +77,7 @@ export const formatTagLabel = (rawValue = "") => {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
 };
+
 // Conversion factors to base units (cup for volume, gram for weight)
 const VOLUME_TO_CUP = {
   tsp: 1 / 48,
