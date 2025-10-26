@@ -261,3 +261,14 @@
     opacity: 0;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .loading-wrapper {
+    height: calc(100vh - 50px);
+  }
+
+  #cooking {
+    width: 40vh;
+    height: 40vh;
+  }
+}
