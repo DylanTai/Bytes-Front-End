@@ -7,7 +7,7 @@ import * as recipeService from "../../services/recipeService.js";
 import { formatTagLabel } from "../../config/recipeConfig.js";
 import * as groceryListService from "../../services/groceryListService.js";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
-import PopUps from "../../components/PopUps/PopUps.jsx";
+import {showToast} from "../../components/PopUps/PopUps.jsx";
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -72,16 +72,10 @@ const RecipeDetail = () => {
       });
       const message =
         response?.message || `Added ${ingredient.name} to your grocery list.`;
-      toast.custom((t) => <PopUps message={message} type="success" t={t} />);
+      showToast(message, "success");
     } catch (err) {
       console.error("Failed to add ingredient to grocery list:", err);
-      toast.custom((t) => (
-        <PopUps
-          message="Failed to add ingredient to grocery list."
-          type="error"
-          t={t}
-        />
-      ));
+      showToast("Failed to add ingredients to grocery list.", "error")
     } finally {
       setAddingIngredientId(null);
     }

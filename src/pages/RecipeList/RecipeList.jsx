@@ -6,7 +6,7 @@ import * as groceryListService from "../../services/groceryListService.js";
 import { AVAILABLE_TAGS } from "../../config/recipeConfig.js";
 import "./RecipeList.css";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
-import PopUps from "../../components/PopUps/PopUps.jsx";
+import {showToast} from "../../components/PopUps/PopUps.jsx";
 
 const RecipeList = () => {
   const [recipes, setRecipes] = useState([]);
@@ -54,10 +54,10 @@ const RecipeList = () => {
       const message =
         response?.message ||
         `Added ingredients from "${recipeTitle}" to your grocery list.`;
-      toast.success(message);
+      showToast(message, "success")
     } catch (err) {
       console.error("Error adding to grocery list:", err);
-      toast.error("Failed to add ingredients to grocery list.");
+      showToast("Unable to add ingredients to grocery list.", "error")
     }
   };
 
