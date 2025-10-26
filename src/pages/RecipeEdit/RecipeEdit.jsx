@@ -71,6 +71,7 @@ const RecipeEdit = () => {
         const recipe = await getRecipe(id);
         const ingredients = await getIngredients(id);
         const steps = await getSteps(id);
+        const sortedSteps = [...steps].sort((a, b) => a.step - b.step);
 
         setRecipeData({
           title: recipe.title || "",
@@ -97,7 +98,7 @@ const RecipeEdit = () => {
         );
 
         setStepsData(
-          steps.map((step) => ({
+          sortedSteps.map((step) => ({
             id: step.id,
             step: step.step,
             description: step.description,
