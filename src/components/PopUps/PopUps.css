@@ -1,0 +1,37 @@
+.pop-ups {
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.pop-ups-body {
+  flex: 1;
+  margin-right: 8px;
+}
+
+.pop-ups-progress {
+  height: 3px;
+  border-radius: 2px;
+  background: #ffb86c;
+}
+
+.pop-ups-close-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.pop-ups-close-btn:hover {
+  opacity: 1;
+}

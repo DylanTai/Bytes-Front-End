@@ -2,10 +2,12 @@ import "./RecipeDetail.css";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router";
+import toast from "react-hot-toast";
 import * as recipeService from "../../services/recipeService.js";
 import { formatTagLabel } from "../../config/recipeConfig.js";
 import * as groceryListService from "../../services/groceryListService.js";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import PopUps from "../../components/PopUps/PopUps.jsx";
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -45,11 +47,15 @@ const RecipeDetail = () => {
     ) {
       try {
         await recipeService.deleteRecipe(id);
-        alert("Recipe deleted successfully!");
+        toast.custom((t) => (
+          <PopUps message="Recipe deleted successfully!" type="success" t={t} />
+        ));
         navigate("/");
       } catch (error) {
         console.error("Failed to delete recipe:", error);
-        alert("Failed to delete recipe.");
+        toast.custom((t) => (
+          <PopUps message="Failed to delete recipe." type="error" t={t} />
+        ));
       }
     }
   };
@@ -65,20 +71,24 @@ const RecipeDetail = () => {
         weight_unit: ingredient.weight_unit || "",
       });
       const message =
-        response?.message ||
-        `Added ${ingredient.name} to your grocery list.`;
-      alert(message);
+        response?.message || `Added ${ingredient.name} to your grocery list.`;
+      toast.custom((t) => <PopUps message={message} type="success" t={t} />);
     } catch (err) {
       console.error("Failed to add ingredient to grocery list:", err);
-      alert("Failed to add ingredient to grocery list.");
+      toast.custom((t) => (
+        <PopUps
+          message="Failed to add ingredient to grocery list."
+          type="error"
+          t={t}
+        />
+      ));
     } finally {
       setAddingIngredientId(null);
     }
   };
 
-
   if (loading) {
-    return <LoadingAnimation />
+    return <LoadingAnimation />;
   }
 
   if (error || !recipe) {
@@ -120,11 +130,7 @@ const RecipeDetail = () => {
       {/* Recipe Image - S3 returns full URL */}
       {recipe.image && (
         <div className="recipe-image-container">
-          <img 
-            src={recipe.image}
-            alt={recipe.title}
-            className="recipe-image"
-          />
+          <img src={recipe.image} alt={recipe.title} className="recipe-image" />
         </div>
       )}
 
