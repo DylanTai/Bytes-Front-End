@@ -16,7 +16,7 @@ const RecipeList = () => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  const recipesPerPage = 5;
+  const recipesPerPage = 15;
 
   const sortedAvailableTags = useMemo(() => {
     return [...AVAILABLE_TAGS].sort((a, b) => a.label.localeCompare(b.label));
