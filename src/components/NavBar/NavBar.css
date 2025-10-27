@@ -92,10 +92,24 @@
 
 /*  Mobile Responsive  */
 @media (max-width: 768px) {
+  .navbar {
+    display: block;
+    height: 60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
   .nav-hamburger {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
   }
 
   .nav-left,
@@ -104,15 +118,20 @@
   }
 
   .nav-center {
+    position: fixed;
+    left: 50%;
+    top: 0;
+    height: 60px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
     justify-content: center;
+    flex: none;
+    margin: 0;
   }
 
   .nav-center img {
     height: 42px;
-  }
-  .nav-center a {
-    width: 80%;
-    transform: translateX(-40px);
   }
 
   /* --- Mobile dropdown --- */

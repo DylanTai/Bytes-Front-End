@@ -6,6 +6,7 @@ import "./Home.css";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -18,8 +19,6 @@ const Home = () => {
   if (loading) {
     return <LoadingAnimation />;
   }
-
-  const { user } = useContext(UserContext);
   if (user) {
     return <RecipeList />;
   }

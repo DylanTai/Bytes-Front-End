@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { generateRecipe } from "../../services/recipeService.js";
 import { AVAILABLE_TAGS_AI, formatTagLabel } from "../../config/recipeConfig.js";
-import "./RecipeAI.css";
+import "./RecipeAi.css";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 import {
@@ -148,7 +148,7 @@ const RecipeAI = () => {
     }
   };
 
-  return (
+  return ( 
     <div className="prompt-form-page">
       <h2 className="AI-form-title">AI Recipe Generator</h2>
 
