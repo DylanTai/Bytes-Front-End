@@ -95,7 +95,6 @@
   border-radius: 10px;
   background-color: #ffb54b;
   width: 220px;
-  height: 70px;
   box-sizing: border-box;
   padding: 16px;
   display: flex;
@@ -107,7 +106,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   z-index: 20;
   animation: fadeInUp 0.3s ease;
-  
+  text-overflow: ellipsis;
 }
 
 @keyframes fadeInUp {
