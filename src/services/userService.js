@@ -102,6 +102,29 @@ export const updateUsername = async (username) => {
   }
 };
 
+// Update email
+export const updateEmail = async (email) => {
+  try {
+    const res = await fetchWithAuth(`${BASE_URL}/update-email/`, {
+      method: "PATCH",
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const error = new Error("Failed to update email");
+      error.response = { data };
+      throw error;
+    }
+
+    return data;
+  } catch (err) {
+    console.error("Error updating email:", err);
+    throw err;
+  }
+};
+
 // Update password
 export const updatePassword = async (passwordData) => {
   try {

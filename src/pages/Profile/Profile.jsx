@@ -20,6 +20,11 @@ const Profile = () => {
   const [usernameErrors, setUsernameErrors] = useState({});
   const [usernameSuccess, setUsernameSuccess] = useState("");
 
+  // Email form state
+  const [emailForm, setEmailForm] = useState({ email: user?.email || "" });
+  const [emailErrors, setEmailErrors] = useState({});
+  const [emailSuccess, setEmailSuccess] = useState("");
+
   // Password form state
   const [passwordForm, setPasswordForm] = useState({
     current_password: "",
@@ -74,6 +79,31 @@ const Profile = () => {
       }
     } finally {
       stopLoading(timer);
+    }
+  };
+
+  // Handle email change
+  const handleEmailChange = (e) => {
+    setEmailForm({ email: e.target.value });
+    setEmailErrors({});
+    setEmailSuccess("");
+  };
+
+  const handleEmailSubmit = async (e) => {
+    e.preventDefault();
+    setEmailErrors({});
+    setEmailSuccess("");
+
+    try {
+      const result = await userService.updateEmail(emailForm.email);
+      setEmailSuccess("Email updated successfully!");
+      setUser(result.user);
+    } catch (error) {
+      if (error.response && error.response.data) {
+        setEmailErrors(error.response.data);
+      } else {
+        setEmailErrors({ email: [error.message || "Failed to update email."] });
+      }
     }
   };
 
@@ -152,58 +182,123 @@ const Profile = () => {
     <div className="profile-page">
       <h1 className="profile-title">My Profile</h1>
 
-      <div className="profile-section-container">
-        {/* Update Username Section */}
-        <section className="profile-section">
-          <h2>Update Username</h2>
-          {usernameSuccess && (
-            <p className="success-message">{usernameSuccess}</p>
-          )}
-          <form onSubmit={handleUsernameSubmit} noValidate>
-            <div className="form-group">
-              <label htmlFor="username">New Username:</label>
-              <input
-                type="text"
-                id="username"
-                value={usernameForm.username}
-                onChange={handleUsernameChange}
-                className={usernameErrors.username ? "input-error" : ""}
-              />
-              {usernameErrors.username && (
-                <p className="field-error">
-                  {usernameErrors.username.join(", ")}
-                </p>
-              )}
-            </div>
-            <button type="submit" className="submit-button">
-              Update Username
-            </button>
-          </form>
-        </section>
+      {/* Update Username Section */}
+      <section className="profile-section">
+        <h2>Update Username</h2>
+        {usernameSuccess && <p className="success-message">{usernameSuccess}</p>}
+        <form onSubmit={handleUsernameSubmit} noValidate>
+          <div className="form-group">
+            <label htmlFor="username">New Username:</label>
+            <input
+              type="text"
+              id="username"
+              value={usernameForm.username}
+              onChange={handleUsernameChange}
+              className={usernameErrors.username ? "input-error" : ""}
+            />
+            {usernameErrors.username && (
+              <p className="field-error">{usernameErrors.username.join(", ")}</p>
+            )}
+          </div>
+          <button type="submit" className="submit-button">
+            Update Username
+          </button>
+        </form>
+      </section>
 
-        {/* Update Password Section */}
-        <section className="profile-section">
-          <h2>Update Password</h2>
-          {passwordSuccess && (
-            <p className="success-message">{passwordSuccess}</p>
-          )}
-          <form onSubmit={handlePasswordSubmit} noValidate>
-            <div className="form-group">
-              <label htmlFor="current_password">Current Password:</label>
-              <input
-                type="password"
-                id="current_password"
-                name="current_password"
-                value={passwordForm.current_password}
-                onChange={handlePasswordChange}
-                className={passwordErrors.current_password ? "input-error" : ""}
-              />
-              {passwordErrors.current_password && (
-                <p className="field-error">
-                  {passwordErrors.current_password.join(", ")}
-                </p>
-              )}
-            </div>
+      {/* Update Email Section */}
+      <section className="profile-section">
+        <h2>Update Email</h2>
+        {emailSuccess && <p className="success-message">{emailSuccess}</p>}
+        <form onSubmit={handleEmailSubmit} noValidate>
+          <div className="form-group">
+            <label htmlFor="email">New Email:</label>
+            <input
+              type="text"
+              id="email"
+              value={emailForm.email}
+              onChange={handleEmailChange}
+              className={emailErrors.email ? "input-error" : ""}
+            />
+            {emailErrors.email && (
+              <p className="field-error">{emailErrors.email.join(", ")}</p>
+            )}
+          </div>
+          <button type="submit" className="submit-button">
+            Update Email
+          </button>
+        </form>
+      </section>
+
+      {/* Update Password Section */}
+      <section className="profile-section">
+        <h2>Update Password</h2>
+        {passwordSuccess && <p className="success-message">{passwordSuccess}</p>}
+        <form onSubmit={handlePasswordSubmit} noValidate>
+          <div className="form-group">
+            <label htmlFor="current_password">Current Password:</label>
+            <input
+              type="password"
+              id="current_password"
+              name="current_password"
+              value={passwordForm.current_password}
+              onChange={handlePasswordChange}
+              className={passwordErrors.current_password ? "input-error" : ""}
+            />
+            {passwordErrors.current_password && (
+              <p className="field-error">{passwordErrors.current_password.join(", ")}</p>
+            )}
+          </div>
+          <div className="form-group">
+            <label htmlFor="new_password">New Password:</label>
+            <input
+              type="password"
+              id="new_password"
+              name="new_password"
+              value={passwordForm.new_password}
+              onChange={handlePasswordChange}
+              className={passwordErrors.new_password ? "input-error" : ""}
+            />
+            {passwordErrors.new_password && (
+              <p className="field-error">{passwordErrors.new_password.join(", ")}</p>
+            )}
+          </div>
+          <div className="form-group">
+            <label htmlFor="confirm_password">Confirm New Password:</label>
+            <input
+              type="password"
+              id="confirm_password"
+              name="confirm_password"
+              value={passwordForm.confirm_password}
+              onChange={handlePasswordChange}
+              className={passwordErrors.confirm_password ? "input-error" : ""}
+            />
+            {passwordErrors.confirm_password && (
+              <p className="field-error">{passwordErrors.confirm_password.join(", ")}</p>
+            )}
+          </div>
+          <button type="submit" className="submit-button">
+            Update Password
+          </button>
+        </form>
+      </section>
+
+      {/* Delete Account Section */}
+      <section className="profile-section danger-section">
+        <h2>Delete Account</h2>
+        <p className="warning-text">
+          This action cannot be undone. All your recipes and data will be permanently deleted.
+        </p>
+        {!showDeleteConfirm ? (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="danger-button"
+          >
+            Delete My Account
+          </button>
+        ) : (
+          <div className="delete-confirm">
+            <p><strong>Are you sure? Enter your password to confirm:</strong></p>
             <div className="form-group">
               <label htmlFor="new_password">New Password:</label>
               <input
