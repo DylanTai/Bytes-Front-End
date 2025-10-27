@@ -21,6 +21,7 @@ import {
 import "../RecipeForm/RecipeForm.css";
 import "./RecipeEdit.css";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import { showToast } from "../../components/PopUps/PopUps.jsx";
 
 const RecipeEdit = () => {
   const { id } = useParams();
@@ -119,7 +120,7 @@ const RecipeEdit = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching recipe:", error);
-        alert("Failed to load recipe. You may not have permission to view it.");
+        showToast("Failed to load recipe. You may not have permission to view it.", "error");
         navigate("/");
       } finally {
         stopLoading(timer);
@@ -137,7 +138,7 @@ const RecipeEdit = () => {
       // Validate file type
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        alert('Please upload a valid image file (JPG, JPEG, PNG, GIF, or WebP)');
+        showToast('Please upload a valid image file (JPG, JPEG, PNG, GIF, or WebP)', "error");
         e.target.value = '';
         return;
       }
@@ -145,7 +146,7 @@ const RecipeEdit = () => {
       // Validate file size (5MB limit)
       const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
-        alert('Image file size must be less than 5MB');
+        showToast('Image file size must be less than 5MB', 'error');
         e.target.value = '';
         return;
       }
@@ -320,7 +321,7 @@ const RecipeEdit = () => {
         await deleteIngredient(id, ingredient.id);
       } catch (error) {
         console.error("Error deleting ingredient:", error);
-        alert("Failed to delete ingredient");
+        showToast("Failed to delete ingredient", "error");
         return;
       }
     }
@@ -349,7 +350,7 @@ const RecipeEdit = () => {
         await deleteStep(id, step.id);
       } catch (error) {
         console.error("Error deleting step:", error);
-        alert("Failed to delete step");
+        showToast("Failed to delete step", "error");
         return;
       }
     }
@@ -409,7 +410,7 @@ const RecipeEdit = () => {
 
     // If there are validation errors, show them and stop
     if (errors.length > 0) {
-      alert("Please fix the following errors:\n\n" + errors.join("\n"));
+      showToast("Please fix the following errors:\n\n" + errors.join("\n"), "error");
       return;
     }
 
@@ -466,7 +467,7 @@ const RecipeEdit = () => {
         }
       }
 
-      alert("Recipe updated successfully!");
+      showToast("Recipe updated successfully!", "error");
       navigate(`/recipes/${id}`);
     } catch (error) {
       console.error("Error updating recipe:", error);
@@ -486,12 +487,12 @@ const RecipeEdit = () => {
           errorMessage = "Invalid recipe data. Please check all fields.";
         }
         
-        alert(errorMessage);
+        showToast(errorMessage, "error");
       } else if (error.status === 401) {
-        alert("Your session has expired. Please log in again.");
+        showToast("Your session has expired. Please log in again.", "error");
         navigate("/sign-in");
       } else {
-        alert(`Failed to update recipe: ${error.message}`);
+        showToast(`Failed to update recipe: ${error.message}`, "error");
       }
     }
   };
@@ -501,7 +502,7 @@ const RecipeEdit = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingAnimation />;
   }
 
   return (

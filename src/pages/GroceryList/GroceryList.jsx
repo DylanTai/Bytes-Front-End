@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import * as groceryListService from "../../services/groceryListService.js";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import { showToast } from "../../components/PopUps/PopUps.jsx";
 import "./GroceryList.css";
 
 const GroceryList = () => {
@@ -60,7 +61,7 @@ const GroceryList = () => {
     const checkedCount = items.filter((item) => item.checked).length;
     
     if (checkedCount === 0) {
-      alert("No items are checked!");
+      showToast("No items are checked!", "error");
       return;
     }
 
