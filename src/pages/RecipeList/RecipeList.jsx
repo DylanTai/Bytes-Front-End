@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import * as recipeService from "../../services/recipeService.js";
 import * as groceryListService from "../../services/groceryListService.js";
 import { AVAILABLE_TAGS } from "../../config/recipeConfig.js";
 import "./RecipeList.css";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
-import {showToast} from "../../components/PopUps/PopUps.jsx";
+import { showToast } from "../../components/PopUps/PopUps.jsx";
 
 const RecipeList = () => {
   const [recipes, setRecipes] = useState([]);
@@ -54,7 +54,7 @@ const RecipeList = () => {
       const message =
         response?.message ||
         `Added ingredients from "${recipeTitle}" to your grocery list.`;
-      showToast(message, "success")
+      showToast(message, "success");
     } catch (err) {
       console.error("Error adding to grocery list:", err);
       showToast("Unable to add ingredients to grocery list.", "error");
