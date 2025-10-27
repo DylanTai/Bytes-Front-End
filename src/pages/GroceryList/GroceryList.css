@@ -57,7 +57,7 @@ ul {
 }
 
 .grocery-list {
-   display: block;
+  display: block;
   flex-direction: column;
   width: 100%;
   max-width: 600px;
@@ -67,10 +67,9 @@ ul {
   padding: 40px 50px;
   line-height: 2.2;
   position: relative;
-  background-image:
-    linear-gradient(#f0e6d2 1px, transparent 1px); 
-  background-size: 100% 2.2em; 
-  border-left: 6px solid #f9ae2c; 
+  background-image: linear-gradient(#f0e6d2 1px, transparent 1px);
+  background-size: 100% 2.2em;
+  border-left: 6px solid #f9ae2c;
 }
 
 .grocery-list::before {
@@ -93,7 +92,6 @@ ul {
 
 .grocery-item-text {
   padding-left: 20px;
-  
 }
 
 .grocery-list-actions {
@@ -109,4 +107,10 @@ ul {
   transform: scale(1.3);
   accent-color: #f9ae2c;
   cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .grocery-list {
+    width: 65%;
+  }
 }

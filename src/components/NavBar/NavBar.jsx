@@ -100,7 +100,7 @@ const NavBar = () => {
               onMouseLeave={() => setShowDropdown(false)}
             >
               <button className="dropdown-button">
-                Recipes{" "}
+                Actions{" "}
                 <span
                   className={`dropdown-arrow ${showDropdown ? "open" : ""}`}
                 >
