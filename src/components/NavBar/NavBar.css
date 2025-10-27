@@ -136,6 +136,7 @@
 
   .mobile-menu.closing {
     animation: slideUp 0.3s ease forwards;
+    pointer-events: none;
   }
 
   .mobile-menu .nav-link {

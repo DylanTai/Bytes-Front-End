@@ -133,7 +133,7 @@
   margin-top: 20px;
 }
 
-.response-recipe {
+.response-recipe-ai {
   opacity: 0;
   transform: translateY(10px);
   animation: fadeInUp 0.6s ease forwards;
@@ -144,14 +144,14 @@
   width: 100%;
 }
 
-#recipe-title {
+#recipe-ai-title {
   font-size: 32px;
   font-weight: 600;
   color: #3a1c08;
   margin-top: 20px;
 }
 
-.generated-recipe-notes,
+.generated-recipe-ai-notes,
 .generated-ingredients,
 .generated-steps,
 .generated-tags,
@@ -166,7 +166,7 @@
   animation-delay: 0.3s;
 }
 
-.generated-recipe-notes h3,
+.generated-recipe-ai-notes h3,
 .generated-ingredients h3,
 .generated-steps h3,
 .generated-tags h3 {
@@ -239,7 +239,7 @@
 /* For gradual section fade-ins */
 .generated-ingredients,
 .generated-steps,
-.generated-recipe-notes {
+.generated-recipe-ai-notes {
   animation: fadeIn 0.6s ease forwards;
   opacity: 0;
   animation-delay: 0.3s;
