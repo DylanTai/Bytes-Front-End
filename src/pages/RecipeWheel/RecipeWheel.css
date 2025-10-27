@@ -1,6 +1,6 @@
 .recipe-wheel-page {
   text-align: center;
-  background-color: #ffe0bd45;
+  background-color: #e4e3e345;
   border-radius: 80px;
   min-height: calc(100vh - 75px);
   padding-bottom: 40px;
@@ -108,7 +108,6 @@
   z-index: 20;
   text-overflow: ellipsis;
 }
-
 
 /* when selected recipe is shown */
 .wheel-container.blurred {

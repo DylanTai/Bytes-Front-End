@@ -5,7 +5,7 @@
 }
 
 .recipe-list-page {
-  background-color: #ffe0bd45;
+  background-color: #e4e3e345;
   border-radius: 80px;
   min-height: calc(100vh - 75px);
   padding-bottom: 40px;
@@ -109,7 +109,7 @@
   padding: 0;
   width: clamp(320px, 75vw, 1200px);
   margin: 50px auto 0 auto;
-      justify-self: center;
+  justify-self: center;
 }
 
 .recipe-link {
@@ -243,7 +243,7 @@
   width: 100%;
   border: 2px solid #82200c;
   border-radius: 12px;
-  background-color: #ffe8cc;
+  background-color: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: max-height 0.3s ease, padding 0.3s ease;
   overflow: hidden;
