@@ -6,7 +6,7 @@ export const showToast = (message, type = "success") => {
 
   toast(
     (t) => (
-      <div className={`pop-ups pop-ups-${type}`}>
+      <div className={`pop-ups pop-ups-toast pop-ups-${type}`}>
         <span className="pop-ups-icon">{icon}</span>
         <span className="pop-ups-body">{message}</span>
         <button
@@ -80,7 +80,7 @@ function PopUps() {
         style: {
           padding: 0,
           margin: 0,
-          background: "#d2ee91ff",
+          background: "white",
           boxShadow: "none",
         },
       }}
