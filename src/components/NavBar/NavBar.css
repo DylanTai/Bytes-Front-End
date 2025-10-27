@@ -1,15 +1,21 @@
+/* ===========================
+   NAVBAR BASE
+=========================== */
 .navbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center; /* keeps logo centered by default */
   background-color: white;
   width: 100%;
   padding: 0 1rem;
   position: fixed;
   top: 0;
+  left: 0;
   z-index: 1000;
   box-shadow: none;
   transition: box-shadow 0.25s ease-in-out, background-color 0.25s ease;
+  will-change: box-shadow, background-color, backdrop-filter;
+  transform: translateZ(0); /* prevents image shift on scroll */
 }
 
 .navbar.scrolled {
@@ -17,71 +23,82 @@
   backdrop-filter: blur(8px);
 }
 
-/* Layout for left, center, right */
+/* ===========================
+   DESKTOP LAYOUT
+=========================== */
 .nav-left,
 .nav-center,
 .nav-right {
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex: 1;
 }
 
 .nav-left {
+  position: absolute;
+  left: 2rem;
   justify-content: flex-start;
-  margin-left: 2rem;
 }
 
 .nav-center {
   justify-content: center;
+  transform: translateX(-18%); /* shift logo slightly left */
 }
 
 .nav-right {
+  position: absolute;
+  right: 4rem;
   justify-content: flex-end;
-  margin-right: 4rem;
   margin-top: 7px;
 }
 
-/* Links */
+/* ===========================
+   LINKS
+=========================== */
 .nav-link {
   color: #82200c;
   text-decoration: none;
   padding: 10px;
   font-weight: 400;
   text-align: center;
-}
-
-.nav-link-right {
-  color: #82200c;
-  background-color: rgb(255, 255, 255); /* dark reddish color */
-  text-decoration: none;
-  padding: 10px 18px;
-  border-radius: 20px;
-  border-style: solid;
-  border-width: 2px;
-  border-color: rgb(255, 204, 146);
-  font-weight: 500;
-  text-align: center;
-  transition: all 0.2s ease-in-out;
-  display: inline-block;
-}
-.nav-link-right:hover {
-  background-color: #ff904b;
-  transform: translateY(-2px);
+  transition: color 0.2s ease;
 }
 
 .nav-link:hover {
   color: #f9ae2c;
 }
 
-/* Logo */
-.nav-center img {
-  height: 50px;
-  display: block;
-  margin: 0 auto; /* keeps centered alignment */
+.nav-link-right {
+  color: #82200c;
+  background-color: #fff;
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: 2px solid rgb(255, 204, 146);
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+  display: inline-block;
 }
 
-/* dropdown menu */
+.nav-link-right:hover {
+  background-color: #ff904b;
+  transform: translateY(-2px);
+}
+
+/* ===========================
+   LOGO
+=========================== */
+.nav-center img {
+  height: 50px;
+  width: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* ===========================
+   DROPDOWN MENU
+=========================== */
 .dropdown {
   position: relative;
   display: inline-block;
@@ -96,7 +113,7 @@
   cursor: pointer;
   padding: 8px 12px;
   border-radius: 8px;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .dropdown-button:hover {
@@ -105,7 +122,7 @@
 
 .dropdown-arrow {
   display: inline-block;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, color 0.2s ease;
   margin-left: 4px;
   color: #82200c;
 }
@@ -142,7 +159,9 @@
   }
 }
 
-/* Hamburger (hidden on desktop) */
+/* ===========================
+   HAMBURGER
+=========================== */
 .nav-hamburger {
   display: none;
   border: 0;
@@ -152,15 +171,13 @@
   margin-right: 8px;
 }
 
-/*  Mobile Responsive  */
+/* ===========================
+   MOBILE RESPONSIVE
+=========================== */
 @media (max-width: 768px) {
   .navbar {
     display: block;
     height: 60px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
   }
 
   .nav-hamburger {
@@ -184,19 +201,17 @@
     left: 50%;
     top: 0;
     height: 60px;
-    transform: translateX(-50%);
+    transform: translateX(calc(-50% - 18%));
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: none;
-    margin: 0;
   }
 
   .nav-center img {
     height: 42px;
   }
 
-  /* --- Mobile dropdown --- */
+  /* --- MOBILE MENU --- */
   .mobile-menu {
     display: flex;
     flex-direction: column;
@@ -234,7 +249,7 @@
     color: #f9ae2c;
   }
 
-  /* --- Animations --- */
+  /* --- ANIMATIONS --- */
   @keyframes slideDown {
     from {
       opacity: 0;
