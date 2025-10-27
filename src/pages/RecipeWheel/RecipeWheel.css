@@ -4,6 +4,7 @@
   border-radius: 80px;
   min-height: calc(100vh - 75px);
   padding-bottom: 40px;
+  margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
   position: relative;
@@ -105,20 +106,9 @@
   transition: background-color 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   z-index: 20;
-  animation: fadeInUp 0.3s ease;
   text-overflow: ellipsis;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 10px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
 
 /* when selected recipe is shown */
 .wheel-container.blurred {

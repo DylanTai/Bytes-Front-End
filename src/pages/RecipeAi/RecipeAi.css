@@ -3,6 +3,7 @@
   border-radius: 80px;
   min-height: calc(100vh - 75px);
   padding-bottom: 40px;
+  margin-top: 50px;
   margin-left: 10px;
   margin-right: 10px;
   display: flex;

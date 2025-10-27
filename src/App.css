@@ -5,6 +5,12 @@
   font-family: "Hubot Sans", sans-serif;
 }
 
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 :root {
   --footer-height: 60px;
 }
@@ -18,6 +24,6 @@ main {
 }
 
 body {
-  margin-top: 60px;
+  margin-top: 20px;
   font-family: "Hubot Sans", sans-serif;
 }
