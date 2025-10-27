@@ -100,18 +100,6 @@
   gap: 10px;
 }
 
-<<<<<<< HEAD
-.list-filters {
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-  flex-wrap: wrap;
-  align-content: center;
-}
-=======
-/* Removed duplicate .list-filters - see line 225 for the actual definition */
->>>>>>> dev
-
 /* recipe list */
 .recipe-list {
   display: flex;
