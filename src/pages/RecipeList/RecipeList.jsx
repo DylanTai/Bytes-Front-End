@@ -35,7 +35,7 @@ const RecipeList = () => {
         setLoading(false);
       }
     };
-    fetchRecipes();
+    // fetchRecipes();
   }, []);
 
   // Reset to page 1 when search or filters change
