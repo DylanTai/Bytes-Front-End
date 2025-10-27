@@ -2,7 +2,6 @@ import "./RecipeDetail.css";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { Link } from "react-router";
-import toast from "react-hot-toast";
 import * as recipeService from "../../services/recipeService.js";
 import { formatTagLabel } from "../../config/recipeConfig.js";
 import * as groceryListService from "../../services/groceryListService.js";
@@ -78,6 +77,31 @@ const RecipeDetail = () => {
       setAddingIngredientId(null);
     }
   };
+
+  const handleFavoriteToggle = async (event) => {
+    if (!recipe || favoriteUpdating) return;
+    const nextFavorite = event.target.checked;
+    const previousFavorite = recipe.favorite;
+    setFavoriteUpdating(true);
+    setRecipe((prev) => ({
+      ...prev,
+      favorite: nextFavorite,
+    }));
+
+    try {
+      await recipeService.updateRecipeFavorite(id, nextFavorite);
+    } catch (err) {
+      console.error("Failed to update favorite status:", err);
+      alert("Failed to update favorite status. Please try again.");
+      setRecipe((prev) => ({
+        ...prev,
+        favorite: previousFavorite,
+      }));
+    } finally {
+      setFavoriteUpdating(false);
+    }
+  };
+
 
   if (loading) {
     return <LoadingAnimation />;
