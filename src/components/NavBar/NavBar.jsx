@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { UserContext } from "../../contexts/UserContext";
 import "./NavBar.css";
 import { Squash as Hamburger } from "hamburger-react";
@@ -11,6 +11,7 @@ const NavBar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
 
   const handleSignOut = () => {
     if (window.confirm("Are you sure you want to sign out?")) {
@@ -99,7 +100,10 @@ const NavBar = () => {
               onMouseEnter={() => setShowDropdown(true)}
               onMouseLeave={() => setShowDropdown(false)}
             >
-              <button className="dropdown-button">
+              <button
+                className="dropdown-button"
+                onClick={() => navigate("/")}
+              >
                 Recipes{" "}
                 <span
                   className={`dropdown-arrow ${showDropdown ? "open" : ""}`}
