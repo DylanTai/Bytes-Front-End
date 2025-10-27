@@ -3,6 +3,7 @@
   border-radius: 80px;
   min-height: calc(100vh - 75px);
   padding-bottom: 40px;
+  margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
 }
@@ -55,12 +56,14 @@
   align-items: center;
   gap: 20px;
   flex-wrap: wrap;
-  width: clamp(260px, 70vw, 720px);
+  width: 90%;
+  max-width: 720px;
   background: #fffdfc;
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  padding: 20px 28px; /* shared card */
+  padding: 20px 28px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
 .recipe-field-group label {
@@ -75,7 +78,9 @@
 
 .recipe-field-group input,
 .recipe-field-group textarea {
-  flex: 1 1 260px;
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
   font-size: 1rem;
   line-height: 1.4;
   border-radius: 12px;
