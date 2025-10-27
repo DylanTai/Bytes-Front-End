@@ -4,8 +4,6 @@
   font-style: normal;
 }
 
-
-
 .recipe-list-page {
   background-color: #ffe0bd45;
   border-radius: 80px;
@@ -418,6 +416,7 @@
   .recipe-thumbnail-wrapper {
     width: 90px;
     height: 90px;
+    border-radius: 10px;
   }
 
   .sort-controls {
