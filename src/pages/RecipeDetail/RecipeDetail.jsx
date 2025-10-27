@@ -16,6 +16,7 @@ const RecipeDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [addingIngredientId, setAddingIngredientId] = useState(null);
+  const [favoriteUpdating, setFavoriteUpdating] = useState(false);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -76,6 +77,30 @@ const RecipeDetail = () => {
     }
   };
 
+  const handleFavoriteToggle = async (event) => {
+    if (!recipe || favoriteUpdating) return;
+    const nextFavorite = event.target.checked;
+    const previousFavorite = recipe.favorite;
+    setFavoriteUpdating(true);
+    setRecipe((prev) => ({
+      ...prev,
+      favorite: nextFavorite,
+    }));
+
+    try {
+      await recipeService.updateRecipeFavorite(id, nextFavorite);
+    } catch (err) {
+      console.error("Failed to update favorite status:", err);
+      alert("Failed to update favorite status. Please try again.");
+      setRecipe((prev) => ({
+        ...prev,
+        favorite: previousFavorite,
+      }));
+    } finally {
+      setFavoriteUpdating(false);
+    }
+  };
+
 
   if (loading) {
     return <LoadingAnimation />
@@ -115,6 +140,23 @@ const RecipeDetail = () => {
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="favorite-container detail-favorite-container">
+        <label
+          htmlFor="detail-favorite"
+          className="detail-favorite-label"
+        >
+          Favorite 🍪
+        </label>
+        <input
+          id="detail-favorite"
+          type="checkbox"
+          className="detail-favorite-checkbox"
+          checked={!!recipe.favorite}
+          onChange={handleFavoriteToggle}
+          disabled={favoriteUpdating}
+        />
       </div>
 
       {/* Recipe Image - S3 returns full URL */}
