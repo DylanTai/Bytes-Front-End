@@ -212,10 +212,6 @@
   width: clamp(100px, 45vw, 420px);
 }
 
-.recipe-favorite-input {
-  margin-left: -85px;
-}
-
 .favorite-container {
   background: #fffdfc;
   border-radius: 20px;
@@ -225,6 +221,21 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  width: fit-content;
+  align-self: center;
+}
+
+.favorite-container label {
+  font-weight: 600;
+  color: #3a1c08;
+  font-size: 18px;
+}
+
+.favorite-container input[type="checkbox"] {
+  width: 26px;
+  height: 26px;
+  accent-color: #d08c45;
+  cursor: pointer;
 }
 
 .image-upload-hint {

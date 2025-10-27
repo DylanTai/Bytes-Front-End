@@ -179,6 +179,33 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    // Client-side validation before submitting
+    const errors = [];
+
+    // Validate title
+    if (!recipeData.title || recipeData.title.trim() === "") {
+      errors.push("Title is required");
+    }
+
+    // Validate ingredients
+    const validIngredients = ingredientsData.filter(ing => ing.name && ing.name.trim() !== "");
+    if (validIngredients.length === 0) {
+      errors.push("At least one ingredient with a name is required");
+    }
+
+    // Validate steps
+    const validSteps = stepsData.filter(step => step.description && step.description.trim() !== "");
+    if (validSteps.length === 0) {
+      errors.push("At least one step with a description is required");
+    }
+
+    // If there are validation errors, show them and stop
+    if (errors.length > 0) {
+      alert("Please fix the following errors:\n\n" + errors.join("\n"));
+      return;
+    }
+
     try {
       // Create FormData for image upload
       const formData = new FormData();
@@ -186,7 +213,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       formData.append("notes", recipeData.notes);
       formData.append("favorite", recipeData.favorite);
       formData.append("tags", JSON.stringify(tags));
-      
+
       // Add image if one was selected
       if (imageFile) {
         formData.append("image", imageFile);

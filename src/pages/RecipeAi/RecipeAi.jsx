@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { generateRecipe } from "../../services/recipeService.js";
-import { AVAILABLE_TAGS_AI } from "../../config/recipeConfig.js";
+import { AVAILABLE_TAGS_AI, formatTagLabel } from "../../config/recipeConfig.js";
 import "./RecipeAI.css";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 import { showToast } from "../../components/PopUps/PopUps.jsx";
@@ -52,28 +52,29 @@ const RecipeAI = () => {
     setLoading(true);
     setGeneratedRecipe(null);
 
-    /// animation
     try {
       const response = await generateRecipe(prompt, tags);
-      const tempRecipe = {};
+      const responseTags = response.tags || [];
+      setGeneratedRecipe({
+        title: response.title,
+        notes: response.notes || "",
+        ingredients: response.ingredients || [],
+        steps: response.steps || [],
+        tags: responseTags,
+      });
 
-      setGeneratedRecipe({ title: response.title });
-      await new Promise((res) => setTimeout(res, 1000));
-
-      if (response.notes) {
-        tempRecipe.notes = response.notes;
-        setGeneratedRecipe((prev) => ({ ...prev, notes: response.notes }));
-        await new Promise((res) => setTimeout(res, 1000));
-      }
-      if (response.ingredients) {
-        setGeneratedRecipe((prev) => ({
-          ...prev,
-          ingredients: response.ingredients,
-        }));
-        await new Promise((res) => setTimeout(res, 1000));
-      }
-      if (response.steps) {
-        setGeneratedRecipe((prev) => ({ ...prev, steps: response.steps }));
+      // update checkboxes to reflect AI tags
+      const validTagValues = new Set(AVAILABLE_TAGS_AI.map((tag) => tag.value));
+      const normalizedTags = responseTags.filter((tag) =>
+        validTagValues.has(tag)
+      );
+      if (normalizedTags.length > 0) {
+        setTags((prev) => {
+          const prevList = Array.isArray(prev) ? prev : [];
+          const tagSet = new Set(prevList);
+          normalizedTags.forEach((tag) => tagSet.add(tag));
+          return Array.from(tagSet);
+        });
       }
     } catch (err) {
       setError("Failed to generate recipe. Please try again.");
@@ -90,7 +91,10 @@ const RecipeAI = () => {
       const formData = new FormData();
       formData.append("title", generatedRecipe.title);
       formData.append("notes", generatedRecipe.notes);
-      formData.append("tags", JSON.stringify(tags));
+      const tagsToSave = generatedRecipe.tags?.length
+        ? generatedRecipe.tags
+        : tags;
+      formData.append("tags", JSON.stringify(tagsToSave));
 
       const newRecipe = await addRecipe(formData);
 
@@ -153,13 +157,13 @@ const RecipeAI = () => {
         <div className="ai-form-container">
           <div className="prompt-box">
             <label htmlFor="prompt-input">Enter your input:</label>
-            <input
-              type="text"
+            <textarea
               id="prompt-input"
               value={prompt}
               onChange={handlePromptChange}
               placeholder="e.g. healthy high-protein breakfast"
               required
+              rows="4"
             />
           </div>
 
@@ -210,6 +214,17 @@ const RecipeAI = () => {
               </div>
             )}
 
+            {generatedRecipe.tags?.length > 0 && (
+              <div className="generated-tags">
+                <h3>Tags</h3>
+                <ul className="generated-tags-list">
+              {generatedRecipe.tags.map((tag, index) => (
+                <li key={`${tag}-${index}`}>{formatTagLabel(tag)}</li>
+              ))}
+            </ul>
+          </div>
+            )}
+
             {generatedRecipe.ingredients?.length > 0 && (
               <div className="generated-ingredients">
                 <h3>Ingredients</h3>
@@ -239,17 +254,24 @@ const RecipeAI = () => {
                 </ol>
               </div>
             )}
+
           </div>
         )}
       </div>
       {generatedRecipe && !loading && (
-        <button
-          className="generate-buttons"
-          id="save-button"
-          onClick={handleSubmitSave}
-        >
-          Save recipe!
-        </button>
+        <>
+          <div className="ai-disclaimer-box">
+            DISCLAIMER: AI may mislabel dietary tags or ingredients. Always
+            double-check ingredients and allergens before cooking.
+          </div>
+          <button
+            className="generate-buttons"
+            id="save-button"
+            onClick={handleSubmitSave}
+          >
+            Save recipe!
+          </button>
+        </>
       )}
     </div>
   );
