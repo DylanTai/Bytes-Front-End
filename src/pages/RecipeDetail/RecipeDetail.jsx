@@ -6,7 +6,11 @@ import * as recipeService from "../../services/recipeService.js";
 import { formatTagLabel } from "../../config/recipeConfig.js";
 import * as groceryListService from "../../services/groceryListService.js";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
-import {showToast} from "../../components/PopUps/PopUps.jsx";
+import { toast } from "react-hot-toast";
+import {
+  showToast,
+  showConfirmToast,
+} from "../../components/PopUps/PopUps.jsx";
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -30,7 +34,10 @@ const RecipeDetail = () => {
         setSteps(stepsData);
       } catch (error) {
         console.error("Failed to fetch recipe:", error);
-        showToast("Recipe not found or you don't have permission to view it", "error")
+        showToast(
+          "Recipe not found or you don't have permission to view it",
+          "error"
+        );
       } finally {
         setLoading(false);
       }
@@ -40,22 +47,23 @@ const RecipeDetail = () => {
   }, [id]);
 
   const handleDelete = async () => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete "${recipe.title}"? This action cannot be undone.`
-      )
-    ) {
-      try {
-        await recipeService.deleteRecipe(id);
-        showToast("Recipe deleted!", "success")
-        navigate("/");
-      } catch (error) {
-        console.error("Failed to delete recipe:", error);
-        showToast("Failed to delete recipe.", "error")
+    showConfirmToast(
+      `Are you sure you want to delete "${recipe.title}"? This action cannot be undone.`,
+      async () => {
+        try {
+          await recipeService.deleteRecipe(id);
+          showToast("Recipe deleted!", "success");
+          navigate("/");
+        } catch (error) {
+          console.error("Failed to delete recipe:", error);
+          showToast("Failed to delete recipe.", "error");
+        }
+      },
+      () => {
+        showToast("Deletion cancelled.", "error");
       }
-    }
+    );
   };
-
 
   const handleAddIngredientToGrocery = async (ingredient) => {
     if (addingIngredientId === ingredient.id) return;
@@ -72,7 +80,7 @@ const RecipeDetail = () => {
       showToast(message, "success");
     } catch (err) {
       console.error("Failed to add ingredient to grocery list:", err);
-      showToast("Failed to add ingredients to grocery list.", "error")
+      showToast("Failed to add ingredients to grocery list.", "error");
     } finally {
       setAddingIngredientId(null);
     }
@@ -92,7 +100,7 @@ const RecipeDetail = () => {
       await recipeService.updateRecipeFavorite(id, nextFavorite);
     } catch (err) {
       console.error("Failed to update favorite status:", err);
-      alert("Failed to update favorite status. Please try again.");
+      showToast("Failed to update favorite status. Please try again.", "error");
       setRecipe((prev) => ({
         ...prev,
         favorite: previousFavorite,
@@ -101,7 +109,6 @@ const RecipeDetail = () => {
       setFavoriteUpdating(false);
     }
   };
-
 
   if (loading) {
     return <LoadingAnimation />;
@@ -144,10 +151,7 @@ const RecipeDetail = () => {
       </div>
 
       <div className="favorite-container detail-favorite-container">
-        <label
-          htmlFor="detail-favorite"
-          className="detail-favorite-label"
-        >
+        <label htmlFor="detail-favorite" className="detail-favorite-label">
           Favorite 🍪
         </label>
         <input

@@ -18,27 +18,69 @@ export const showToast = (message, type = "success") => {
       </div>
     ),
     {
-      duration: type === "error" ? Infinity : 3000,
+      duration: type === "error" ? Infinity : Infinity,
     }
+  );
+};
+
+export const ConfirmToast = ({ t, message, onConfirm, onCancel }) => (
+  <div className="pop-ups pop-ups-confirm">
+    <span className="pop-ups-icon">⚠️</span>
+    <span className="pop-ups-body">{message}</span>
+
+    <div className="pop-ups-buttons">
+      <button
+        className="pop-ups-btn confirm"
+        onClick={() => {
+          onConfirm();
+          toast.dismiss(t.id);
+        }}
+      >
+        Yes
+      </button>
+      <button
+        className="pop-ups-btn cancel"
+        onClick={() => {
+          onCancel();
+          toast.dismiss(t.id);
+        }}
+      >
+        No
+      </button>
+    </div>
+  </div>
+);
+
+export const showConfirmToast = (message, onConfirm, onCancel) => {
+  toast.custom(
+    (t) => (
+      <ConfirmToast
+        t={t}
+        message={message}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+      />
+    ),
+    { duration: Infinity }
   );
 };
 
 function PopUps() {
   return (
     <Toaster
-      position="top-center"
-      reverseOrder={false}
-      containerStyle={{
+    position="top-center"
+    reverseOrder={false}
+    containerStyle={{
         padding: 0,
         margin: 0,
         background: "transparent",
         boxShadow: "none",
-      }}
-      toastOptions={{
+    }}
+    toastOptions={{
         style: {
           padding: 0,
           margin: 0,
-          background: "white",
+          background: "#d2ee91ff",
           boxShadow: "none",
         },
       }}

@@ -202,7 +202,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
     // If there are validation errors, show them and stop
     if (errors.length > 0) {
-      alert("Please fix the following errors:\n\n" + errors.join("\n"));
+      showToast("Please fix the following errors:\n\n" + errors.join("\n"), "error");
       return;
     }
 
