@@ -9,6 +9,7 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const { user, setUser } = useContext(UserContext);
 
   const handleSignOut = () => {
@@ -54,23 +55,6 @@ const NavBar = () => {
     setIsOpen(false);
   };
 
-  const authenticatedLeft = (
-    <>
-      <Link to="/recipes/add" className="nav-link">
-        Add Recipe
-      </Link>
-      <Link to="/recipes/AI" className="nav-link">
-        Generate A Recipe!
-      </Link>
-      <Link to="/grocery-list" className="nav-link">
-        Grocery List
-      </Link>
-      <Link to="/recipe-wheel" className="nav-link">
-        Recipe Wheel
-      </Link>
-    </>
-  );
-
   const authenticatedRight = (
     <>
       <Link to="/profile" className="nav-link-right">
@@ -103,7 +87,48 @@ const NavBar = () => {
         <Hamburger toggled={isOpen} toggle={handleHamburgerToggle} size={22} />
       </button>
 
-      <div className="nav-left">{user ? authenticatedLeft : null}</div>
+      <div className="nav-left">
+        <Link to="/" className="nav-link">
+          Home
+        </Link>
+
+        {user && (
+          <>
+            <div
+              className="dropdown"
+              onMouseEnter={() => setShowDropdown(true)}
+              onMouseLeave={() => setShowDropdown(false)}
+            >
+              <button className="dropdown-button">
+                Recipes{" "}
+                <span
+                  className={`dropdown-arrow ${showDropdown ? "open" : ""}`}
+                >
+                  ‹
+                </span>
+              </button>
+
+              {showDropdown && (
+                <div className="dropdown-menu">
+                  <Link to="/recipes/add" className="nav-link">
+                    Add Recipe
+                  </Link>
+                  <Link to="/recipes/AI" className="nav-link">
+                    Generate A Recipe!
+                  </Link>
+                  <Link to="/recipe-wheel" className="nav-link">
+                    Recipe Wheel
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            <Link to="/grocery-list" className="nav-link">
+              Grocery List
+            </Link>
+          </>
+        )}
+      </div>
 
       <div className="nav-center">
         <Link to="/">
