@@ -221,11 +221,11 @@ const RecipeAI = () => {
         )}
 
         {generatedRecipe && !loading && (
-          <div className="response-recipe">
-            <h2 id="recipe-title">{generatedRecipe.title}</h2>
+          <div className="response-recipe-ai">
+            <h2 id="recipe-ai-title">{generatedRecipe.title}</h2>
 
             {generatedRecipe.notes && (
-              <div className="generated-recipe-notes">
+              <div className="generated-recipe-ai-notes">
                 <h3>Notes:</h3>
                 <p>{generatedRecipe.notes}</p>
               </div>

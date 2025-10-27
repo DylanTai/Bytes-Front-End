@@ -523,7 +523,7 @@ const RecipeEdit = () => {
         )}
         <div className="form-element">
           <div className="recipe-form">
-            <div className="recipe-field-group">
+            <div className="recipe-field-group recipe-field-group--title">
             <label htmlFor="recipe-title">Title: </label>
             <input
               type="text"
@@ -535,7 +535,7 @@ const RecipeEdit = () => {
               className="recipe-title-input"
             />
             </div>
-            <div className="recipe-field-group">
+            <div className="recipe-field-group recipe-field-group--notes">
             <label htmlFor="recipe-notes">Notes:</label>
             <textarea
               type="text"
