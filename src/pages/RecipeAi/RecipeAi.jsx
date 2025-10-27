@@ -1,7 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { generateRecipe } from "../../services/recipeService.js";
-import { AVAILABLE_TAGS_AI, formatTagLabel } from "../../config/recipeConfig.js";
+import {
+  AVAILABLE_TAGS_AI,
+  formatTagLabel,
+} from "../../config/recipeConfig.js";
 import "./RecipeAI.css";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 import { showToast } from "../../components/PopUps/PopUps.jsx";
@@ -19,6 +22,7 @@ const RecipeAI = () => {
   const [prompt, setPrompt] = useState("");
   const [tags, setTags] = useState([]);
   const [generatedRecipe, setGeneratedRecipe] = useState(null);
+  const [useGroceryList, setUseGroceryList] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const tagOptions = useMemo(
@@ -167,6 +171,19 @@ const RecipeAI = () => {
             />
           </div>
 
+          <div className="ai-form-container">
+            <div className="grocery-list-checkbox">
+              <label htmlFor="grocery-lisst-checkbox">
+                <input
+                  type="checkbox"
+                  checked={useGroceryList}
+                  onChange={(e) => setUseGroceryList(e.target.checked)}
+                />
+                Use items that I checked on my grocery list
+              </label>
+            </div>
+          </div>
+
           <div className="tags-container">
             <h3>Tags</h3>
             <div className="tags-grid">
@@ -218,11 +235,11 @@ const RecipeAI = () => {
               <div className="generated-tags">
                 <h3>Tags</h3>
                 <ul className="generated-tags-list">
-              {generatedRecipe.tags.map((tag, index) => (
-                <li key={`${tag}-${index}`}>{formatTagLabel(tag)}</li>
-              ))}
-            </ul>
-          </div>
+                  {generatedRecipe.tags.map((tag, index) => (
+                    <li key={`${tag}-${index}`}>{formatTagLabel(tag)}</li>
+                  ))}
+                </ul>
+              </div>
             )}
 
             {generatedRecipe.ingredients?.length > 0 && (
@@ -254,7 +271,6 @@ const RecipeAI = () => {
                 </ol>
               </div>
             )}
-
           </div>
         )}
       </div>
