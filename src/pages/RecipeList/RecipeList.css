@@ -1,3 +1,11 @@
+.kaushan-script-regular {
+  font-family: "Kaushan Script", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+
 .recipe-list-page {
   background-color: #ffe0bd45;
   border-radius: 80px;
@@ -14,9 +22,13 @@
   margin-bottom: 45px;
   margin-top: 50px;
   margin-bottom: 20px;
-  font-family: "Handjet", sans-serif;
+  /* font-family: "Handjet", sans-serif; */
+  font-family: "Kaushan Script", cursive;
   font-size: 55px;
   padding-top: 60px;
+
+  color: #a01616;
+  text-shadow: 4px 4px 5px #ff67678c;
 }
 
 /* search and filters */
