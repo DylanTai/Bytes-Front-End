@@ -1,6 +1,27 @@
 const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/users`;
 
-// Helper function for authenticated requests
+// Refresh token helper
+const refreshAccessToken = async () => {
+  const refresh = localStorage.getItem("refresh");
+
+  if (!refresh) throw new Error("No refresh token found");
+
+  const res = await fetch(`${BASE_URL}/token/refresh/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ refresh }),
+  });
+
+  if (!res.ok) throw new Error("Token refresh failed");
+
+  const data = await res.json();
+  localStorage.setItem("access", data.access);
+  return data.access;
+};
+
+// Helper function for authenticated requests with automatic token refresh
 const fetchWithAuth = async (url, options = {}) => {
   const access = localStorage.getItem("access");
   const authHeaders = {
@@ -12,10 +33,31 @@ const fetchWithAuth = async (url, options = {}) => {
     authHeaders["Authorization"] = `Bearer ${access}`;
   }
 
-  return await fetch(url, {
+  // Try initial request
+  let res = await fetch(url, {
     ...options,
     headers: authHeaders,
   });
+
+  // If unauthorized, try refreshing token and retry
+  if (res.status === 401) {
+    try {
+      const newAccess = await refreshAccessToken();
+      authHeaders["Authorization"] = `Bearer ${newAccess}`;
+
+      res = await fetch(url, {
+        ...options,
+        headers: authHeaders,
+      });
+    } catch (refreshErr) {
+      // Refresh failed, user needs to log in again
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+      throw new Error("Session expired. Please log in again.");
+    }
+  }
+
+  return res;
 };
 
 // Get current user
