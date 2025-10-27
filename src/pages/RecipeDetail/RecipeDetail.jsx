@@ -6,6 +6,11 @@ import * as recipeService from "../../services/recipeService.js";
 import { formatTagLabel } from "../../config/recipeConfig.js";
 import * as groceryListService from "../../services/groceryListService.js";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import { toast } from "react-hot-toast";
+import {
+  showToast,
+  showConfirmToast,
+} from "../../components/PopUps/PopUps.jsx";
 
 const RecipeDetail = () => {
   const { id } = useParams();
@@ -29,7 +34,10 @@ const RecipeDetail = () => {
         setSteps(stepsData);
       } catch (error) {
         console.error("Failed to fetch recipe:", error);
-        setError("Recipe not found or you don't have permission to view it.");
+        showToast(
+          "Recipe not found or you don't have permission to view it",
+          "error"
+        );
       } finally {
         setLoading(false);
       }
@@ -39,20 +47,22 @@ const RecipeDetail = () => {
   }, [id]);
 
   const handleDelete = async () => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete "${recipe.title}"? This action cannot be undone.`
-      )
-    ) {
-      try {
-        await recipeService.deleteRecipe(id);
-        alert("Recipe deleted successfully!");
-        navigate("/");
-      } catch (error) {
-        console.error("Failed to delete recipe:", error);
-        alert("Failed to delete recipe.");
+    showConfirmToast(
+      `Are you sure you want to delete "${recipe.title}"? This action cannot be undone.`,
+      async () => {
+        try {
+          await recipeService.deleteRecipe(id);
+          showToast("Recipe deleted!", "success");
+          navigate("/");
+        } catch (error) {
+          console.error("Failed to delete recipe:", error);
+          showToast("Failed to delete recipe.", "error");
+        }
+      },
+      () => {
+        showToast("Deletion cancelled.", "error");
       }
-    }
+    );
   };
 
   const handleAddIngredientToGrocery = async (ingredient) => {
@@ -66,12 +76,11 @@ const RecipeDetail = () => {
         weight_unit: ingredient.weight_unit || "",
       });
       const message =
-        response?.message ||
-        `Added ${ingredient.name} to your grocery list.`;
-      alert(message);
+        response?.message || `Added ${ingredient.name} to your grocery list.`;
+      showToast(message, "success");
     } catch (err) {
       console.error("Failed to add ingredient to grocery list:", err);
-      alert("Failed to add ingredient to grocery list.");
+      showToast("Failed to add ingredients to grocery list.", "error");
     } finally {
       setAddingIngredientId(null);
     }
@@ -91,7 +100,7 @@ const RecipeDetail = () => {
       await recipeService.updateRecipeFavorite(id, nextFavorite);
     } catch (err) {
       console.error("Failed to update favorite status:", err);
-      alert("Failed to update favorite status. Please try again.");
+      showToast("Failed to update favorite status. Please try again.", "error");
       setRecipe((prev) => ({
         ...prev,
         favorite: previousFavorite,
@@ -101,9 +110,8 @@ const RecipeDetail = () => {
     }
   };
 
-
   if (loading) {
-    return <LoadingAnimation />
+    return <LoadingAnimation />;
   }
 
   if (error || !recipe) {
@@ -143,10 +151,7 @@ const RecipeDetail = () => {
       </div>
 
       <div className="favorite-container detail-favorite-container">
-        <label
-          htmlFor="detail-favorite"
-          className="detail-favorite-label"
-        >
+        <label htmlFor="detail-favorite" className="detail-favorite-label">
           Favorite 🍪
         </label>
         <input
@@ -162,11 +167,7 @@ const RecipeDetail = () => {
       {/* Recipe Image - S3 returns full URL */}
       {recipe.image && (
         <div className="recipe-image-container">
-          <img 
-            src={recipe.image}
-            alt={recipe.title}
-            className="recipe-image"
-          />
+          <img src={recipe.image} alt={recipe.title} className="recipe-image" />
         </div>
       )}
 

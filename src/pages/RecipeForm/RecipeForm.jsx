@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
+import { showToast } from "../../components/PopUps/PopUps.jsx";
 
 import {
   addRecipe,
@@ -58,7 +59,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
     const token = localStorage.getItem("access");
     if (!token) {
       // Redirect to login if no token
-      alert("Please log in to create a recipe.");
+      showToast("Please log-in or sign-up to add a recipe.", "error")
       navigate("/sign-in");
     } else {
       setLoading(false);
@@ -76,7 +77,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       // Validate file type
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        alert('Please upload a valid image file (JPG, JPEG, PNG, GIF, or WebP)');
+        showToast('Please upload a valid image file (JPG, JPEG, PNG, GIF, or WebP)', "error")
         // Reset file input
         e.target.value = '';
         return;
@@ -85,7 +86,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       // Validate file size (5MB limit)
       const maxSize = 5 * 1024 * 1024; // 5MB in bytes
       if (file.size > maxSize) {
-        alert('Image file size must be less than 5MB');
+        showToast('Image file size must be less than 5MB', "error")
         e.target.value = '';
         return;
       }
@@ -201,7 +202,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
 
     // If there are validation errors, show them and stop
     if (errors.length > 0) {
-      alert("Please fix the following errors:\n\n" + errors.join("\n"));
+      showToast("Please fix the following errors:\n\n" + errors.join("\n"), "error");
       return;
     }
 
@@ -259,14 +260,14 @@ const RecipeForm = ({ recipes, setRecipes }) => {
           errorMessage = "Invalid recipe data. Please check all fields.";
         }
         
-        alert(errorMessage);
+        showToast(errorMessage);
       } else if (error.status === 401) {
         // Authentication error - redirect to sign-in
-        alert("Your session has expired. Please log in again.");
+        showToast("Your session has expired. Please log in again.", "error");
         navigate("/sign-in");
       } else {
         // Other errors
-        alert(`An error occurred: ${error.message}`);
+        showToast(`An error occurred: ${error.message}`, "error");
       }
     }
   };
