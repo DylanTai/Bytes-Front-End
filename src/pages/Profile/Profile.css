@@ -1,8 +1,157 @@
 .profile-page {
-  background-color: #ffe0bd45;
+  background-color: #e4e3e345;
   border-radius: 80px;
   min-height: calc(100vh - 75px);
   padding-bottom: 40px;
+  margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
+}
+
+.profile-title {
+  display: flex;
+  justify-content: center;
+  padding: 25px;
+  margin-bottom: 45px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  font-family: "Handjet", sans-serif;
+  font-size: 55px;
+  padding-top: 60px;
+}
+
+/* buttons */
+.submit-button,
+.danger-button {
+  color: #82200c;
+  text-decoration: none;
+  padding: 20px;
+  font-weight: 400;
+  width: auto;
+  text-align: center;
+  background: none;
+  border: none;
+  font-size: 20px;
+}
+
+.submit-button:hover,
+.danger-button:hover {
+  color: #f9ae2c;
+  cursor: pointer;
+}
+
+/* profile section */
+.profile-section-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-align: center;
+  align-items: center;
+}
+
+.profile-section h2 {
+  font-family: "Handjet", sans-serif;
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #4b2e1a;
+}
+
+.form-group input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d4b9a3;
+  font-size: 16px;
+  background-color: #fff;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #f9ae2c;
+  outline: none;
+}
+
+.input-error {
+  border-color: #d9534f !important;
+  background-color: #fff5f5;
+}
+
+/* Messages */
+.success-message {
+  color: #3c763d;
+  background-color: #dff0d8;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.field-error {
+  color: #d9534f;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.danger-section {
+  background-color: #fff8f7;
+  border: 1px solid #ffd6d1;
+}
+
+.danger-section h2 {
+  color: #82200c;
+}
+
+.warning-text {
+  color: #82200c;
+  font-style: italic;
+  margin-bottom: 15px;
+}
+
+.delete-confirm {
+  margin-top: 15px;
+}
+
+.delete-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cancel-button {
+  color: #4b2e1a;
+  text-decoration: underline;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.cancel-button:hover {
+  color: #f9ae2c;
 }

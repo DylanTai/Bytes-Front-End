@@ -2,14 +2,21 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import * as userService from "../../services/userService.js";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import { showToast } from "../../components/PopUps/PopUps.jsx";
 import "./Profile.css";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { user, setUser } = useContext(UserContext);
 
+  const [loading, setLoading] = useState(false);
+  const [showAnimation, setShowAnimation] = useState(false);
+
   // Username form state
-  const [usernameForm, setUsernameForm] = useState({ username: user?.username || "" });
+  const [usernameForm, setUsernameForm] = useState({
+    username: user?.username || "",
+  });
   const [usernameErrors, setUsernameErrors] = useState({});
   const [usernameSuccess, setUsernameSuccess] = useState("");
 
@@ -32,6 +39,19 @@ const Profile = () => {
   const [deleteErrors, setDeleteErrors] = useState({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // loading animation functions
+  const startLoading = () => {
+    setLoading(true);
+    const timer = setTimeout(() => setShowAnimation(true), 400);
+    return timer;
+  };
+
+  const stopLoading = (timer) => {
+    clearTimeout(timer);
+    setLoading(false);
+    setShowAnimation(false);
+  };
+
   // Handle username change
   const handleUsernameChange = (e) => {
     setUsernameForm({ username: e.target.value });
@@ -43,6 +63,7 @@ const Profile = () => {
     e.preventDefault();
     setUsernameErrors({});
     setUsernameSuccess("");
+    const timer = startLoading();
 
     try {
       const result = await userService.updateUsername(usernameForm.username);
@@ -52,8 +73,12 @@ const Profile = () => {
       if (error.response && error.response.data) {
         setUsernameErrors(error.response.data);
       } else {
-        setUsernameErrors({ username: [error.message || "Failed to update username."] });
+        setUsernameErrors({
+          username: [error.message || "Failed to update username."],
+        });
       }
+    } finally {
+      stopLoading(timer);
     }
   };
 
@@ -93,6 +118,7 @@ const Profile = () => {
     e.preventDefault();
     setPasswordErrors({});
     setPasswordSuccess("");
+    const timer = startLoading();
 
     try {
       await userService.updatePassword(passwordForm);
@@ -106,8 +132,12 @@ const Profile = () => {
       if (error.response && error.response.data) {
         setPasswordErrors(error.response.data);
       } else {
-        setPasswordErrors({ current_password: [error.message || "Failed to update password."] });
+        setPasswordErrors({
+          current_password: [error.message || "Failed to update password."],
+        });
       }
+    } finally {
+      stopLoading(timer);
     }
   };
 
@@ -116,26 +146,37 @@ const Profile = () => {
     setDeleteErrors({});
 
     if (!deletePassword) {
-      setDeleteErrors({ password: ["Password is required to delete account."] });
+      setDeleteErrors({
+        password: ["Password is required to delete account."],
+      });
       return;
     }
 
+    const timer = startLoading();
+
     try {
       await userService.deleteAccount(deletePassword);
-      // Clear user data and redirect
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
       setUser(null);
-      alert("Account deleted successfully.");
+      showToast("Account deleted successfully.", "success");
       navigate("/");
     } catch (error) {
       if (error.response && error.response.data) {
         setDeleteErrors(error.response.data);
       } else {
-        setDeleteErrors({ password: [error.message || "Failed to delete account."] });
+        setDeleteErrors({
+          password: [error.message || "Failed to delete account."],
+        });
       }
+    } finally {
+      stopLoading(timer);
     }
   };
+
+  if (showAnimation) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <div className="profile-page">
@@ -205,7 +246,9 @@ const Profile = () => {
               className={passwordErrors.current_password ? "input-error" : ""}
             />
             {passwordErrors.current_password && (
-              <p className="field-error">{passwordErrors.current_password.join(", ")}</p>
+              <p className="field-error">
+                {passwordErrors.current_password.join(", ")}
+              </p>
             )}
           </div>
           <div className="form-group">
@@ -219,7 +262,9 @@ const Profile = () => {
               className={passwordErrors.new_password ? "input-error" : ""}
             />
             {passwordErrors.new_password && (
-              <p className="field-error">{passwordErrors.new_password.join(", ")}</p>
+              <p className="field-error">
+                {passwordErrors.new_password.join(", ")}
+              </p>
             )}
           </div>
           <div className="form-group">
@@ -233,7 +278,9 @@ const Profile = () => {
               className={passwordErrors.confirm_password ? "input-error" : ""}
             />
             {passwordErrors.confirm_password && (
-              <p className="field-error">{passwordErrors.confirm_password.join(", ")}</p>
+              <p className="field-error">
+                {passwordErrors.confirm_password.join(", ")}
+              </p>
             )}
           </div>
           <button type="submit" className="submit-button">
@@ -257,7 +304,9 @@ const Profile = () => {
           </button>
         ) : (
           <div className="delete-confirm">
-            <p><strong>Are you sure? Enter your password to confirm:</strong></p>
+            <p>
+              <strong>Are you sure? Enter your password to confirm:</strong>
+            </p>
             <div className="form-group">
               <input
                 type="password"
@@ -270,7 +319,9 @@ const Profile = () => {
                 className={deleteErrors.password ? "input-error" : ""}
               />
               {deleteErrors.password && (
-                <p className="field-error">{deleteErrors.password.join(", ")}</p>
+                <p className="field-error">
+                  {deleteErrors.password.join(", ")}
+                </p>
               )}
             </div>
             <div className="delete-buttons">

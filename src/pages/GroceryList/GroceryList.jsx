@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import * as groceryListService from "../../services/groceryListService.js";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import { showToast } from "../../components/PopUps/PopUps.jsx";
 import "./GroceryList.css";
 
 const GroceryList = () => {
@@ -59,7 +61,7 @@ const GroceryList = () => {
     const checkedCount = items.filter((item) => item.checked).length;
     
     if (checkedCount === 0) {
-      alert("No items are checked!");
+      showToast("No items are checked!", "error");
       return;
     }
 
@@ -80,7 +82,7 @@ const GroceryList = () => {
   };
 
   if (loading) {
-    return <div className="grocery-list-page"><p>Loading...</p></div>;
+    return <LoadingAnimation />;
   }
 
   return (
@@ -93,6 +95,7 @@ const GroceryList = () => {
         </p>
       ) : (
         <>
+          <div className="grocery-list-container">
           <ul className="grocery-list">
             {items.map((item) => (
               <li key={item.id} className={`grocery-item ${item.checked ? 'checked' : ''}`}>
@@ -103,7 +106,7 @@ const GroceryList = () => {
                   className="grocery-checkbox"
                 />
                 <span className="grocery-item-text">
-                  {item.name} - {formatQuantity(item)}
+                  {formatQuantity(item)} - {item.name} 
                 </span>
               </li>
             ))}
@@ -116,6 +119,7 @@ const GroceryList = () => {
             <button onClick={handleClearChecked} className="update-button">
               Update (Remove Checked Items)
             </button>
+          </div>
           </div>
         </>
       )}

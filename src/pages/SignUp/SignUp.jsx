@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { signUp } from "../../services/authService.js";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import "./SignUp.css";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const SignUpForm = () => {
     password: "",
     password2: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const { username, email, password, password2 } = formData;
 
@@ -65,6 +67,7 @@ const SignUpForm = () => {
 
   const handleSubmit = async (evt) => {
     evt.preventDefault();
+    setLoading(true);
     
     // Get frontend validation errors
     const frontendErrors = validateForm();
@@ -105,15 +108,21 @@ const SignUpForm = () => {
       }
       
       setErrors(allErrors);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <main className="sign-up-page">
       <h1 className="sign-up-title">Sign Up</h1>
       <form onSubmit={handleSubmit} noValidate>
-        <div className="signup-section">
-          <label htmlFor="username">Username:</label>
+        <div className="sign-form-group">
+          <label htmlFor="username" className="sign-label">Username:</label>
           <input
             type="text"
             id="username"
@@ -126,8 +135,8 @@ const SignUpForm = () => {
             <p className="field-error">{errors.username.join(", ")}</p>
           )}
         </div>
-        <div className="signup-section">
-          <label htmlFor="email">Email:</label>
+        <div className="sign-form-group">
+          <label htmlFor="email" className="sign-label">Email:</label>
           <input
             type="text"
             id="email"
@@ -140,8 +149,8 @@ const SignUpForm = () => {
             <p className="field-error">{errors.email.join(", ")}</p>
           )}
         </div>
-        <div className="signup-section">
-          <label htmlFor="password">Password:</label>
+        <div className="sign-form-group">
+          <label htmlFor="password" className="sign-label">Password:</label>
           <input
             type="password"
             id="password"
@@ -154,8 +163,8 @@ const SignUpForm = () => {
             <p className="field-error">{errors.password.join(", ")}</p>
           )}
         </div>
-        <div className="signup-section">
-          <label htmlFor="password2">Confirm Password:</label>
+        <div className="sign-form-group">
+          <label htmlFor="password2" className="sign-label">Confirm Password:</label>
           <input
             type="password"
             id="password2"

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router";
+import PopUps from "./components/PopUps/PopUps.jsx";
 
 // Components
 import NavBar from "./components/NavBar/NavBar.jsx";
@@ -15,6 +16,7 @@ import RecipeForm from "./pages/RecipeForm/RecipeForm.jsx";
 import GroceryList from "./pages/GroceryList/GroceryList.jsx";
 import RecipeWheel from "./pages/RecipeWheel/RecipeWheel.jsx";
 import Profile from "./pages/Profile/Profile.jsx";
+import RecipeAI from "./pages/RecipeAi/RecipeAi.jsx";
 
 // Protected route wrapper
 import Protected from "./components/Protected/Protected.jsx";
@@ -77,7 +79,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/recipes/:recipeId/edit",
+    path: "/recipes/:id/edit", // ← Change to :id
     element: (
       <Protected>
         <NavBar />
@@ -91,6 +93,15 @@ const router = createBrowserRouter([
       <Protected>
         <NavBar />
         <RecipeForm />
+      </Protected>
+    ),
+  },
+  {
+    path: "/recipes/AI",
+    element: (
+      <Protected>
+        <NavBar />
+        <RecipeAI />
       </Protected>
     ),
   },
@@ -167,6 +178,7 @@ export default function App() {
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <div className="App">
+        <PopUps />
         <RouterProvider router={router} />
       </div>
     </UserContext.Provider>

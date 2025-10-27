@@ -1,13 +1,116 @@
 .grocery-list-page {
-  background-color: #ffe0bd45;
+  background-color: #e4e3e345;
   border-radius: 80px;
   min-height: calc(100vh - 75px);
   padding-bottom: 40px;
+  margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
 }
 
+/* check off list items */
 .grocery-item.checked .grocery-item-text {
   text-decoration: line-through;
   color: #999;
+}
+
+.grocery-list-title {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 45px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  font-family: "Handjet", sans-serif;
+  font-size: 55px;
+  padding-top: 60px;
+}
+
+.check-all-button,
+.update-button {
+  color: #82200c;
+  text-decoration: none;
+  padding: 20px;
+  font-weight: 400;
+  width: auto;
+  text-align: center;
+  background: none;
+  border: none;
+  font-size: 20px;
+}
+
+.check-all-button:hover,
+.update-button:hover {
+  color: #f9ae2c;
+  cursor: pointer;
+}
+
+.grocery-list-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.grocery-list {
+  display: block;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  background-color: #fffdf8;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 40px 50px;
+  line-height: 2.2;
+  position: relative;
+  background-image: linear-gradient(#f0e6d2 1px, transparent 1px);
+  background-size: 100% 2.2em;
+  border-left: 6px solid #f9ae2c;
+}
+
+.grocery-list::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 45px;
+  width: 2px;
+  height: 100%;
+  background-color: #ff6b6b;
+  opacity: 0.3;
+}
+
+.grocery-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 2.2em;
+}
+
+.grocery-item-text {
+  padding-left: 20px;
+}
+
+.grocery-list-actions {
+  margin-top: 30px;
+}
+
+.empty-message {
+  text-align: center;
+  margin-top: 80px;
+}
+
+.grocery-checkbox {
+  transform: scale(1.3);
+  accent-color: #f9ae2c;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .grocery-list {
+    width: 65%;
+  }
 }

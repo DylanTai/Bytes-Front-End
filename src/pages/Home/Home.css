@@ -3,13 +3,16 @@
   font-optical-sizing: auto;
   font-weight: 600;
   font-style: normal;
-  font-variation-settings:
-    "ELGR" 2,
-    "ELSH" 2;
+  font-variation-settings: "ELGR" 2, "ELSH" 2;
 }
 
 main {
-  background-color: whitesmoke;
+  background-color: #ffe0bd45;
+  border-radius: 80px;
+  min-height: calc(100vh - 75px);
+  padding-bottom: 40px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .landing-page-title {
@@ -25,7 +28,7 @@ main p {
 }
 
 .home-main {
-  background-color: #ffe0bd45;
+  background-color: #e4e3e345;
   border-radius: 80px;
   min-height: 100vh;
   margin-left: 10px;

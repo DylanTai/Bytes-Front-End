@@ -1,0 +1,274 @@
+.prompt-form-page {
+  background-color: #e4e3e345;
+  border-radius: 80px;
+  min-height: calc(100vh - 75px);
+  padding-bottom: 40px;
+  margin-top: 50px;
+  margin-left: 10px;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.AI-form-title {
+  display: flex;
+  justify-content: center;
+  padding: 25px;
+  margin-bottom: 10px;
+  margin-top: 50px;
+  font-size: 32px;
+  font-weight: 600;
+  padding-top: 60px;
+  color: #3a1c08;
+}
+
+.prompt-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ai-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.prompt-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  width: clamp(240px, 60vw, 720px);
+}
+
+.prompt-box label {
+  font-weight: 600;
+  font-size: 16px;
+  color: #3a1c08;
+}
+
+.prompt-box textarea {
+  font-size: 16px;
+  border-radius: 8px;
+  padding: 8px;
+  border: 1px solid #d4b9a3;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.tags-container {
+  display: flex;
+  flex-direction: column;
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  width: clamp(240px, 60vw, 720px);
+}
+
+.tags-container h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #3a1c08;
+}
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .tags-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .tags-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1400px) {
+  .tags-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.tag-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #fff7ea;
+  border: 1px solid #d08c45;
+  border-radius: 8px;
+  padding: 12px 18px 12px 12px;
+  min-height: 48px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.tag-checkbox input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #d08c45;
+  cursor: pointer;
+}
+
+.response {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.response-recipe-ai {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.6s ease forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+#recipe-ai-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #3a1c08;
+  margin-top: 20px;
+}
+
+.generated-recipe-ai-notes,
+.generated-ingredients,
+.generated-steps,
+.generated-tags,
+.ai-disclaimer-box {
+  background: #fffdfc;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  width: clamp(240px, 60vw, 720px);
+  animation: fadeIn 0.6s ease forwards;
+  opacity: 0;
+  animation-delay: 0.3s;
+}
+
+.generated-recipe-ai-notes h3,
+.generated-ingredients h3,
+.generated-steps h3,
+.generated-tags h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #3a1c08;
+}
+
+.generated-tags-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.generated-tags-list li {
+  background-color: #fff7ea;
+  border: 1px solid #d08c45;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.95rem;
+  color: #3a1c08;
+}
+
+.ai-disclaimer-box {
+  font-size: 0.95rem;
+  color: #82200c;
+  line-height: 1.4;
+  margin-top: 20px;
+}
+
+#save-button {
+  margin-top: 20px;
+}
+
+.generated-ingredient-list {
+  list-style-position: inside;
+  padding-left: 0;
+  margin: 0;
+}
+
+.generated-ingredient-item {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.generated-step-list {
+  list-style-position: inside;
+  padding-left: 0;
+  margin: 0;
+  counter-reset: step-counter;
+}
+
+.generated-step-list li {
+  margin-bottom: 12px;
+  line-height: 1.6;
+  padding-left: 0;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* For gradual section fade-ins */
+.generated-ingredients,
+.generated-steps,
+.generated-recipe-ai-notes {
+  animation: fadeIn 0.6s ease forwards;
+  opacity: 0;
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.generate-buttons {
+  background-color: #f7931a;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.generate-buttons:hover {
+  background-color: #ffa726;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}

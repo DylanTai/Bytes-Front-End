@@ -1,21 +1,25 @@
 .recipe-wheel-page {
-  /* max-width: 900px;
-  margin: 2rem auto;
-  padding: 0 1rem; */
   text-align: center;
-  background-color: #ffe0bd45;
+  background-color: #e4e3e345;
   border-radius: 80px;
   min-height: calc(100vh - 75px);
   padding-bottom: 40px;
+  margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
+  position: relative;
 }
 
 .wheel-title {
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  color: #82200c;
-  font-family: "Hubot Sans", sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 25px;
+  margin-bottom: 45px;
+  margin-top: 50px;
+  margin-bottom: 20px;
+  font-family: "Handjet", sans-serif;
+  font-size: 55px;
+  padding-top: 60px;
 }
 
 .no-recipes {
@@ -42,6 +46,35 @@
   color: black;
 }
 
+/* favorites filter */
+.favorites-filter-wheel {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-right: 70px;
+}
+
+.favorites-filter-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-family: "Hubot Sans", sans-serif;
+}
+
+.favorites-filter input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.favorites-filter span {
+  font-weight: 600;
+}
+
+/* wheel */
 .wheel {
   width: 100%;
   height: 100%;
@@ -53,27 +86,38 @@
   transition: opacity 0.2s ease;
 }
 
+/* recipe card when hover over wheel segment */
 .recipe-tooltip {
-  position: fixed;
-  top: 200px;
+  position: absolute;
+  bottom: 5px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #ffe0bd;
-  color: #82200c;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  font-family: "Hubot Sans", sans-serif;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 100;
-  border: 3px solid #82200c;
+  border: black solid 2px;
+  border-radius: 10px;
+  background-color: #ffb54b;
+  width: 220px;
+  box-sizing: border-box;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 20;
+  text-overflow: ellipsis;
 }
 
+/* when selected recipe is shown */
+.wheel-container.blurred {
+  filter: blur(6px);
+  pointer-events: none;
+  transition: filter 0.3s ease;
+}
+
+/* spin button */
 .spin-button {
-  border: #82200c solid 3px;
-  border-radius: 8px;
   padding: 1rem 3rem;
   background: transparent;
   color: #82200c;
@@ -82,14 +126,15 @@
   font-family: "Hubot Sans", sans-serif;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   letter-spacing: 1px;
   text-transform: none;
+  border: none;
+  position: relative;
+  z-index: 10;
 }
 
 .spin-button:hover:not(:disabled) {
-  background-color: #82200c;
-  color: blanchedalmond;
+  color: #f9ae2c;
 }
 
 .spin-button:active:not(:disabled) {
@@ -101,14 +146,31 @@
   cursor: not-allowed;
 }
 
+/* selected recipe */
 .selected-recipe {
-  margin-top: 2rem;
-  padding: 2rem;
-  background: transparent;
-  border-radius: 8px;
-  border: 3px solid #82200c;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: black solid 2px;
+  border-radius: 20px;
+  background-color: #fffdfc;
+  width: 220px;
+  height: 220px;
+  box-sizing: border-box;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  transition: background-color 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  animation: slideIn 0.5s ease-out;
+  justify-content: center;
+  z-index: 5000;
+  animation: slide-in 0.4s ease;
+  width: 465px;
+  height: 187px;
 }
 
 @keyframes slideIn {
@@ -123,61 +185,26 @@
 }
 
 .selected-recipe h2 {
-  color: #82200c;
+  color: black;
   margin: 0 0 1.5rem 0;
   font-size: 1.8rem;
   font-family: "Hubot Sans", sans-serif;
 }
 
+/* view recipe button */
 .view-recipe-button {
-  border: #82200c solid 3px;
-  border-radius: 8px;
-  padding: 0.75rem 2rem;
-  background: white;
   color: #82200c;
-  font-size: 1.1rem;
-  font-weight: 600;
-  font-family: "Hubot Sans", sans-serif;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border: none;
+  background-color: transparent;
+  font-size: 1.2rem;
 }
 
 .view-recipe-button:hover {
-  background-color: #f9ae2c;
-  color: white;
+  color: black;
 }
 
 .view-recipe-button:active {
   transform: scale(0.98);
-}
-
-.favorites-filter {
-  margin-bottom: 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.favorites-filter label {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  font-size: 1.1rem;
-  font-family: "Hubot Sans", sans-serif;
-  color: #82200c;
-}
-
-.favorites-filter input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: #82200c;
-}
-
-.favorites-filter span {
-  font-weight: 600;
 }
 
 /* Responsive */

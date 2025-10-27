@@ -1,180 +1,177 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router";
-
 import {
-  addIngredient,
-  addStep,
   getRecipe,
-  getIngredients,
-  getSteps,
   updateRecipe,
+  getIngredients,
+  addIngredient,
   updateIngredient,
+  deleteIngredient,
+  getSteps,
+  addStep,
   updateStep,
+  deleteStep,
 } from "../../services/recipeService.js";
+import {
+  VOLUME_UNITS,
+  WEIGHT_UNITS,
+  AVAILABLE_TAGS,
+  calculateAllUnits,
+} from "../../config/recipeConfig.js";
+import "../RecipeForm/RecipeForm.css";
 import "./RecipeEdit.css";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
+import { showToast } from "../../components/PopUps/PopUps.jsx";
 
-//units
-const VOLUME_UNITS = [
-  { value: "cup", label: "Cup" },
-  { value: "tbsp", label: "Tablespoon" },
-  { value: "tsp", label: "Teaspoon" },
-];
-
-const WEIGHT_UNITS = [
-  { value: "g", label: "Gram" },
-  { value: "oz", label: "Ounce" },
-];
-
-const EditRecipe = () => {
+const RecipeEdit = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { recipeId } = useParams();
 
-  // useState's
   const [recipeData, setRecipeData] = useState({
     title: "",
     notes: "",
     favorite: false,
+    image: null,
   });
 
-  const [ingredientsData, setIngredientsData] = useState([
-    {
-      name: "",
-      quantity: 0,
-      volume_unit: "",
-      weight_unit: "",
-    },
-  ]);
+  const [ingredientsData, setIngredientsData] = useState([]);
+  const [stepsData, setStepsData] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [calculatedUnits, setCalculatedUnits] = useState([]);
+  const [formErrors, setFormErrors] = useState({}); // ADD THIS LINE
+  const tagOptions = useMemo(
+    () => [...AVAILABLE_TAGS].sort((a, b) => a.label.localeCompare(b.label)),
+    []
+  );
 
-  const [stepsData, setStepsData] = useState([
-    {
-      step: 1,
-      description: "",
-    },
-  ]);
+  // Image state
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [removeExistingImage, setRemoveExistingImage] = useState(false);
+  const [hasExistingImage, setHasExistingImage] = useState(false);
+
+  // helpers for loading animation
+  const startLoading = () => {
+    setLoading(true);
+    const timer = setTimeout(() => setShowAnimation(true), 400);
+    return timer;
+  };
+
+  const stopLoading = (timer) => {
+    clearTimeout(timer);
+    setLoading(false);
+    setShowAnimation(false);
+  };
 
   useEffect(() => {
-    const getDetails = async () => {
-      const recipeValue = await getRecipe(recipeId);
-      const ingredientsValue = await getIngredients(recipeId);
-      const stepsValue = await getSteps(recipeId);
+    const fetchRecipeData = async () => {
+      const timer = startLoading();
+      try {
+        const recipe = await getRecipe(id);
+        const ingredients = await getIngredients(id);
+        const steps = await getSteps(id);
+        const sortedSteps = [...steps].sort((a, b) => a.step - b.step);
 
-      setRecipeData(recipeValue);
-      setIngredientsData(ingredientsValue);
-      setStepsData(stepsValue);
+        setRecipeData({
+          title: recipe.title || "",
+          notes: recipe.notes || "",
+          favorite: recipe.favorite || false,
+          image: recipe.image || null,
+        });
+
+        // Set existing image as preview if it exists (S3 returns full URL)
+        if (recipe.image) {
+          setHasExistingImage(true);
+          setImagePreview(recipe.image);
+        }
+
+        setIngredientsData(
+          ingredients.map((ing) => ({
+            id: ing.id,
+            name: ing.name,
+            quantity: ing.quantity,
+            volume_unit: ing.volume_unit || "",
+            weight_unit: ing.weight_unit || "",
+            isNew: false,
+          }))
+        );
+
+        setStepsData(
+          sortedSteps.map((step) => ({
+            id: step.id,
+            step: step.step,
+            description: step.description,
+            isNew: false,
+          }))
+        );
+
+        setTags(recipe.tags || []);
+
+        // Initialize calculated units for existing ingredients
+        const initialCalcUnits = ingredients.map((ing) => {
+          const unit = ing.volume_unit || ing.weight_unit;
+          const isVolume = !!ing.volume_unit;
+          return unit ? calculateAllUnits(ing.quantity, unit, isVolume) : {};
+        });
+        setCalculatedUnits(initialCalcUnits);
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching recipe:", error);
+        showToast("Failed to load recipe. You may not have permission to view it.", "error");
+        navigate("/");
+      } finally {
+        stopLoading(timer);
+      }
     };
 
-    getDetails();
-  }, []);
+    fetchRecipeData();
+  }, [id, navigate]);
 
-  // button handlers
-  const addExtraIngredient = (e) => {
-    setIngredientsData((prev) => {
-      return [
-        ...prev,
-        {
-          name: "",
-          quantity: 0,
-          volume_unit: "",
-          weight_unit: "",
-        },
-      ];
-    });
-  };
+  // Image handlers
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    
+    if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        showToast('Please upload a valid image file (JPG, JPEG, PNG, GIF, or WebP)', "error");
+        e.target.value = '';
+        return;
+      }
 
-  const removeIngredient = (indexToRmove) => {
-    setIngredientsData((prev) =>
-      prev
-        .filter((_, index) => index !== indexToRmove)
-        .map((ingredient) => ({
-          ...ingredient,
-        }))
-    );
-  };
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        showToast('Image file size must be less than 5MB', 'error');
+        e.target.value = '';
+        return;
+      }
 
-  const addExtraStep = (e) => {
-    setStepsData((prev) => {
-      return [
-        ...prev,
-        {
-          step: prev.length + 1,
-          description: "",
-        },
-      ];
-    });
-  };
-
-  const removeStep = (indexToRmove) => {
-    setStepsData((prev) =>
-      prev
-        .filter((_, index) => index !== indexToRmove)
-        .map((step, newIndex) => ({
-          ...step,
-          step: newIndex + 1,
-        }))
-    );
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      // Create new Recipe (recipeId)
-      await updateRecipe(recipeId, recipeData);
-
-      const updateIngredientsData = ingredientsData.filter((ingredient) => {
-        return ingredient.id;
-      });
-
-      const newIngredientsData = ingredientsData.filter((ingredient) => {
-        return !ingredient.id;
-      });
-
-      const updateStepsData = stepsData.filter((step) => {
-        return step.id;
-      });
-
-      const newStepsData = stepsData.filter((step) => {
-        return !step.id;
-      });
-
-      const ingredientsPromises = newIngredientsData.map((ingredient) =>
-        addIngredient(recipeId, {
-          ...ingredient,
-          recipe: recipeId,
-        })
-      );
-
-      await Promise.all(ingredientsPromises);
-
-      const stepsPromises = newStepsData.map((step) =>
-        addStep(recipeId, {
-          ...step,
-          recipe: recipeId,
-        })
-      );
-
-      await Promise.all(stepsPromises);
-
-      const ingredientsEditPromises = updateIngredientsData.map((ingredient) =>
-        updateIngredient(recipeId, ingredient.id, ingredient)
-      );
-
-      await Promise.all(ingredientsEditPromises);
-
-      const stepsEditPromises = updateStepsData.map((step) =>
-        updateStep(recipeId, step.id, step)
-      );
-
-      await Promise.all(stepsEditPromises);
-
-      navigate(`/recipes/${recipeId}`);
-    } catch (error) {
-      console.error(error);
+      setImageFile(file);
+      setRemoveExistingImage(false);
+      setHasExistingImage(false);
+      
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
     }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setRemoveExistingImage(true);
+    setHasExistingImage(false);
+    // Reset file input
+    const fileInput = document.getElementById("recipe-image");
+    if (fileInput) fileInput.value = "";
   };
 
   const handleRecipeChange = (event) => {
     const { name, value, type, checked } = event.target;
-
     setRecipeData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -185,12 +182,98 @@ const EditRecipe = () => {
     const { name, value } = event.target;
     setIngredientsData((prev) => {
       const updated = [...prev];
-      updated[index][name] = value;
-      if (name === "volume_unit" && value) {
-        updated[index].weight_unit = "";
-      }
-      if (name === "weight_unit" && value) {
-        updated[index].volume_unit = "";
+      const currentIngredient = updated[index];
+
+      if (name === "quantity") {
+        updated[index].quantity = value;
+
+        if (currentIngredient.volume_unit) {
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = calculateAllUnits(
+              value,
+              currentIngredient.volume_unit,
+              true
+            );
+            return updatedCalc;
+          });
+        } else if (currentIngredient.weight_unit) {
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = calculateAllUnits(
+              value,
+              currentIngredient.weight_unit,
+              false
+            );
+            return updatedCalc;
+          });
+        }
+      } else if (name === "volume_unit") {
+        const oldUnit = currentIngredient.volume_unit;
+        const newUnit = value;
+
+        if (!newUnit) {
+          updated[index].quantity = 0;
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = {};
+            return updatedCalc;
+          });
+        } else if (!oldUnit && newUnit) {
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = calculateAllUnits(
+              currentIngredient.quantity,
+              newUnit,
+              true
+            );
+            return updatedCalc;
+          });
+        } else if (oldUnit && newUnit && oldUnit !== newUnit) {
+          const calculatedValue = calculatedUnits[index]?.[newUnit];
+          if (calculatedValue !== undefined) {
+            updated[index].quantity = calculatedValue;
+          }
+        }
+
+        updated[index].volume_unit = newUnit;
+        if (newUnit) {
+          updated[index].weight_unit = "";
+        }
+      } else if (name === "weight_unit") {
+        const oldUnit = currentIngredient.weight_unit;
+        const newUnit = value;
+
+        if (!newUnit) {
+          updated[index].quantity = 0;
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = {};
+            return updatedCalc;
+          });
+        } else if (!oldUnit && newUnit) {
+          setCalculatedUnits((prevCalc) => {
+            const updatedCalc = [...prevCalc];
+            updatedCalc[index] = calculateAllUnits(
+              currentIngredient.quantity,
+              newUnit,
+              false
+            );
+            return updatedCalc;
+          });
+        } else if (oldUnit && newUnit && oldUnit !== newUnit) {
+          const calculatedValue = calculatedUnits[index]?.[newUnit];
+          if (calculatedValue !== undefined) {
+            updated[index].quantity = calculatedValue;
+          }
+        }
+
+        updated[index].weight_unit = newUnit;
+        if (newUnit) {
+          updated[index].volume_unit = "";
+        }
+      } else {
+        updated[index][name] = value;
       }
 
       return updated;
@@ -205,17 +288,242 @@ const EditRecipe = () => {
       return updated;
     });
   };
-  const handleCancel = () => {
-    navigate(`/recipes/${recipeId}`);
+
+  const handleTagChange = (tagValue) => {
+    setTags((prev) => {
+      if (prev.includes(tagValue)) {
+        return prev.filter((tag) => tag !== tagValue);
+      } else {
+        return [...prev, tagValue];
+      }
+    });
   };
+
+  const addExtraIngredient = () => {
+    setIngredientsData((prev) => [
+      ...prev,
+      {
+        name: "",
+        quantity: 0,
+        volume_unit: "",
+        weight_unit: "",
+        isNew: true,
+      },
+    ]);
+    setCalculatedUnits((prev) => [...prev, {}]);
+  };
+
+  const removeIngredient = async (index) => {
+    const ingredient = ingredientsData[index];
+
+    if (!ingredient.isNew && ingredient.id) {
+      try {
+        await deleteIngredient(id, ingredient.id);
+      } catch (error) {
+        console.error("Error deleting ingredient:", error);
+        showToast("Failed to delete ingredient", "error");
+        return;
+      }
+    }
+
+    setIngredientsData((prev) => prev.filter((_, i) => i !== index));
+    setCalculatedUnits((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const addExtraStep = () => {
+    setStepsData((prev) => [
+      ...prev,
+      {
+        step: prev.length + 1,
+        description: "",
+        isNew: true,
+      },
+    ]);
+  };
+
+  const removeStep = async (index) => {
+    const step = stepsData[index];
+
+    // If it's an existing step (not new), delete it from the backend
+    if (!step.isNew && step.id) {
+      try {
+        await deleteStep(id, step.id);
+      } catch (error) {
+        console.error("Error deleting step:", error);
+        showToast("Failed to delete step", "error");
+        return;
+      }
+    }
+
+    // Remove from local state and renumber remaining steps
+    setStepsData((prev) =>
+      prev
+        .filter((_, i) => i !== index)
+        .map((step, newIndex) => ({
+          ...step,
+          step: newIndex + 1,
+        }))
+    );
+  };
+
+  const moveStep = (currentIndex, direction) => {
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+
+    if (newIndex < 0 || newIndex >= stepsData.length) return;
+
+    setStepsData((prev) => {
+      const newSteps = [...prev];
+      const temp = newSteps[currentIndex];
+      newSteps[currentIndex] = newSteps[newIndex];
+      newSteps[newIndex] = temp;
+
+      // Update step numbers
+      newSteps[currentIndex] = { ...newSteps[currentIndex], step: currentIndex + 1 };
+      newSteps[newIndex] = { ...newSteps[newIndex], step: newIndex + 1 };
+
+      return newSteps;
+    });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Client-side validation before submitting
+    const errors = [];
+
+    // Validate title
+    if (!recipeData.title || recipeData.title.trim() === "") {
+      errors.push("Title is required");
+    }
+
+    // Validate ingredients
+    const validIngredients = ingredientsData.filter(ing => ing.name && ing.name.trim() !== "");
+    if (validIngredients.length === 0) {
+      errors.push("At least one ingredient with a name is required");
+    }
+
+    // Validate steps
+    const validSteps = stepsData.filter(step => step.description && step.description.trim() !== "");
+    if (validSteps.length === 0) {
+      errors.push("At least one step with a description is required");
+    }
+
+    // If there are validation errors, show them and stop
+    if (errors.length > 0) {
+      showToast("Please fix the following errors:\n\n" + errors.join("\n"), "error");
+      return;
+    }
+
+    try {
+      // Create FormData for image upload
+      const formData = new FormData();
+      formData.append("title", recipeData.title);
+      formData.append("notes", recipeData.notes);
+      formData.append("favorite", recipeData.favorite);
+      formData.append("tags", JSON.stringify(tags));
+
+      // Handle image
+      if (imageFile) {
+        // New image uploaded
+        formData.append("image", imageFile);
+      } else if (removeExistingImage) {
+        // User wants to remove the existing image
+        formData.append("image", "");
+      }
+      // If neither, keep existing image (don't append anything)
+
+      // Update recipe
+      await updateRecipe(id, formData);
+
+      // Update or create ingredients
+      for (const ingredient of ingredientsData) {
+        const ingredientPayload = {
+          name: ingredient.name,
+          quantity: ingredient.quantity,
+          volume_unit: ingredient.volume_unit || "",
+          weight_unit: ingredient.weight_unit || "",
+          recipe: id,
+        };
+
+        if (ingredient.isNew) {
+          await addIngredient(id, ingredientPayload);
+        } else {
+          await updateIngredient(id, ingredient.id, ingredientPayload);
+        }
+      }
+
+      // Update or create steps
+      for (const step of stepsData) {
+        const stepPayload = {
+          step: step.step,
+          description: step.description,
+          recipe: id,
+        };
+
+        if (step.isNew) {
+          await addStep(id, stepPayload);
+        } else {
+          await updateStep(id, step.id, stepPayload);
+        }
+      }
+
+      showToast("Recipe updated successfully!", "error");
+      navigate(`/recipes/${id}`);
+    } catch (error) {
+      console.error("Error updating recipe:", error);
+      
+      // Handle different types of errors
+      if (error.status === 400) {
+        const details = error.details;
+        let errorMessage = "Please check your recipe data:\n";
+        
+        if (details && typeof details === 'object') {
+          Object.entries(details).forEach(([field, messages]) => {
+            if (Array.isArray(messages)) {
+              errorMessage += `\n${field}: ${messages.join(', ')}`;
+            }
+          });
+        } else {
+          errorMessage = "Invalid recipe data. Please check all fields.";
+        }
+        
+        showToast(errorMessage, "error");
+      } else if (error.status === 401) {
+        showToast("Your session has expired. Please log in again.", "error");
+        navigate("/sign-in");
+      } else {
+        showToast(`Failed to update recipe: ${error.message}`, "error");
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    navigate(`/recipes/${id}`);
+  };
+
+  if (loading) {
+    return <LoadingAnimation />;
+  }
 
   return (
     <>
-      <h1 className="recipeform-title">Log New Recipe</h1>
+      <div className="recipe-form-page">
+      <h1 className="recipeform-title">Edit Recipe</h1>
 
-      <form onSubmit={handleSubmit} className="recipe-form">
+
+      <form onSubmit={handleSubmit} className="edit-recipe-form">
+        {formErrors.length > 0 && (
+          <div className="error-messages" role="alert">
+            <ul>
+              {formErrors.map((message, index) => (
+                <li key={index}>{message}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="form-element">
           <div className="recipe-form">
+            <div className="recipe-field-group recipe-field-group--title">
             <label htmlFor="recipe-title">Title: </label>
             <input
               type="text"
@@ -223,148 +531,245 @@ const EditRecipe = () => {
               value={recipeData.title}
               onChange={handleRecipeChange}
               name="title"
+              required
+              className="recipe-title-input"
             />
+            </div>
+            <div className="recipe-field-group recipe-field-group--notes">
             <label htmlFor="recipe-notes">Notes:</label>
-            <input
+            <textarea
               type="text"
               id="recipe-notes"
               value={recipeData.notes}
               onChange={handleRecipeChange}
               name="notes"
+              className="recipe-notes-input"
             />
-            <label htmlFor="recipe-favorite">Favorite</label>
+            </div>
+            <div className="favorite-container">
+            <label htmlFor="recipe-favorite" style={{fontWeight: 'bold'}}>Favorite</label>
             <input
               id="recipe-favorite"
               type="checkbox"
-              name="favorite"
               checked={recipeData.favorite}
               onChange={handleRecipeChange}
+              className="edit-recipe-favorite-input"
+              name="favorite"
             />
+            </div>
+
+            {/* Image Upload Section */}
+            <div className="image-upload-section">
+              <label htmlFor="recipe-image">Recipe Image:</label>
+              <p className="image-upload-hint">Supported formats: JPG, JPEG, PNG, GIF, WebP (Max 5MB)</p>
+              <input
+                type="file"
+                id="recipe-image"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                onChange={handleImageChange}
+              />
+
+              {imagePreview ? (
+                <div className="image-preview-container">
+                  <img src={imagePreview} alt="Recipe preview" className="image-preview" />
+                  <button type="button" onClick={handleRemoveImage} className="remove-image-btn">
+                    Remove Image
+                  </button>
+                </div>
+              ) : (
+                hasExistingImage && !removeExistingImage && (
+                  <div className="image-preview-container">
+                    <p>Current image (no changes):</p>
+                    <img
+                      src={recipeData.image}
+                      alt="Current recipe"
+                      className="image-preview"
+                    />
+                    <button type="button" onClick={handleRemoveImage} className="remove-image-btn">
+                      Remove Image
+                    </button>
+                  </div>
+                )
+              )}
+            </div>
           </div>
 
-          <div className="ingredient-container">
+          <div className="tags-container">
+            <h3>Tags</h3>
+            <div className="tags-grid">
+              {tagOptions.map((tag) => (
+                <label key={tag.value} className="tag-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={tags.includes(tag.value)}
+                    onChange={() => handleTagChange(tag.value)}
+                  />
+                  {tag.label}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="edit-ingredient-container">
             {ingredientsData.map((ingredient, index) => (
-              <div className="ingredient-form" key={index}>
-                <label htmlFor={`ingredient-name-${index}`}>Ingredient: </label>
-                <input
-                  type="text"
-                  id={`ingredient-name-${index}`}
-                  value={ingredient.name}
-                  onChange={(e) => {
-                    handleIngredientChange(index, e);
-                  }}
-                  name="name"
-                  autoComplete="false"
-                />
-                <label htmlFor={`ingredient-quantity-${index}`}>Quantity</label>
-                <input
-                  type="number"
-                  id={`ingredient-quantity-${index}`}
-                  value={ingredient.quantity}
-                  onChange={(e) => handleIngredientChange(index, e)}
-                  name="quantity"
-                />
+              <div className="ingredient-item" key={index}>
+                <div className="ingredient-form">
+                  <div className="ingredient-row">
+                    <div className="ingredient-field-group">
+                      <label htmlFor={`ingredient-name-${index}`} style={{fontWeight: 'bold'}}>Ingredient:</label>
+                      <input
+                        type="text"
+                        id={`ingredient-name-${index}`}
+                        value={ingredient.name}
+                        onChange={(e) => handleIngredientChange(index, e)}
+                        name="name"
+                        autoComplete="off"
+                        className="ingredient-name-input"
+                      />
+                    </div>
 
-                <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
-                <select
-                  id={`ingredient-volume-${index}`}
-                  name="volume_unit"
-                  value={ingredient.volume_unit || ""}
-                  onChange={(e) => {
-                    handleIngredientChange(index, e);
-                  }}
-                  disabled={ingredient.weight_unit !== ""}
-                >
-                  <option value="">---</option>
-                  {VOLUME_UNITS.map((unit) => (
-                    <option key={unit.value} value={unit.value}>
-                      {unit.label}
-                    </option>
-                  ))}
-                </select>
+                    <div className="ingredient-field-group">
+                      <label htmlFor={`ingredient-quantity-${index}`}>Quantity:</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        id={`ingredient-quantity-${index}`}
+                        value={ingredient.quantity}
+                        onChange={(e) => handleIngredientChange(index, e)}
+                        name="quantity"
+                        className="quantity-input"
+                      />
+                    </div>
 
-                <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
-                <select
-                  id={`ingredient-weight-${index}`}
-                  name="weight_unit"
-                  value={ingredient.weight_unit || ""}
-                  onChange={(e) => {
-                    handleIngredientChange(index, e);
-                  }}
-                  disabled={ingredient.volume_unit !== ""}
-                >
-                  <option value="">---</option>
-                  {WEIGHT_UNITS.map((unit) => (
-                    <option key={unit.value} value={unit.value}>
-                      {unit.label}
-                    </option>
-                  ))}
-                </select>
-                {ingredientsData.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      removeIngredient(index);
-                    }}
-                  >
-                    Remove Ingredient
-                  </button>
-                )}
+                    <div className="ingredient-field-group">
+                      <label htmlFor={`ingredient-volume-${index}`}>Volume:</label>
+                      <select
+                        id={`ingredient-volume-${index}`}
+                        name="volume_unit"
+                        value={ingredient.volume_unit || ""}
+                        onChange={(e) => handleIngredientChange(index, e)}
+                        disabled={ingredient.weight_unit !== ""}
+                        className="volume-input"
+                      >
+                        <option value="">---</option>
+                        {VOLUME_UNITS.map((unit) => (
+                          <option key={unit.value} value={unit.value}>
+                            {unit.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="ingredient-field-group">
+                      <label htmlFor={`ingredient-weight-${index}`}>Weight:</label>
+                      <select
+                        id={`ingredient-weight-${index}`}
+                        name="weight_unit"
+                        value={ingredient.weight_unit || ""}
+                        onChange={(e) => handleIngredientChange(index, e)}
+                        disabled={ingredient.volume_unit !== ""}
+                        className="weight-input"
+                      >
+                        <option value="">---</option>
+                        {WEIGHT_UNITS.map((unit) => (
+                          <option key={unit.value} value={unit.value}>
+                            {unit.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  {ingredientsData.length > 1 && (
+                    <div className="ingredient-remove-container">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          removeIngredient(index);
+                        }}
+                        className="form-btn remove-ingredient-btn"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
-            <button type="button" onClick={addExtraIngredient}>
+            <button type="button" onClick={addExtraIngredient} className="form-btn">
               Add Ingredient
             </button>
           </div>
-          <div className="steps-component">
+          <div className="edit-steps-component">
             {stepsData.map((step, index) => (
               <div className="step-form" key={index}>
-                <label htmlFor={`step-number-${index}`}>step</label>
-                <input
-                  type="number"
-                  id={`step-number-${index}`}
-                  value={step.step}
-                  name="step"
-                  readOnly
-                  onChange={(e) => {
-                    handleStepChange(index, e);
-                  }}
-                />
-                <label htmlFor={`step-description-${index}`}>Description</label>
-                <input
-                  type="text"
-                  id={`step-description-${index}`}
-                  value={step.description}
-                  name="description"
-                  onChange={(e) => {
-                    handleStepChange(index, e);
-                  }}
-                />
-                {stepsData.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      removeStep(index);
+                <div className="step-info-left">
+                  <div className="step-controls">
+                    <button
+                      type="button"
+                      onClick={() => moveStep(index, 'up')}
+                      disabled={index === 0}
+                      className="step-arrow-btn"
+                      aria-label="Move step up"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveStep(index, 'down')}
+                      disabled={index === stepsData.length - 1}
+                      className="step-arrow-btn"
+                      aria-label="Move step down"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                  <div className="step-labels">
+                    <span className="step-number-label">Step {step.step}:</span>
+                  </div>
+                </div>
+                <div className="step-content-right">
+                  <textarea
+                    type="text"
+                    id={`step-description-${index}`}
+                    value={step.description}
+                    name="description"
+                    className="step-description-input"
+                    onChange={(e) => {
+                      handleStepChange(index, e);
                     }}
-                  >
-                    Remove step
-                  </button>
-                )}
+                  />
+                  {stepsData.length > 1 && (
+                    <div className="step-remove-container">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          removeStep(index);
+                        }}
+                        className="form-btn step-remove-btn"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
-            <button type="button" onClick={addExtraStep}>
-              Add step
+            <button type="button" onClick={addExtraStep} className="form-btn">
+              Add Step
             </button>
           </div>
-
-          <button type="submit">Update Recipe</button>
-          <button type="button" onClick={handleCancel}>
+            <div className="recipe-form-btns">
+          <button type="submit" className="form-btn">Update Recipe</button>
+          <button type="button" onClick={handleCancel} className="form-btn">
             Cancel
           </button>
+          </div>
+
         </div>
       </form>
+      </div>
     </>
   );
 };
 
-export default EditRecipe;
+export default RecipeEdit;

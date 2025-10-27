@@ -1,0 +1,28 @@
+// Code borrowed & modified from https://codepen.io/Cr8tiveJen/pen/povjYOm
+
+import "./LoadingAnimation.css";
+
+const LoadingAnimation = () => {
+  return (
+    <div className="loading-wrapper">
+      <div id="cooking">
+        <div className="bubble"></div>
+        <div className="bubble"></div>
+        <div className="bubble"></div>
+        <div className="bubble"></div>
+        <div className="bubble"></div>
+        <div id="area">
+          <div id="sides">
+            <div id="pan"></div>
+            <div id="handle"></div>
+          </div>
+          <div id="pancake">
+            <div id="pastry"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default LoadingAnimation;
