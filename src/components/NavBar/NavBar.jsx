@@ -149,6 +149,13 @@ const NavBar = () => {
           {user ? (
             <>
               <Link
+                to="/"
+                className="nav-link"
+                onClick={closeWithAnimation}
+              >
+                Home
+              </Link>
+              <Link
                 to="/recipes/add"
                 className="nav-link"
                 onClick={closeWithAnimation}
@@ -160,7 +167,7 @@ const NavBar = () => {
                 className="nav-link"
                 onClick={closeWithAnimation}
               >
-                Generate A Recipe
+                Generate A Recipe!
               </Link>
               <Link
                 to="/grocery-list"
@@ -174,7 +181,7 @@ const NavBar = () => {
                 className="nav-link"
                 onClick={closeWithAnimation}
               >
-                Recipe Wheel!!!
+                Recipe Wheel
               </Link>
               <Link
                 to="/profile"

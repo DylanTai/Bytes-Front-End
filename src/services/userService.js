@@ -147,3 +147,60 @@ export const deleteAccount = async (password) => {
     throw err;
   }
 };
+
+// Request password reset email
+export const requestPasswordReset = async (email) => {
+  try {
+    const res = await fetch(`${BASE_URL}/password-reset/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const error = new Error("Failed to send password reset email");
+      error.response = { data };
+      throw error;
+    }
+
+    return data;
+  } catch (err) {
+    console.error("Error requesting password reset:", err);
+    throw err;
+  }
+};
+
+// Confirm password reset with token
+export const confirmPasswordReset = async (uid, token, newPassword, newPassword2) => {
+  try {
+    const res = await fetch(`${BASE_URL}/password-reset-confirm/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        uid,
+        token,
+        new_password: newPassword,
+        new_password2: newPassword2,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const error = new Error("Failed to reset password");
+      error.response = { data };
+      throw error;
+    }
+
+    return data;
+  } catch (err) {
+    console.error("Error confirming password reset:", err);
+    throw err;
+  }
+};

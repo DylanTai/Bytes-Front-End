@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { signIn } from "../../services/authService.js";
 import { UserContext } from "../../contexts/UserContext.jsx";
 import "./SignIn.css";
@@ -70,6 +70,12 @@ const SignInForm = () => {
             required
             className="password-input"
           />
+        </div>
+
+        <div className="forgot-password-link-container">
+          <Link to="/forgot-password" className="forgot-password-link">
+            Forgot Password?
+          </Link>
         </div>
 
         <div className="sign-in-buttons-container">
