@@ -246,7 +246,9 @@ const Profile = () => {
               className={passwordErrors.current_password ? "input-error" : ""}
             />
             {passwordErrors.current_password && (
-              <p className="field-error">{passwordErrors.current_password.join(", ")}</p>
+              <p className="field-error">
+                {passwordErrors.current_password.join(", ")}
+              </p>
             )}
           </div>
           <div className="form-group">
@@ -260,7 +262,9 @@ const Profile = () => {
               className={passwordErrors.new_password ? "input-error" : ""}
             />
             {passwordErrors.new_password && (
-              <p className="field-error">{passwordErrors.new_password.join(", ")}</p>
+              <p className="field-error">
+                {passwordErrors.new_password.join(", ")}
+              </p>
             )}
           </div>
           <div className="form-group">
@@ -274,7 +278,9 @@ const Profile = () => {
               className={passwordErrors.confirm_password ? "input-error" : ""}
             />
             {passwordErrors.confirm_password && (
-              <p className="field-error">{passwordErrors.confirm_password.join(", ")}</p>
+              <p className="field-error">
+                {passwordErrors.confirm_password.join(", ")}
+              </p>
             )}
           </div>
           <button type="submit" className="submit-button">
@@ -298,100 +304,44 @@ const Profile = () => {
           </button>
         ) : (
           <div className="delete-confirm">
-            <p><strong>Are you sure? Enter your password to confirm:</strong></p>
+            <p>
+              <strong>Are you sure? Enter your password to confirm:</strong>
+            </p>
             <div className="form-group">
-              <label htmlFor="new_password">New Password:</label>
               <input
                 type="password"
-                id="new_password"
-                name="new_password"
-                value={passwordForm.new_password}
-                onChange={handlePasswordChange}
-                className={passwordErrors.new_password ? "input-error" : ""}
+                placeholder="Enter your password"
+                value={deletePassword}
+                onChange={(e) => {
+                  setDeletePassword(e.target.value);
+                  setDeleteErrors({});
+                }}
+                className={deleteErrors.password ? "input-error" : ""}
               />
-              {passwordErrors.new_password && (
+              {deleteErrors.password && (
                 <p className="field-error">
-                  {passwordErrors.new_password.join(", ")}
+                  {deleteErrors.password.join(", ")}
                 </p>
               )}
             </div>
-            <div className="form-group">
-              <label htmlFor="confirm_password">Confirm New Password:</label>
-              <input
-                type="password"
-                id="confirm_password"
-                name="confirm_password"
-                value={passwordForm.confirm_password}
-                onChange={handlePasswordChange}
-                className={passwordErrors.confirm_password ? "input-error" : ""}
-              />
-              {passwordErrors.confirm_password && (
-                <p className="field-error">
-                  {passwordErrors.confirm_password.join(", ")}
-                </p>
-              )}
+            <div className="delete-buttons">
+              <button onClick={handleDeleteAccount} className="danger-button">
+                Confirm Delete
+              </button>
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm(false);
+                  setDeletePassword("");
+                  setDeleteErrors({});
+                }}
+                className="cancel-button"
+              >
+                Cancel
+              </button>
             </div>
-            <button type="submit" className="submit-button">
-              Update Password
-            </button>
-          </form>
-        </section>
-
-        {/* Delete Account Section */}
-        <section className="profile-section danger-section">
-          <h2>Delete Account</h2>
-          <p className="warning-text">
-            This action cannot be undone. All your recipes and data will be
-            permanently deleted.
-          </p>
-          {!showDeleteConfirm ? (
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="danger-button"
-            >
-              Delete My Account
-            </button>
-          ) : (
-            <div className="delete-confirm">
-              <p>
-                <strong>Are you sure? Enter your password to confirm:</strong>
-              </p>
-              <div className="form-group">
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={deletePassword}
-                  onChange={(e) => {
-                    setDeletePassword(e.target.value);
-                    setDeleteErrors({});
-                  }}
-                  className={deleteErrors.password ? "input-error" : ""}
-                />
-                {deleteErrors.password && (
-                  <p className="field-error">
-                    {deleteErrors.password.join(", ")}
-                  </p>
-                )}
-              </div>
-              <div className="delete-buttons">
-                <button onClick={handleDeleteAccount} className="danger-button">
-                  Confirm Delete
-                </button>
-                <button
-                  onClick={() => {
-                    setShowDeleteConfirm(false);
-                    setDeletePassword("");
-                    setDeleteErrors({});
-                  }}
-                  className="cancel-button"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-        </section>
-      </div>
+          </div>
+        )}
+      </section>
     </div>
   );
 };
