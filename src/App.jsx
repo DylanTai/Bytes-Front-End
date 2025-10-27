@@ -9,6 +9,8 @@ import NavBar from "./components/NavBar/NavBar.jsx";
 import Home from "./pages/Home/Home.jsx";
 import SignIn from "./pages/SignIn/SignIn.jsx";
 import SignUp from "./pages/SignUp/SignUp.jsx";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword/ResetPassword.jsx";
 import RecipeList from "./pages/RecipeList/RecipeList.jsx";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail.jsx";
 import RecipeEdit from "./pages/RecipeEdit/RecipeEdit.jsx";
@@ -57,6 +59,24 @@ const router = createBrowserRouter([
       <>
         <NavBar />
         <SignUp />
+      </>
+    ),
+  },
+  {
+    path: "/forgot-password",
+    element: (
+      <>
+        <NavBar />
+        <ForgotPassword />
+      </>
+    ),
+  },
+  {
+    path: "/reset-password/:uid/:token",
+    element: (
+      <>
+        <NavBar />
+        <ResetPassword />
       </>
     ),
   },
