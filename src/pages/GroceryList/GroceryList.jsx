@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import * as groceryListService from "../../services/groceryListService.js";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation.jsx";
-import { showToast } from "../../components/PopUps/PopUps.jsx";
+import {
+  showToast,
+  showConfirmToast,
+} from "../../components/PopUps/PopUps.jsx";
 import "./GroceryList.css";
 
 const GroceryList = () => {
@@ -59,21 +62,34 @@ const GroceryList = () => {
 
   const handleClearChecked = async () => {
     const checkedCount = items.filter((item) => item.checked).length;
-    
+
     if (checkedCount === 0) {
       showToast("No items are checked!", "error");
       return;
     }
 
-    if (window.confirm(`Remove ${checkedCount} checked item(s) from your grocery list?`)) {
-      try {
-        await groceryListService.clearCheckedItems();
-        // Remove checked items from local state
-        setItems((prevItems) => prevItems.filter((item) => !item.checked));
-      } catch (err) {
-        console.error("Failed to clear checked items:", err);
+    showConfirmToast(
+      `Remove ${checkedCount} checked item(s) from your grocery list?`,
+      async () => {
+        try {
+          await groceryListService.clearCheckedItems();
+          setItems((prevItems) => prevItems.filter((item) => !item.checked));
+          showToast(`${checkedCount} item(s) removed!`, "success");
+        } catch (error) {
+          console.error("Failed to clear checked items:", err);
+          showToast("Failed to clear checked items.", "error");
+        }
       }
-    }
+    );
+    // if (window.confirm(`Remove ${checkedCount} checked item(s) from your grocery list?`)) {
+    //   try {
+    //     await groceryListService.clearCheckedItems();
+    //     // Remove checked items from local state
+    //     setItems((prevItems) => prevItems.filter((item) => !item.checked));
+    //   } catch (err) {
+    //     console.error("Failed to clear checked items:", err);
+    //   }
+    // }
   };
 
   const formatQuantity = (item) => {
@@ -88,7 +104,7 @@ const GroceryList = () => {
   return (
     <div className="grocery-list-page">
       <h1 className="grocery-list-title">My Grocery List</h1>
-      
+
       {items.length === 0 ? (
         <p className="empty-message">
           Your grocery list is empty. Add ingredients from your recipes!
@@ -96,30 +112,35 @@ const GroceryList = () => {
       ) : (
         <>
           <div className="grocery-list-container">
-          <ul className="grocery-list">
-            {items.map((item) => (
-              <li key={item.id} className={`grocery-item ${item.checked ? 'checked' : ''}`}>
-                <input
-                  type="checkbox"
-                  checked={item.checked}
-                  onChange={() => handleCheckboxChange(item.id, item.checked)}
-                  className="grocery-checkbox"
-                />
-                <span className="grocery-item-text">
-                  {formatQuantity(item)} - {item.name} 
-                </span>
-              </li>
-            ))}
-          </ul>
-          
-          <div className="grocery-list-actions">
-            <button onClick={handleCheckAll} className="check-all-button">
-              {items.every((item) => item.checked) ? "Uncheck All" : "Check All"}
-            </button>
-            <button onClick={handleClearChecked} className="update-button">
-              Update (Remove Checked Items)
-            </button>
-          </div>
+            <ul className="grocery-list">
+              {items.map((item) => (
+                <li
+                  key={item.id}
+                  className={`grocery-item ${item.checked ? "checked" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={item.checked}
+                    onChange={() => handleCheckboxChange(item.id, item.checked)}
+                    className="grocery-checkbox"
+                  />
+                  <span className="grocery-item-text">
+                    {formatQuantity(item)} - {item.name}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="grocery-list-actions">
+              <button onClick={handleCheckAll} className="check-all-button">
+                {items.every((item) => item.checked)
+                  ? "Uncheck All"
+                  : "Check All"}
+              </button>
+              <button onClick={handleClearChecked} className="update-button">
+                Update (Remove Checked Items)
+              </button>
+            </div>
           </div>
         </>
       )}

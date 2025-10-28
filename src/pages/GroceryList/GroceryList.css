@@ -3,7 +3,7 @@
   border-radius: 80px;
   min-height: calc(100vh - 75px);
   padding-bottom: 40px;
-  margin-top: 10px;
+  margin-top: -16px;
   margin-left: 10px;
   margin-right: 10px;
 }
@@ -20,7 +20,7 @@
   margin-bottom: 45px;
   margin-top: 50px;
   margin-bottom: 20px;
-  font-family: "Handjet", sans-serif;
+  font-family: "Hubot Sans", sans-serif;
   font-size: 55px;
   padding-top: 60px;
 }

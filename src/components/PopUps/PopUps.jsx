@@ -18,7 +18,7 @@ export const showToast = (message, type = "success") => {
       </div>
     ),
     {
-      duration: type === "error" ? Infinity : Infinity,
+      duration: type === "error" ? Infinity : 3000,
     }
   );
 };
