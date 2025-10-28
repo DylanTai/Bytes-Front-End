@@ -1,14 +1,23 @@
+.hubot-sans {
+  font-family: "Hubot Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
 * {
   margin: 0;
   padding: 0;
   color: black;
-  font-family: "Hubot Sans", sans-serif;
 }
 
 html,
 body {
   overflow-x: hidden;
   max-width: 100vw;
+  font-family: "Hubot Sans", sans-serif;
 }
 
 :root {
@@ -20,10 +29,8 @@ main {
   align-items: center;
   justify-content: center;
   height: 90vh;
-  font-family: "Hubot Sans", sans-serif;
 }
 
 body {
   margin-top: 20px;
-  font-family: "Hubot Sans", sans-serif;
 }

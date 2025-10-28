@@ -11,6 +11,7 @@ export const signUp = async (formData) => {
 
     if (!res.ok) {
       const errorData = await res.json();
+      console.error("Backend validation errors:", JSON.stringify(errorData, null, 2)); // Log the actual error
       // Create error object that includes the response data
       const error = new Error("Sign up failed");
       error.response = { data: errorData };

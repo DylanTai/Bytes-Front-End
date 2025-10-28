@@ -3,7 +3,7 @@
   border-radius: 80px;
   min-height: calc(100vh - 75px);
   padding-bottom: 40px;
-  margin-top: 10px;
+  margin-top: -16px;
   margin-left: 10px;
   margin-right: 10px;
 }
@@ -15,7 +15,7 @@
   margin-bottom: 45px;
   margin-top: 50px;
   margin-bottom: 20px;
-  font-family: "Handjet", sans-serif;
+  font-family: "Hubot Sans", sans-serif;
   font-size: 55px;
   padding-top: 60px;
 }
@@ -54,7 +54,7 @@
 .profile-section {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 70%;
   background: #fffdfc;
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
@@ -62,6 +62,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-align: center;
   align-items: center;
+  margin: 40px auto 0 auto;
 }
 
 .profile-section h2 {
