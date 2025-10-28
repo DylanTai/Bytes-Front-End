@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { UserContext } from "../../contexts/UserContext";
 import "./NavBar.css";
 import { Squash as Hamburger } from "hamburger-react";
+import { showConfirmToast, showToast } from "../PopUps/PopUps";
 import logo from "../../../assets/Bytes AI.png";
 
 const NavBar = () => {
@@ -14,13 +15,22 @@ const NavBar = () => {
   const navigate = useNavigate();
 
   const handleSignOut = () => {
-    if (window.confirm("Are you sure you want to sign out?")) {
+  showConfirmToast(
+    "Are you sure you want to sign out?",
+    () => {
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
       localStorage.removeItem("token"); // legacy key cleanup
       setUser(null);
+
+      showToast("Signed out successfully!", "success");
+    },
+    () => {
+      // do nothing on cancel
     }
-  };
+  );
+};
+
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 0);
