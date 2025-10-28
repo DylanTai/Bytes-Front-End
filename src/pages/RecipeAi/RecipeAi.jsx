@@ -15,6 +15,7 @@ import {
 const RecipeAI = () => {
   const navigate = useNavigate();
   const [showLoading, setShowLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [prompt, setPrompt] = useState("");
   const [tags, setTags] = useState([]);
@@ -87,6 +88,14 @@ const RecipeAI = () => {
 
   const handleSubmitSave = async (event) => {
     event.preventDefault();
+
+    // Prevent double submission
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
       // Create FormData for image upload
       const formData = new FormData();
@@ -147,6 +156,9 @@ const RecipeAI = () => {
         // Other errors
         showToast(`An error occurred: ${error.message}`, "error");
       }
+
+      // Re-enable the submit button on error
+      setIsSubmitting(false);
     }
   };
 
@@ -281,8 +293,9 @@ const RecipeAI = () => {
             className="generate-buttons"
             id="save-button"
             onClick={handleSubmitSave}
+            disabled={isSubmitting}
           >
-            Save recipe!
+            {isSubmitting ? "Saving Recipe..." : "Save Recipe!"}
           </button>
         </>
       )}
