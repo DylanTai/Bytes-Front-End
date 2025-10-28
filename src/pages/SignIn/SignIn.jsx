@@ -72,6 +72,10 @@ const SignInForm = () => {
           />
         </div>
 
+        <div className="forgot-password-link">
+          <Link to="/forgot-password">Forgot Password?</Link>
+        </div>
+
         <div className="sign-in-buttons-container">
           <button type="submit" className="sign-in-btns">Sign In</button>
           <button type="button" onClick={() => navigate("/")} className="sign-in-btns">
