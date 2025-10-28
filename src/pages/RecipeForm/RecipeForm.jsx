@@ -19,6 +19,7 @@ import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation
 const RecipeForm = ({ recipes, setRecipes }) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
     // useState's
   const [recipeData, setRecipeData] = useState({
@@ -180,6 +181,11 @@ const RecipeForm = ({ recipes, setRecipes }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // Prevent double submission
+    if (isSubmitting) {
+      return;
+    }
+
     // Client-side validation before submitting
     const errors = [];
 
@@ -205,6 +211,8 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       showToast("Please fix the following errors:\n\n" + errors.join("\n"), "error");
       return;
     }
+
+    setIsSubmitting(true);
 
     try {
       // Create FormData for image upload
@@ -242,13 +250,13 @@ const RecipeForm = ({ recipes, setRecipes }) => {
       navigate(`/recipes/${newRecipe.id}`);
     } catch (error) {
       console.error("Error in handleSubmit:", error);
-      
+
       // Handle different types of errors
       if (error.status === 400) {
         // Validation error - don't redirect to sign-in
         const details = error.details;
         let errorMessage = "Please check your recipe data:\n";
-        
+
         if (details && typeof details === 'object') {
           // Format validation errors
           Object.entries(details).forEach(([field, messages]) => {
@@ -259,7 +267,7 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         } else {
           errorMessage = "Invalid recipe data. Please check all fields.";
         }
-        
+
         showToast(errorMessage);
       } else if (error.status === 401) {
         // Authentication error - redirect to sign-in
@@ -269,6 +277,9 @@ const RecipeForm = ({ recipes, setRecipes }) => {
         // Other errors
         showToast(`An error occurred: ${error.message}`, "error");
       }
+
+      // Re-enable the submit button on error
+      setIsSubmitting(false);
     }
   };
 
@@ -651,10 +662,10 @@ const RecipeForm = ({ recipes, setRecipes }) => {
               </button>
             </div>
             <div className="recipe-form-btns">
-              <button type="submit" className="form-btn">
-                Add Recipe
+              <button type="submit" className="form-btn" disabled={isSubmitting}>
+                {isSubmitting ? "Adding Recipe..." : "Add Recipe"}
               </button>
-              <button type="button" onClick={handleCancel} className="form-btn">
+              <button type="button" onClick={handleCancel} className="form-btn" disabled={isSubmitting}>
                 Cancel
               </button>
             </div>
