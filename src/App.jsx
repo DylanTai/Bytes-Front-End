@@ -25,7 +25,6 @@ import Protected from "./components/Protected/Protected.jsx";
 import { UserContext } from "./contexts/UserContext.jsx";
 
 // Services
-import * as authService from "./services/authService.js";
 import * as userService from "./services/userService.js";
 
 // Styles
@@ -143,23 +142,25 @@ export default function App() {
   useEffect(() => {
     const initAuth = async () => {
       const access = localStorage.getItem("access");
-      if (access) {
+      const refresh = localStorage.getItem("refresh");
+
+      // Only try to verify if we have both tokens
+      if (access && refresh) {
         try {
           const userData = await userService.getUser();
           setUser(userData);
         } catch (error) {
-          // Token invalid or expired, try refresh
-          try {
-            await authService.refreshAccessToken();
-            const userData = await userService.getUser();
-            setUser(userData);
-          } catch (refreshError) {
-            // Refresh failed, clear storage
-            localStorage.removeItem("access");
-            localStorage.removeItem("refresh");
-            setUser(null);
-          }
+          // Authentication failed, clear everything
+          console.error("Auth verification failed:", error);
+          localStorage.removeItem("access");
+          localStorage.removeItem("refresh");
+          setUser(null);
         }
+      } else {
+        // No tokens or incomplete tokens, clear storage
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        setUser(null);
       }
       setLoading(false);
     };
